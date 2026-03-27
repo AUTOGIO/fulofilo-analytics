@@ -21,7 +21,6 @@ def get_conn():
     conn.execute("SET threads = 8")               # all M3 performance cores
     conn.execute("SET memory_limit = '8GB'")      # safe limit < 16GB unified
     conn.execute("SET enable_progress_bar = false")
-    conn.execute("PRAGMA enable_checkpoint_on_shutdown = true")
     conn.execute("SET temp_directory = '/tmp/duckdb_fulofilo'")
     
     # Register views if Parquet files exist
