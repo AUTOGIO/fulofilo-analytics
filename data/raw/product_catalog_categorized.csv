@@ -1,0 +1,49 @@
+sku,raw_key,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,unit_profit,margin_pct,qty_sold,revenue,profit,avg_price,cum_revenue,cum_pct,abc_class,Category,Subcategory,CategoryConfidence
+88,regional,Produto Regional,Decoração,26.0,50.0,80,200,24.0,48.0,3202.0,159810.22,76558.22,49.91,159810.22,18.4,A,Decoração,Artesanato,high
+46,Canga areia,Canga Areia,Cangas,20.0,40.0,80,200,20.0,50.0,2800.0,112354.47,56354.47,40.13,272164.69,31.3,A,Cangas,Cangas,high
+138,nécessaire stylo,Nécessaire Stylo,Nécessaires,7.0,15.0,150,500,8.0,53.3,6901.0,104084.69,55777.69,15.08,376249.38,43.3,A,Nécessaires,Nécessaires,high
+30,kit 65,Kit Turista R$65,Kits,31.5,65.0,25,80,33.5,51.5,787.0,50925.49,26134.99,64.71,427174.87,49.1,A,Kits,Kits Presentes,high
+70,kit 110,Kit Turista R$110,Kits,55.0,110.0,15,50,55.0,50.0,464.0,49206.04,23686.04,106.05,476380.91,54.8,A,Kits,Kits Presentes,high
+29,caneca louça,Caneca de Louça,Canecas,15.0,35.0,40,100,20.0,57.1,1265.0,43992.03,25017.03,34.78,520372.93999999994,59.8,A,Souvenirs,Canecas,high
+7,chaveiro 10,Chaveiro R$10,Acessórios,6.0,10.0,100,300,4.0,40.0,4341.0,43292.2,17246.199999999997,9.97,563665.1399999999,64.8,A,Souvenirs,Chaveiros,high
+149,alça,Alça de Bolsa,Acessórios,4.5,12.0,80,200,7.5,62.5,3420.0,40820.14,25430.14,11.94,604485.2799999999,69.5,A,Acessórios,Bolsas e Mochilas,high
+1,placas,Placa Decorativa (Série),Decoração,6.0,15.0,60,150,9.0,60.0,2725.0,39887.14,23537.14,14.64,644372.4199999999,74.1,A,Souvenirs,Placas Decorativas,high
+31,bolsa 48,Bolsa R$48,Bolsas,20.0,48.0,20,60,28.0,58.3,502.0,22663.46,12623.46,45.15,667035.8799999999,76.7,A,Acessórios,Bolsas e Mochilas,high
+58,conjunto masc oxe,Conjunto Masculino Oxe,Roupas Adulto,35.0,66.0,10,30,31.0,47.0,315.0,20874.35,9849.35,66.27,687910.2299999999,79.1,A,Kits,Kits Presentes,high
+41,caneca 20,Caneca R$20,Canecas,12.0,20.0,30,80,8.0,40.0,1006.0,20094.45,8022.450000000001,19.97,708004.6799999998,81.4,B,Souvenirs,Canecas,high
+54,eco bag,Eco Bag,Bolsas,12.0,25.0,25,80,13.0,52.0,668.0,16684.42,8668.419999999998,24.98,724689.0999999999,83.3,B,Acessórios,Bolsas e Mochilas,high
+24,infantil,Roupa Infantil,Roupas Infantil,16.0,40.0,15,40,24.0,60.0,368.0,14656.0,8768.0,39.83,739345.0999999999,85.0,B,Vestuário,Roupas,high
+11,bata adulto,Bata Adulto,Roupas Adulto,22.0,60.0,10,30,38.0,63.3,224.0,13432.28,8504.28,59.97,752777.3799999999,86.6,B,Vestuário,Roupas,high
+22,sereia,Vestido Sereia,Roupas Adulto,100.0,188.0,5,15,88.0,46.8,70.0,13155.8,6155.799999999999,187.94,765933.1799999999,88.1,B,Vestuário,Moda Praia,high
+60,vestido algodão pp a g,Vestido Algodão PP-G,Roupas Adulto,25.0,50.0,10,30,25.0,50.0,227.0,11342.64,5667.639999999999,49.97,777275.82,89.4,B,Vestuário,Moda Praia,high
+33,caneca 30,Caneca R$30,Canecas,15.0,30.0,20,60,15.0,50.0,279.0,8368.24,4183.24,29.99,785644.0599999999,90.4,B,Souvenirs,Canecas,high
+57,camisa infantil oxe,Camisa Infantil Oxe,Roupas Infantil,35.0,58.0,8,25,23.0,39.7,138.0,7951.7,3121.7,57.62,793595.7599999999,91.3,B,Vestuário,Moda Praia,high
+64,body oxe,Body Oxe,Roupas Adulto,15.0,35.0,10,30,20.0,57.1,218.0,7614.45,4344.45,34.93,801210.2099999998,92.1,B,Vestuário,Roupas,high
+20,porta lingerie,Porta Lingerie,Bolsas,8.0,20.0,15,50,12.0,60.0,378.0,7595.38,4571.38,20.09,808805.5899999999,93.0,B,Nécessaires,Nécessaires,high
+73,placa,Placa Decorativa Avulsa,Decoração,6.0,17.0,20,60,11.0,64.7,442.0,7276.64,4624.64,16.46,816082.2299999999,93.9,B,Souvenirs,Placas Decorativas,high
+14,ima12,Imã 12cm,Acessórios,6.0,12.0,30,100,6.0,50.0,569.0,6808.41,3394.41,11.97,822890.6399999999,94.6,B,Souvenirs,Ímãs de Geladeira,high
+59,macaquinho fem oxe,Macaquinho Feminino Oxe,Roupas Adulto,35.0,55.0,8,25,20.0,36.4,102.0,5596.07,2026.0699999999997,54.86,828486.7099999998,95.3,C,Vestuário,Roupas,high
+62,vestido oxe 60,Vestido Oxe T60,Roupas Adulto,24.0,50.0,8,25,26.0,52.0,111.0,5562.26,2898.26,50.11,834048.9699999999,95.9,C,Vestuário,Moda Praia,high
+44,macaquinho unissex 45,Macaquinho Unissex T45,Roupas Adulto,20.0,45.0,8,25,25.0,55.6,109.0,4902.35,2722.3500000000004,44.98,838951.3199999998,96.5,C,Vestuário,Roupas,high
+136,bata infantil,Bata Infantil,Roupas Infantil,20.0,40.0,10,30,20.0,50.0,106.0,4236.17,2116.17,39.96,843187.4899999999,97.0,C,Vestuário,Roupas,high
+131,body,Body Adulto,Roupas Adulto,12.0,28.0,10,30,16.0,57.1,149.0,4168.15,2380.1499999999996,27.97,847355.6399999999,97.4,C,Vestuário,Roupas,high
+61,macaquinho fem 40,Macaquinho Feminino T40,Roupas Adulto,25.0,40.0,8,25,15.0,37.5,74.0,2953.73,1103.73,39.92,850309.3699999999,97.8,C,Vestuário,Roupas,high
+53,40,Roupa Tamanho 40,Roupas Adulto,20.0,40.0,8,20,20.0,50.0,72.0,2780.31,1340.31,38.62,853089.6799999999,98.1,C,Vestuário,Roupas,high
+48,65,Roupa Tamanho 65,Roupas Adulto,35.0,65.0,5,15,30.0,46.2,42.0,2723.22,1253.2199999999998,64.84,855812.8999999999,98.4,C,Vestuário,Roupas,high
+55,50,Roupa Tamanho 50,Roupas Adulto,28.0,50.0,8,20,22.0,44.0,41.0,2030.0,882.0,49.51,857842.8999999999,98.7,C,Vestuário,Roupas,high
+47,55,Roupa Tamanho 55,Roupas Adulto,30.0,55.0,8,20,25.0,45.5,34.0,1863.96,843.96,54.82,859706.8599999999,98.9,C,Vestuário,Roupas,high
+153,3 estágios,Roupa 3 Estágios,Roupas Adulto,30.0,70.0,5,15,40.0,57.1,22.0,1537.12,877.1199999999999,69.87,861243.9799999999,99.0,C,Vestuário,Roupas,high
+68,mochila,Mochila Modelo A,Bolsas,26.0,65.0,10,30,39.0,60.0,23.0,1502.76,880.76,65.34,862746.7399999999,99.2,C,Acessórios,Bolsas e Mochilas,high
+66,mochila,Mochila Modelo B,Bolsas,50.0,85.0,5,15,35.0,41.2,23.0,1502.76,880.76,65.34,864249.4999999999,99.4,C,Acessórios,Bolsas e Mochilas,high
+51,45,Roupa Tamanho 45,Roupas Adulto,25.0,45.0,8,20,20.0,44.4,27.0,1213.78,538.78,44.95,865463.2799999999,99.5,C,Vestuário,Roupas,high
+65,ima 15,Imã 15cm,Acessórios,10.0,15.0,20,60,5.0,33.3,78.0,1056.9,276.9000000000001,13.55,866520.1799999999,99.7,C,Souvenirs,Ímãs de Geladeira,high
+69,vestido algodão gg,Vestido Algodão GG,Roupas Adulto,30.0,55.0,5,15,25.0,45.5,17.0,935.0,425.0,55.0,867455.1799999999,99.8,C,Vestuário,Moda Praia,high
+71,bata  xg,Bata Adulto XG,Roupas Adulto,30.0,65.0,5,15,35.0,53.8,8.0,520.0,280.0,65.0,867975.1799999999,99.8,C,Vestuário,Roupas,high
+63,carteira pequena,Carteira Pequena,Acessórios,3.5,10.0,15,50,6.5,65.0,50.0,499.7,324.7,9.99,868474.8799999999,99.9,C,Acessórios,Bolsas e Mochilas,high
+28,bolsinha sereia,Bolsinha Sereia,Bolsas,15.0,25.0,10,30,10.0,40.0,17.0,425.0,170.0,25.0,868899.8799999999,99.9,C,Acessórios,Bolsas e Mochilas,high
+43,60,Roupa Tamanho 60,Roupas Adulto,30.0,60.0,5,15,30.0,50.0,4.0,236.84,116.84,59.21,869136.7199999999,100.0,C,Vestuário,Roupas,high
+38,caneca 35,Caneca R$35,Canecas,16.0,35.0,10,30,19.0,54.3,5.0,175.0,95.0,35.0,869311.7199999999,100.0,C,Souvenirs,Canecas,high
+67,kit mochila,Kit com Mochila,Kits,55.0,105.0,5,15,50.0,47.6,1.0,105.0,50.0,105.0,869416.7199999999,100.0,C,Kits,Kits Presentes,high
+49,canga 35,Canga Tamanho 35,Cangas,15.0,35.0,10,30,20.0,57.1,2.0,70.0,40.0,35.0,869486.7199999999,100.0,C,Cangas,Cangas,high
+72,chaveiro peq,Chaveiro Pequeno,Acessórios,2.5,6.0,20,60,3.5,58.3,6.0,37.89,22.89,6.32,869524.6099999999,100.0,C,Souvenirs,Chaveiros,high
+56,imã 15,Imã 15cm (Variante),Acessórios,7.0,15.0,5,20,8.0,53.3,1.0,15.0,8.0,15.0,869539.6099999999,100.0,C,Souvenirs,Ímãs de Geladeira,high
