@@ -1,0 +1,54 @@
+ELEVE VENDAS - Produtos (Receita)
+Filtro 01/01/2024 00:00 até 02/12/2024 23:59 | Emitido em 02/12/2024 10:05:27 | por TATIANA MORIMOTO
+Item Quantidade Receita
+regional 3202.000 159810.22
+Canga areia 2800.000 112354.47
+nécessaire stylo 6901.000 104084.69
+kit 65 787.000 50925.49
+kit 110 464.000 49206.04
+caneca louça 1265.000 43992.03
+chaveiro 10 4341.000 43292.20
+alça 3420.000 40820.14
+placas 2725.000 39887.14
+bolsa 48 502.000 22663.46
+conjunto masc oxe 315.000 20874.35
+caneca 20 1006.000 20094.45
+eco bag 668.000 16684.42
+infantil 368.000 14656.00
+bata adulto 224.000 13432.28
+sereia 70.000 13155.80
+vestido algodão pp a g 227.000 11342.64
+caneca 30 279.000 8368.24
+camisa infantil oxe 138.000 7951.70
+body oxe 218.000 7614.45
+porta lingerie 378.000 7595.38
+placa 442.000 7276.64
+ima12 569.000 6808.41
+macaquinho fem oxe 102.000 5596.07
+vestido oxe 60 111.000 5562.26
+macaquinho unissex 45 109.000 4902.35
+bata infantil 106.000 4236.17
+body 149.000 4168.15
+macaquinho fem 40 74.000 2953.73
+40 72.000 2780.31
+
+Item Quantidade Receita
+65 42.000 2723.22
+50 41.000 2030.00
+55 34.000 1863.96
+3 estágios 22.000 1537.12
+mochila 22.000 1420.00
+45 27.000 1213.78
+ima 15 78.000 1056.90
+vestido algodão gg 17.000 935.00
+bata  xg 8.000 520.00
+carteira pequena 50.000 499.70
+bolsinha sereia 17.000 425.00
+60 4.000 236.84
+caneca 35 5.000 175.00
+kit mochila 1.000 105.00
+mochila 1.000 82.76
+canga 35 2.000 70.00
+chaveiro peq 6.000 37.89
+imã 15 1.000 15.00
+TOTAIS: 32410.000 868036.85

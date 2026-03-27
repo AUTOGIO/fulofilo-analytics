@@ -1,0 +1,72 @@
+# FulôFiló — Visual POS Dataset Configuration
+# YOLOv11 (Ultralytics) — Product Detection Model
+#
+# HOW TO USE:
+# 1. Add product images to: visual_pos/images/train/ and visual_pos/images/val/
+# 2. Add YOLO-format label files to: visual_pos/labels/train/ and visual_pos/labels/val/
+# 3. Run: uv run python visual_pos/train.py
+#
+# LABEL FORMAT (YOLO):
+# <class_id> <x_center> <y_center> <width> <height>  (all values 0.0–1.0, normalized)
+#
+# RECOMMENDED TOOL FOR LABELING:
+# - Roboflow (free tier): https://roboflow.com
+# - Label Studio (self-hosted): https://labelstud.io
+
+path: ../visual_pos   # Root of the dataset (relative to this file)
+train: images/train   # Training images
+val: images/val       # Validation images
+
+# Number of classes
+nc: 48
+
+# Class names — mapped to SKUs in product_catalog.csv
+names:
+  0:  "Canga Areia"                # SKU 00046
+  1:  "Canga Tamanho 35"           # SKU 00049
+  2:  "Chaveiro R$10"              # SKU 00007
+  3:  "Chaveiro Pequeno"           # SKU 00072
+  4:  "Alça de Bolsa"              # SKU 00149
+  5:  "Imã 12cm"                   # SKU 00014
+  6:  "Imã 15cm"                   # SKU 00065
+  7:  "Imã 15cm Variante"          # SKU 00056
+  8:  "Carteira Pequena"           # SKU 00063
+  9:  "Nécessaire Stylo"           # SKU 00138
+  10: "Caneca de Louça"            # SKU 00029
+  11: "Caneca R$20"                # SKU 00041
+  12: "Caneca R$30"                # SKU 00033
+  13: "Caneca R$35"                # SKU 00038
+  14: "Placa Decorativa Série"     # SKU 00001
+  15: "Placa Decorativa Avulsa"    # SKU 00073
+  16: "Produto Regional"           # SKU 00088
+  17: "Kit Turista R$65"           # SKU 00030
+  18: "Kit Turista R$110"          # SKU 00070
+  19: "Kit com Mochila"            # SKU 00067
+  20: "Bolsa R$48"                 # SKU 00031
+  21: "Bolsinha Sereia"            # SKU 00028
+  22: "Porta Lingerie"             # SKU 00020
+  23: "Eco Bag"                    # SKU 00054
+  24: "Mochila Modelo A"           # SKU 00068
+  25: "Mochila Modelo B"           # SKU 00066
+  26: "Vestido Sereia"             # SKU 00022
+  27: "Bata Adulto"                # SKU 00011
+  28: "Bata Adulto XG"             # SKU 00071
+  29: "Body Adulto"                # SKU 00131
+  30: "Body Oxe"                   # SKU 00064
+  31: "Conjunto Masculino Oxe"     # SKU 00058
+  32: "Macaquinho Feminino Oxe"    # SKU 00059
+  33: "Macaquinho Feminino T40"    # SKU 00061
+  34: "Macaquinho Unissex T45"     # SKU 00044
+  35: "Vestido Oxe T60"            # SKU 00062
+  36: "Vestido Algodão PP-G"       # SKU 00060
+  37: "Vestido Algodão GG"         # SKU 00069
+  38: "Roupa Tamanho 40"           # SKU 00053
+  39: "Roupa Tamanho 45"           # SKU 00051
+  40: "Roupa Tamanho 50"           # SKU 00055
+  41: "Roupa Tamanho 55"           # SKU 00047
+  42: "Roupa Tamanho 60"           # SKU 00043
+  43: "Roupa Tamanho 65"           # SKU 00048
+  44: "Roupa 3 Estágios"           # SKU 00153
+  45: "Roupa Infantil"             # SKU 00024
+  46: "Bata Infantil"              # SKU 00136
+  47: "Camisa Infantil Oxe"        # SKU 00057

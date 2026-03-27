@@ -1,0 +1,1 @@
+"""FulôFiló Streamlit application package."""
