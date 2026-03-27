@@ -1,3 +1,5 @@
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
 FulôFiló — 📊 Análise ABC (Enhanced)
 =======================================
@@ -15,7 +17,9 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis
 
-st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon="📊", layout="wide")
+from app.components.sidebar import render_sidebar
+
+st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
 st.title("📊 Análise ABC — Classificação Pareto")
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
 

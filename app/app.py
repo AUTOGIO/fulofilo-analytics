@@ -16,11 +16,14 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix
+from app.components.sidebar import render_sidebar
 
 # ── Page Config ──────────────────────────────────────────────────────────────
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent / "assets" / "favicon.png")
 st.set_page_config(
     page_title="FulôFiló Analytics Pro",
-    page_icon="🌺",
+    page_icon=_FAVICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -65,19 +68,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("## 🌺 FulôFiló")
-    st.markdown("**Analytics Pro Dashboard**")
-    st.markdown("---")
-    st.markdown("### 📋 Navegação")
-    st.page_link("app.py",                        label="🏠 Visão Geral",       icon="🏠")
-    st.page_link("pages/01_abc_analysis.py",       label="📊 Análise ABC",       icon="📊")
-    st.page_link("pages/02_margin_matrix.py",      label="💹 Matriz de Margem",  icon="💹")
-    st.page_link("pages/03_inventory.py",          label="📦 Estoque",           icon="📦")
-    st.page_link("pages/04_daily_ops.py",          label="⚡ Operações Diárias", icon="⚡")
-    st.markdown("---")
-    st.markdown("**Período:** Jan–Dez 2024")
-    st.markdown("**Fonte:** Eleve Vendas")
+render_sidebar(active_page='app.py')
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown('<p class="main-header">🌺 FulôFiló Analytics Pro</p>', unsafe_allow_html=True)

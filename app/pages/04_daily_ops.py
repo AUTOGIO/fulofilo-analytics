@@ -15,6 +15,8 @@ from datetime import date
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 
+from app.components.sidebar import render_sidebar
+
 st.set_page_config(page_title="Operações Diárias — FulôFiló", page_icon="⚡", layout="wide")
 st.title("⚡ Operações Diárias")
 st.markdown(f"**Hoje:** {date.today().strftime('%d/%m/%Y')}")

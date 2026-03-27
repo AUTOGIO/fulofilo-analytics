@@ -1,3 +1,5 @@
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
 FulôFiló — 📤 Export Excel (Page 6)
 =====================================
@@ -10,10 +12,12 @@ from pathlib import Path
 
 import streamlit as st
 
+from app.components.sidebar import render_sidebar
+
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-st.set_page_config(page_title="Exportar Excel — FulôFiló", page_icon="📤", layout="wide")
+st.set_page_config(page_title="Exportar Excel — FulôFiló", page_icon=_FAVICON, layout="wide")
 st.markdown("## 📤 Exportar Relatório Excel")
 st.caption("Gera o workbook completo com 9 abas a partir dos dados atuais em Parquet.")
 

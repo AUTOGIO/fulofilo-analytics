@@ -1,3 +1,5 @@
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
 FulôFiló — 🏷️ Category Manager (Page 5)
 =========================================
@@ -19,11 +21,13 @@ sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn
 
+from app.components.sidebar import render_sidebar
+
 RAW_DIR   = ROOT / "data" / "raw"
 CAT_FILE  = RAW_DIR / "product_catalog_categorized.csv"
 BASE_FILE = RAW_DIR / "product_catalog.csv"
 
-st.set_page_config(page_title="Categorias — FulôFiló", page_icon="🏷️", layout="wide")
+st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
 
 st.markdown("## 🏷️ Gerenciador de Categorias")
 st.caption("Visualize, filtre e reassigne categorias de produtos. Mudanças são salvas no CSV e no DuckDB.")

@@ -1,3 +1,5 @@
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
 FulôFiló — Matriz de Margem
 ============================
@@ -14,7 +16,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix
 
-st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon="💹", layout="wide")
+from app.components.sidebar import render_sidebar
+
+st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon=_FAVICON, layout="wide")
 st.title("💹 Matriz de Margem — Volume × Lucratividade")
 st.markdown("""
 Identifica o posicionamento estratégico de cada produto:

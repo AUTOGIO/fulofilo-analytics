@@ -1,3 +1,5 @@
+from pathlib import Path as _Path
+_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
 FulôFiló — 📦 Gestão de Estoque (Enhanced)
 ============================================
@@ -14,7 +16,9 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts
 
-st.set_page_config(page_title="Estoque — FulôFiló", page_icon="📦", layout="wide")
+from app.components.sidebar import render_sidebar
+
+st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
 st.title("📦 Gestão de Estoque")
 st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
 
