@@ -11,6 +11,7 @@ import streamlit as st
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
 LOGO_SMALL  = str(ASSETS / "favicon.png")
+GMT_LOGO    = ASSETS / "GMT.png"
 
 _NAV = [
     ("app.py",                   "🏠", "Visão Geral"),
@@ -104,3 +105,13 @@ def render_sidebar(active_page: str = ""):
             '</div>',
             unsafe_allow_html=True,
         )
+
+        # ── GMT branding ───────────────────────────────────────────────────────
+        if GMT_LOGO.exists():
+            st.markdown(
+                '<div class="sidebar-footer" style="margin-top:4px;">'
+                'Develop by Giovannini Mare<br>Technology'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+            st.image(str(GMT_LOGO), use_container_width=True)
