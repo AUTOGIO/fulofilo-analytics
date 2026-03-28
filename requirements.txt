@@ -1,8 +1,19 @@
-# FulôFiló Analytics Pro — Streamlit Cloud dependencies
-# ultralytics excluded (visual_pos only, not needed for dashboard)
+# FulôFiló local dependencies (dashboard + visual reconciliation MVP)
 streamlit>=1.32.0
 polars>=0.20.15
 duckdb>=0.10.0
 plotly>=5.19.0
 pandas>=2.2.1
 openpyxl>=3.1.5
+
+# Visual reconciliation MVP
+ultralytics>=8.1.29
+torch>=2.2.0
+pillow>=10.2.0
+numpy>=1.26.4
+pyyaml>=6.0.1
+opencv-python>=4.10.0.84
+tqdm>=4.66.4
+
+# Optional Core ML export support (Apple Silicon)
+coremltools>=7.2

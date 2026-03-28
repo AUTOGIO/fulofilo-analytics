@@ -41,6 +41,19 @@ excel/FuloFilo_Report_*.xlsx
 # YOLO training runs (large binary artifacts)
 visual_pos/runs/
 
+# Visual reconciliation generated artifacts
+data/source_catalog/
+data/raw_checkout/
+data/synthetic/
+data/splits/
+data/outputs/
+data/models/
+data/backgrounds/
+data/manifests/catalog_manifest.csv
+data/manifests/catalog_manifest.json
+data/manifests/scene_manifest.csv
+data/manifests/split_manifest.csv
+
 # uv lock (reproducible via pyproject.toml)
 uv.lock
 

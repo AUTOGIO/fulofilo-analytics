@@ -378,3 +378,7 @@ Date,Product,Quantity,Unit_Price,Total,Payment_Method,Source
 2026-03-27,Nécessaire Média,1,38.0,38.0,Crédito,historical
 2026-03-27,Carteira Mini,1,40.0,40.0,Dinheiro,historical
 2026-03-27,Chaveiro Duplo,1,35.0,35.0,Crédito,historical
+2026-03-28,Necessaire Cacto Palavras,4,17.0,68.0,Pix,manual
+2026-03-28,Necessaire Tropical Folhas,12,26.0,312.0,Dinheiro,manual
+2026-03-28,Chaveiro Ellisa Tropical,4,30.0,120.0,Dinheiro,manual
+2026-03-28,Necessaire Coqueiro Escuro,60,15.0,900.0,Dinheiro,manual
