@@ -12,6 +12,11 @@ ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
 LOGO_SMALL  = str(ASSETS / "favicon.png")
 GMT_LOGO    = ASSETS / "GMT.png"
+BRAND_LOGOS = [
+    ASSETS / "Logo-17.png",
+    ASSETS / "Logo-22.png",
+    ASSETS / "Logo-38.jpg",
+]
 
 _NAV = [
     ("app.py",                   "🏠", "Visão Geral"),
@@ -115,3 +120,10 @@ def render_sidebar(active_page: str = ""):
                 unsafe_allow_html=True,
             )
             st.image(str(GMT_LOGO), use_container_width=True)
+
+        # ── Company logos ──────────────────────────────────────────────────────
+        logos = [p for p in BRAND_LOGOS if p.exists()]
+        if logos:
+            st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:8px 0 6px;">', unsafe_allow_html=True)
+            for logo_path in logos:
+                st.image(str(logo_path), use_container_width=True)
