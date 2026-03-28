@@ -293,3 +293,76 @@ else:
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
         st.dataframe(show, use_container_width=True, hide_index=True)
 
+# ── Delete a Sale ──────────────────────────────────────────────────────────────
+st.divider()
+with st.expander("🗑️ Excluir Venda", expanded=False):
+    st.warning("⚠️ Esta ação é irreversível. A venda será removida do CSV, Parquet e Excel.")
+
+    del_history = load_sales_history()
+    if del_history.empty:
+        st.info("Nenhuma venda registrada ainda.")
+    else:
+        del_df = del_history.reset_index(drop=True).copy()
+
+        # ── Optional date filter to narrow down the list ───────────────────
+        min_d = del_df["Date"].min().date()
+        max_d = del_df["Date"].max().date()
+        dc1, dc2 = st.columns(2)
+        with dc1:
+            del_from = st.date_input("📅 A partir de", value=max_d - timedelta(days=6),
+                                     min_value=min_d, max_value=max_d, key="del_from")
+        with dc2:
+            del_to   = st.date_input("📅 Até", value=max_d,
+                                     min_value=min_d, max_value=max_d, key="del_to")
+
+        mask_del = (del_df["Date"].dt.date >= del_from) & (del_df["Date"].dt.date <= del_to)
+        subset   = del_df[mask_del].copy()
+
+        if subset.empty:
+            st.info("Nenhuma venda no período selecionado.")
+        else:
+            subset["_label"] = subset.apply(
+                lambda r: (
+                    f"{r['Date'].strftime('%d/%m/%Y')}  |  "
+                    f"{r['Product']}  |  "
+                    f"Qtd {int(r['Quantity'])}  |  "
+                    f"R$ {float(r['Total']):.2f}  |  "
+                    f"{r['Payment_Method']}"
+                ),
+                axis=1,
+            )
+
+            selected_label = st.selectbox(
+                "Selecionar venda para excluir:",
+                subset["_label"].tolist(),
+                key="delete_sale_select",
+            )
+
+            # Map label → original DataFrame index
+            orig_idx = subset[subset["_label"] == selected_label].index[0]
+            row      = del_df.loc[orig_idx]
+
+            st.markdown(
+                f"**Venda selecionada:** `{row['Product']}` — "
+                f"**{int(row['Quantity'])} un × R$ {float(row['Unit_Price']):.2f}** "
+                f"= **R$ {float(row['Total']):.2f}** ({row['Payment_Method']}) "
+                f"em {row['Date'].strftime('%d/%m/%Y')}"
+            )
+
+            confirm_cb = st.checkbox("✅ Confirmar exclusão desta venda", key="confirm_delete_cb")
+            if st.button("🗑️ Excluir venda", type="primary",
+                         disabled=not confirm_cb, use_container_width=False):
+                new_df = del_df.drop(index=orig_idx).reset_index(drop=True)
+                # Re-format Date as string for CSV consistency
+                new_df["Date"] = new_df["Date"].dt.strftime("%Y-%m-%d")
+                new_df.to_csv(CSV_PATH, index=False)
+                _rebuild_parquet()
+                sync_csv_to_excel_daily_ops()
+                st.success(
+                    f"✅ Venda excluída: **{row['Product']}** "
+                    f"em {row['Date'].strftime('%d/%m/%Y')} — "
+                    f"CSV, Parquet e Excel atualizados."
+                )
+                st.cache_data.clear()
+                st.rerun()
+
