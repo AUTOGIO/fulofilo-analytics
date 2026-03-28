@@ -233,9 +233,8 @@ else:
             .sum()
             .reset_index()
             .rename(columns={"Payment_Method": "Pagamento", "Total": "Receita (R$)"})
-            .sort_values("Receita (R$)", descending=True if hasattr((0).__class__, '__gt__') else True)
+            .sort_values("Receita (R$)", ascending=False)
         )
-        pay_agg = pay_agg.sort_values("Receita (R$)", ascending=False)
 
         col_pie, col_tbl = st.columns([1, 1])
         with col_pie:
