@@ -138,9 +138,11 @@ with tab3:
     if inv_path.exists() and prod_path.exists():
         import polars as pl
         inv  = pl.read_parquet(inv_path)
-        prod = pl.read_parquet(prod_path).select(["sku","unit_cost"])
-        merged_pl = inv.join(prod, on="sku", how="left").with_columns(
-            (pl.col("current_stock").cast(pl.Float64) * pl.col("unit_cost")).alias("value")
+        prod = pl.read_parquet(prod_path).select(["slug","cost","qty_sold"]).with_columns(
+            (pl.col("cost") / pl.col("qty_sold").cast(pl.Float64)).alias("unit_cost")
+        ).select(["slug","unit_cost"])
+        merged_pl = inv.join(prod, left_on="slug", right_on="slug", how="left").with_columns(
+            (pl.col("current_stock").cast(pl.Float64) * pl.col("unit_cost").fill_null(0.0)).alias("value")
         )
         cat_val = (merged_pl.group_by("category")
                    .agg(pl.col("value").sum().alias("total_value"))

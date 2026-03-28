@@ -41,12 +41,21 @@ def load_categorized() -> pl.DataFrame:
         return pl.read_csv(CAT_FILE)
     elif BASE_FILE.exists():
         return pl.read_csv(BASE_FILE)
+    # Fallback: load directly from products parquet
+    pq_path = ROOT / "data" / "parquet" / "products.parquet"
+    if pq_path.exists():
+        return pl.read_parquet(pq_path).select(
+            ["slug", "full_name", "category", "margin_pct"]
+        ).rename({"category": "Category"}).with_columns([
+            pl.col("Category").alias("Subcategory"),
+            pl.lit("auto").alias("CategoryConfidence"),
+        ])
     return pl.DataFrame()
 
 df = load_categorized()
 
 if df.is_empty():
-    st.error("Arquivo product_catalog.csv não encontrado. Execute `etl/build_catalog.py` primeiro.")
+    st.error("Dados de produtos não encontrados. Verifique data/parquet/products.parquet.")
     st.stop()
 
 # Ensure Category columns exist
@@ -123,19 +132,19 @@ if not unmatched_df.is_empty():
         st.caption("Selecione Categoria e Subcategoria para cada produto e clique em Salvar.")
         edits = {}
         for row in unmatched_df.iter_rows(named=True):
-            sku = row["sku"]
+            slug = row["slug"]
             col_a, col_b, col_c = st.columns([3, 2, 2])
-            col_a.markdown(f"**{row['full_name']}** `{sku}`")
+            col_a.markdown(f"**{row['full_name']}** `{slug}`")
             new_cat = col_b.selectbox("Categoria", ALL_CATEGORIES,
-                                       key=f"cat_{sku}", index=ALL_CATEGORIES.index("Outros"))
+                                       key=f"cat_{slug}", index=ALL_CATEGORIES.index("Outros"))
             new_sub = col_c.selectbox("Subcategoria", ALL_SUBCATEGORIES,
-                                       key=f"sub_{sku}", index=ALL_SUBCATEGORIES.index("Não Classificado"))
-            edits[sku] = (new_cat, new_sub)
+                                       key=f"sub_{slug}", index=ALL_SUBCATEGORIES.index("Não Classificado"))
+            edits[slug] = (new_cat, new_sub)
 
         if st.button("💾 Salvar atribuições manuais"):
             updated = df.clone().to_pandas()
-            for sku, (cat, sub) in edits.items():
-                mask = updated["sku"] == sku
+            for slug, (cat, sub) in edits.items():
+                mask = updated["slug"] == slug
                 updated.loc[mask, "Category"]           = cat
                 updated.loc[mask, "Subcategory"]        = sub
                 updated.loc[mask, "CategoryConfidence"] = "manual"
@@ -146,7 +155,7 @@ if not unmatched_df.is_empty():
 
 # ── Main products table with confidence badges ─────────────────────────────────
 st.subheader(f"📋 Produtos ({view.shape[0]} de {total})")
-cols_show = [c for c in ["sku","full_name","category","Category","Subcategory","CategoryConfidence"]
+cols_show = [c for c in ["slug","full_name","category","Category","Subcategory","CategoryConfidence"]
              if c in view.columns]
 display = view.select(cols_show).to_pandas()
 if "CategoryConfidence" in display.columns:

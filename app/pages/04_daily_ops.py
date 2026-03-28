@@ -84,21 +84,23 @@ conn = get_conn()
 
 try:
     products_df = conn.execute("""
-        SELECT sku, full_name, category, unit_cost, suggested_price, margin_pct
+        SELECT slug, full_name, category,
+               ROUND(cost / NULLIF(qty_sold, 0), 2) AS unit_cost,
+               price, margin_pct
         FROM products ORDER BY full_name
     """).pl().to_pandas()
 
-    search = st.text_input("Buscar produto por nome ou SKU", placeholder="Ex: canga, 00007, chaveiro...")
+    search = st.text_input("Buscar produto por nome ou slug", placeholder="Ex: necessaire, chaveiro, carteira...")
     if search:
         mask = (
             products_df["full_name"].str.lower().str.contains(search.lower()) |
-            products_df["sku"].str.contains(search, na=False)
+            products_df["slug"].str.contains(search.lower(), na=False)
         )
         result = products_df[mask].copy()
         if not result.empty:
-            result.columns = ["SKU", "Produto", "Categoria", "Custo (R$)", "Preço Sugerido (R$)", "Margem (%)"]
-            result["Custo (R$)"]          = result["Custo (R$)"].apply(lambda x: f"R$ {x:.2f}")
-            result["Preço Sugerido (R$)"] = result["Preço Sugerido (R$)"].apply(lambda x: f"R$ {x:.2f}")
+            result.columns = ["Slug", "Produto", "Categoria", "Custo Unit. (R$)", "Preço (R$)", "Margem (%)"]
+            result["Custo Unit. (R$)"]    = result["Custo Unit. (R$)"].apply(lambda x: f"R$ {x:.2f}")
+            result["Preço (R$)"]          = result["Preço (R$)"].apply(lambda x: f"R$ {x:.2f}")
             result["Margem (%)"]          = result["Margem (%)"].apply(lambda x: f"{x:.1f}%")
             st.dataframe(result, use_container_width=True, hide_index=True)
         else:
