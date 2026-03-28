@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix
+from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
@@ -38,15 +38,15 @@ render_sidebar(active_page='app.py')
 render_hud_topbar("Visão Geral", "🌺")
 
 # ── Load Data ─────────────────────────────────────────────────────────────────
-@st.cache_data(ttl=300)
-def load_all():
+@st.cache_data
+def load_all(data_version: str):  # noqa: ARG001 — data_version busts cache on file change
     conn = get_conn()
     kpis = get_summary_kpis(conn)
     abc  = get_abc_analysis(conn)
     mm   = get_margin_matrix(conn)
     return kpis, abc, mm
 
-kpis, abc_df, mm_df = load_all()
+kpis, abc_df, mm_df = load_all(get_data_mtime())
 receita, quantidade, lucro, ticket = kpis if kpis else (0, 0, 0, 0)
 margem_pct = (lucro / receita * 100) if receita else 0
 

@@ -15,7 +15,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
-from app.db import get_conn, get_abc_analysis
+from app.db import get_conn, get_abc_analysis, get_data_mtime
 from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
@@ -26,12 +26,12 @@ render_hud_topbar("Análise ABC", "📊")
 
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
 
-@st.cache_data(ttl=300)
-def load():
+@st.cache_data
+def load(data_version: str):  # noqa: ARG001
     conn = get_conn()
     return get_abc_analysis(conn)
 
-df = load()
+df = load(get_data_mtime())
 if df.is_empty():
     st.warning("Execute `etl/build_catalog.py` para gerar os dados."); st.stop()
 

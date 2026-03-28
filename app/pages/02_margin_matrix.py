@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
-from app.db import get_conn, get_margin_matrix
+from app.db import get_conn, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 
@@ -31,12 +31,12 @@ Identifica o posicionamento estratégico de cada produto:
 - 🐕 **Dogs** (baixo volume + baixa margem) — candidatos a descontinuação
 """)
 
-@st.cache_data(ttl=300)
-def load():
+@st.cache_data
+def load(data_version: str):  # noqa: ARG001
     conn = get_conn()
     return get_margin_matrix(conn)
 
-df = load()
+df = load(get_data_mtime())
 
 if df.is_empty():
     st.warning("Execute `etl/build_catalog.py` primeiro.")

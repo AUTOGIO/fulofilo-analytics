@@ -14,7 +14,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
-from app.db import get_conn, get_inventory_alerts
+from app.db import get_conn, get_inventory_alerts, get_data_mtime
 from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
 
@@ -25,12 +25,12 @@ render_hud_topbar("Gestão de Estoque", "📦")
 
 st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
 
-@st.cache_data(ttl=60)
-def load():
+@st.cache_data
+def load(data_version: str):  # noqa: ARG001
     conn = get_conn()
     return get_inventory_alerts(conn)
 
-df = load()
+df = load(get_data_mtime())
 
 if df.is_empty():
     st.info("⚙️ Estoque não configurado. Preencha `data/raw/inventory_TEMPLATE.csv` e execute `etl/ingest_eleve.py`.")

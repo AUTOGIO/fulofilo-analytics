@@ -13,6 +13,26 @@ BASE = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE / "data" / "parquet"
 DB_PATH = BASE / "data" / "fulofilo.duckdb"
 
+
+def get_data_mtime() -> str:
+    """Return a string fingerprint of the parquet directory's latest mtime.
+
+    Pass this as a parameter to any @st.cache_data function to make it
+    auto-invalidate whenever a parquet file is added, updated, or removed.
+    Example:
+        @st.cache_data
+        def load(data_version: str):
+            ...
+        df = load(get_data_mtime())
+    """
+    mtimes = [
+        p.stat().st_mtime
+        for p in DATA_DIR.glob("*.parquet")
+        if p.exists()
+    ]
+    return str(round(max(mtimes), 3)) if mtimes else "0"
+
+
 def get_conn():
     """Initialize DuckDB connection and register Parquet files as views."""
     import os

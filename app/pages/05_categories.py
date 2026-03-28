@@ -19,7 +19,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app.db import get_conn
+from app.db import get_conn, get_data_mtime
 from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
 
@@ -35,8 +35,8 @@ render_hud_topbar("Gerenciador de Categorias", "🏷️")
 st.caption("Visualize, filtre e reassigne categorias de produtos. Mudanças são salvas no CSV e no DuckDB.")
 
 # ── Load data ──────────────────────────────────────────────────────────────────
-@st.cache_data(ttl=60)
-def load_categorized() -> pl.DataFrame:
+@st.cache_data
+def load_categorized(data_version: str = "") -> pl.DataFrame:  # noqa: ARG001
     if CAT_FILE.exists():
         return pl.read_csv(CAT_FILE)
     elif BASE_FILE.exists():
@@ -52,7 +52,7 @@ def load_categorized() -> pl.DataFrame:
         ])
     return pl.DataFrame()
 
-df = load_categorized()
+df = load_categorized(get_data_mtime())
 
 if df.is_empty():
     st.error("Dados de produtos não encontrados. Verifique data/parquet/products.parquet.")
