@@ -15,11 +15,18 @@ DB_PATH = BASE / "data" / "fulofilo.duckdb"
 
 def get_conn():
     """Initialize DuckDB connection and register Parquet files as views."""
+    import os
+    is_cloud = bool(os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("IS_STREAMLIT_CLOUD"))
+
     conn = duckdb.connect(str(DB_PATH))
 
-    # ── M3 Performance Configuration ──────────────────────────────────────
-    conn.execute("SET threads = 8")               # all M3 performance cores
-    conn.execute("SET memory_limit = '8GB'")      # safe limit < 16GB unified
+    # ── Performance Configuration (auto-tuned: M3 local vs Streamlit Cloud) ──
+    if is_cloud:
+        conn.execute("SET threads = 2")
+        conn.execute("SET memory_limit = '512MB'")
+    else:
+        conn.execute("SET threads = 8")               # all M3 performance cores
+        conn.execute("SET memory_limit = '8GB'")      # safe limit < 16GB unified
     conn.execute("SET enable_progress_bar = false")
     conn.execute("SET temp_directory = '/tmp/duckdb_fulofilo'")
     

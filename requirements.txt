@@ -1,0 +1,8 @@
+# FulôFiló Analytics Pro — Streamlit Cloud dependencies
+# ultralytics excluded (visual_pos only, not needed for dashboard)
+streamlit>=1.32.0
+polars>=0.20.15
+duckdb>=0.10.0
+plotly>=5.19.0
+pandas>=2.2.1
+openpyxl>=3.1.5

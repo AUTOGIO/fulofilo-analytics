@@ -1,0 +1,9 @@
+name = "fulofilo-dashboard"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Route: dashboard.giovannini.us → this worker
+# Zone ID is needed — get it from: Cloudflare Dashboard → giovannini.us → Overview → Zone ID
+[[routes]]
+pattern = "dashboard.giovannini.us/*"
+zone_name = "giovannini.us"
