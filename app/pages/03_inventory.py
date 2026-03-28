@@ -14,7 +14,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
-from app.db import get_conn, get_inventory_alerts, get_data_mtime
+from app.db import get_conn, get_inventory_alerts, get_stock_turnover, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
 from app.utils.inventory_ops import load_inventory, adjust_stock, sync_to_excel
@@ -71,6 +71,42 @@ c1.metric("📦 Total SKUs",  total)
 c2.metric("🔴 Crítico",     n_crit,  delta=f"-{n_crit}" if n_crit > 0 else "0",   delta_color="inverse")
 c3.metric("🟡 Baixo",       n_baixo, delta=f"-{n_baixo}" if n_baixo > 0 else "0", delta_color="inverse")
 c4.metric("🟢 OK",          n_ok)
+# ── Giro do Estoque (Stock Turnover) KPIs ─────────────────────────────────────
+@st.cache_data
+def load_turnover(data_version: str):  # noqa: ARG001
+    return get_stock_turnover(get_conn())
+
+giro_df = load_turnover(get_data_mtime())
+
+if not giro_df.is_empty():
+    giro_pd = giro_df.to_pandas()
+    avg_giro  = giro_pd["giro"].mean()
+    n_alto    = (giro_pd["giro_class"] == "🔥 Alto").sum()
+    n_normal  = (giro_pd["giro_class"] == "✅ Normal").sum()
+    n_baixo   = (giro_pd["giro_class"] == "🐢 Baixo").sum()
+    n_zerado  = (giro_pd["giro_class"] == "⚠️ Sem estoque").sum()
+
+    st.markdown("""
+<div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.20);
+border-radius:10px;padding:12px 18px;margin-bottom:12px;">
+<span style="font-size:0.7rem;letter-spacing:0.12em;color:#4A5568;text-transform:uppercase;">
+🔄 Giro do Estoque — Vendas ÷ Estoque Atual
+</span></div>
+""", unsafe_allow_html=True)
+
+    g1, g2, g3, g4, g5 = st.columns(5)
+    g1.metric("📊 Giro Médio",     f"{avg_giro:.2f}x")
+    g2.metric("🔥 Giro Alto",      f"{n_alto}",   delta="≥ 3×", delta_color="normal")
+    g3.metric("✅ Giro Normal",    f"{n_normal}", delta="1–3×", delta_color="off")
+    g4.metric("🐢 Giro Baixo",    f"{n_baixo}",  delta="< 1×", delta_color="inverse")
+    g5.metric("⚠️ Sem Estoque",   f"{n_zerado}", delta_color="inverse")
+
+    with st.expander("📋 Tabela completa de Giro por Produto", expanded=False):
+        giro_show = giro_pd[["product","category","qty_sold","current_stock","giro","giro_class"]].copy()
+        giro_show.columns = ["Produto","Categoria","Qtd Vendida","Estoque Atual","Giro (x)","Classe"]
+        giro_show = giro_show.sort_values("Giro (x)", ascending=False)
+        st.dataframe(giro_show, use_container_width=True, hide_index=True)
+
 st.divider()
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────

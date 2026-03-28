@@ -114,6 +114,36 @@ def get_margin_matrix(conn):
     except duckdb.CatalogException:
         return pl.DataFrame()
 
+def get_stock_turnover(conn):
+    """Return stock turnover (giro) per product: qty_sold / current_stock."""
+    try:
+        return conn.execute("""
+            SELECT
+                i.product,
+                i.category,
+                i.current_stock,
+                i.min_stock,
+                COALESCE(p.qty_sold, 0)                              AS qty_sold,
+                ROUND(
+                    COALESCE(p.qty_sold, 0)::FLOAT /
+                    NULLIF(i.current_stock, 0)
+                , 2)                                                 AS giro,
+                CASE
+                    WHEN i.current_stock = 0                         THEN '⚠️ Sem estoque'
+                    WHEN COALESCE(p.qty_sold,0)::FLOAT /
+                         NULLIF(i.current_stock,0) >= 3              THEN '🔥 Alto'
+                    WHEN COALESCE(p.qty_sold,0)::FLOAT /
+                         NULLIF(i.current_stock,0) >= 1              THEN '✅ Normal'
+                    ELSE                                                  '🐢 Baixo'
+                END                                                  AS giro_class
+            FROM inventory i
+            LEFT JOIN products p ON i.slug = p.slug
+            ORDER BY giro DESC NULLS LAST
+        """).pl()
+    except duckdb.CatalogException:
+        return pl.DataFrame()
+
+
 def get_inventory_alerts(conn):
     """Return products below minimum stock."""
     try:

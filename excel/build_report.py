@@ -454,6 +454,24 @@ def build_daily_ops(ws, data: dict[str, pl.DataFrame]):
         ws.cell(1, ci, h)
 
     if not sales.is_empty():
+        # ── Normalize schema: handle both CSV-schema and parquet-schema ────────
+        cols = sales.columns
+        # Rename lowercase variants to canonical names
+        rename_map = {}
+        if "date" in cols and "Date" not in cols:    rename_map["date"]           = "Date"
+        if "revenue" in cols and "Total" not in cols: rename_map["revenue"]        = "Total"
+        if "slug" in cols and "Product" not in cols:  rename_map["slug"]           = "Product"
+        if "payment" in cols and "Payment_Method" not in cols: rename_map["payment"] = "Payment_Method"
+        if rename_map:
+            sales = sales.rename(rename_map)
+        # Ensure required columns exist with fallbacks
+        if "Product" not in sales.columns:
+            sales = sales.with_columns(pl.lit("—").alias("Product"))
+        if "Payment_Method" not in sales.columns:
+            sales = sales.with_columns(pl.lit("—").alias("Payment_Method"))
+        if "Total" not in sales.columns and "qty" in sales.columns:
+            sales = sales.with_columns((pl.col("qty").cast(pl.Float64)).alias("Total"))
+
         daily = (sales.with_columns(pl.col("Date").cast(pl.Utf8))
                  .group_by("Date")
                  .agg([pl.col("Total").sum().alias("revenue"),

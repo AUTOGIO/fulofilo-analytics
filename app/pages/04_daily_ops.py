@@ -19,6 +19,7 @@ from app.db import get_conn
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 from app.utils.inventory_ops import decrement_stock
+from app.utils.sales_ops import sync_csv_to_excel_daily_ops
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -51,8 +52,12 @@ def append_sale(sale_date, product, quantity, unit_price, payment, notes=""):
         writer.writerow(row)
     _rebuild_parquet()
 
-    # ── Auto-decrement inventory & sync to Excel ───────────────────────────────
+    # ── Auto-decrement inventory → parquet + Excel Inventory sheet ─────────────
     inv_result = decrement_stock(product.strip(), quantity)
+
+    # ── Sync daily sales CSV → Excel "Daily Ops" sheet ─────────────────────────
+    sync_csv_to_excel_daily_ops()
+
     return total, inv_result
 
 
@@ -159,7 +164,18 @@ if submitted:
 st.divider()
 
 # ── Daily Summary ─────────────────────────────────────────────────────────────
-st.subheader("📊 Histórico de Vendas")
+hdr_col1, hdr_col2 = st.columns([4, 1])
+with hdr_col1:
+    st.subheader("📊 Histórico de Vendas")
+with hdr_col2:
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🔄 Sync → Excel", use_container_width=True, type="primary"):
+        path = sync_csv_to_excel_daily_ops()
+        if path:
+            from pathlib import Path as _P
+            st.success(f"✅ `{_P(path).name}` atualizado!")
+        else:
+            st.error("❌ Excel não encontrado.")
 history = load_sales_history()
 
 if history.empty:
