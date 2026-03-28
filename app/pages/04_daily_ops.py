@@ -145,7 +145,7 @@ if submitted:
 st.divider()
 
 # ── Daily Summary ─────────────────────────────────────────────────────────────
-st.subheader("📊 Resumo do Dia (Histórico)")
+st.subheader("📊 Histórico de Vendas")
 history = load_sales_history()
 
 if history.empty:
@@ -161,25 +161,103 @@ else:
 
     st.divider()
 
+    # ── Date range selector ────────────────────────────────────────────────────
+    min_date = history["Date"].min().date()
+    max_date = history["Date"].max().date()
+    default_start = max(min_date, max_date - timedelta(days=29))
+
+    col_range_a, col_range_b, col_range_c = st.columns([2, 2, 1])
+    with col_range_a:
+        range_start = st.date_input("📅 De", value=default_start,
+                                    min_value=min_date, max_value=max_date,
+                                    key="range_start")
+    with col_range_b:
+        range_end = st.date_input("📅 Até", value=max_date,
+                                  min_value=min_date, max_value=max_date,
+                                  key="range_end")
+    with col_range_c:
+        st.markdown("<br>", unsafe_allow_html=True)
+        quick_30 = st.button("⚡ Últimos 30d")
+        if quick_30:
+            range_start = max(min_date, max_date - timedelta(days=29))
+            range_end   = max_date
+
+    # ── Apply range filter ─────────────────────────────────────────────────────
+    mask = (
+        (history["Date"].dt.date >= range_start) &
+        (history["Date"].dt.date <= range_end)
+    )
+    filtered_history = history[mask]
+
+    n_days = (range_end - range_start).days + 1
+    avg_daily = filtered_history["Total"].sum() / n_days if n_days else 0
+
+    f1, f2, f3, f4 = st.columns(4)
+    f1.metric("📦 Transações",      f"{len(filtered_history)}")
+    f2.metric("💰 Receita Período", f"R$ {filtered_history['Total'].sum():,.2f}")
+    f3.metric("📊 Média Diária",    f"R$ {avg_daily:,.2f}")
+    f4.metric("🗓️ Dias",            f"{n_days}")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Revenue bar chart with range ───────────────────────────────────────────
     daily_agg = (
-        history.groupby(history["Date"].dt.strftime("%Y-%m-%d"))["Total"]
+        filtered_history
+        .groupby(filtered_history["Date"].dt.strftime("%Y-%m-%d"))["Total"]
         .sum()
         .reset_index()
         .rename(columns={"Date": "Data", "Total": "Receita (R$)"})
         .sort_values("Data")
-        .tail(30)
+    )
+
+    chart_title = (
+        f"Receita Diária — {range_start.strftime('%d/%m/%Y')} a {range_end.strftime('%d/%m/%Y')}"
     )
     fig = px.bar(
         daily_agg, x="Data", y="Receita (R$)",
-        title="Receita Diária — Últimos 30 dias",
+        title=chart_title,
         color_discrete_sequence=["#00D4FF"],
     )
     fig.update_traces(marker_line_width=0)
-    hud_plotly_layout(fig, height=360)
+    fig.add_hline(y=avg_daily, line_dash="dot", line_color="#FFD700", opacity=0.7,
+                  annotation_text=f"Média R$ {avg_daily:,.0f}",
+                  annotation_font_color="#FFD700",
+                  annotation_position="top left")
+    hud_plotly_layout(fig, height=380)
     st.plotly_chart(fig, use_container_width=True)
 
-    with st.expander("📋 Todas as vendas registradas", expanded=False):
-        show = history.sort_values("Date", ascending=False).copy()
+    # ── Payment method breakdown ───────────────────────────────────────────────
+    if not filtered_history.empty:
+        pay_agg = (
+            filtered_history.groupby("Payment_Method")["Total"]
+            .sum()
+            .reset_index()
+            .rename(columns={"Payment_Method": "Pagamento", "Total": "Receita (R$)"})
+            .sort_values("Receita (R$)", descending=True if hasattr((0).__class__, '__gt__') else True)
+        )
+        pay_agg = pay_agg.sort_values("Receita (R$)", ascending=False)
+
+        col_pie, col_tbl = st.columns([1, 1])
+        with col_pie:
+            fig_pay = px.pie(
+                pay_agg, values="Receita (R$)", names="Pagamento",
+                title="Receita por Forma de Pagamento",
+                color_discrete_sequence=["#00D4FF","#00FF88","#FFD700","#FF4455","#A78BFA"],
+            )
+            fig_pay.update_traces(
+                textfont_color="#E2E8F0",
+                marker=dict(line=dict(color="#080C18", width=2)),
+            )
+            hud_plotly_layout(fig_pay, height=320)
+            st.plotly_chart(fig_pay, use_container_width=True)
+
+        with col_tbl:
+            st.markdown("**Resumo por Pagamento**")
+            pay_agg["Receita (R$)"] = pay_agg["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
+            st.dataframe(pay_agg, use_container_width=True, hide_index=True)
+
+    with st.expander("📋 Todas as vendas no período", expanded=False):
+        show = filtered_history.sort_values("Date", ascending=False).copy()
         show["Date"]       = show["Date"].dt.strftime("%d/%m/%Y")
         show["Unit_Price"] = show["Unit_Price"].apply(lambda x: f"R$ {x:.2f}")
         show["Total"]      = show["Total"].apply(lambda x: f"R$ {x:.2f}")
