@@ -13,6 +13,7 @@ LOGO_FULL   = str(ASSETS / "logo.png")
 LOGO_SMALL  = str(ASSETS / "favicon.png")
 GMT_LOGO    = ASSETS / "GMT.png"
 LOGO_17     = ASSETS / "Logo-17.png"
+LOGO_44     = ASSETS / "Logo-44.jpg"
 
 _NAV = [
     ("app.py",                   "🏠", "Visão Geral"),
@@ -39,13 +40,19 @@ def inject_logo():
     )
 
 
-def render_page_header():
-    """Render Logo-17 centered at the top of any page's main content area."""
-    if not LOGO_17.exists():
+def render_page_header(logo_path=None):
+    """Render a logo centered at the top of any page's main content area.
+
+    Args:
+        logo_path: Path object or str to override the default Logo-17.
+                   If None, falls back to LOGO_17.
+    """
+    target = Path(logo_path) if logo_path else LOGO_17
+    if not target.exists():
         return
     _, col_center, _ = st.columns([2, 1, 2])
     with col_center:
-        st.image(str(LOGO_17), use_container_width=True)
+        st.image(str(target), use_container_width=True)
     st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
 
