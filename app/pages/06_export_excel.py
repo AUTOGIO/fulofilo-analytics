@@ -12,12 +12,14 @@ from pathlib import Path
 
 import streamlit as st
 
-from app.components.sidebar import render_sidebar, render_page_footer
+from app.components.sidebar import render_sidebar, render_page_header
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 st.set_page_config(page_title="Exportar Excel — FulôFiló", page_icon=_FAVICON, layout="wide")
+render_sidebar()
+render_page_header()
 st.markdown("## 📤 Exportar Relatório Excel")
 st.caption("Gera o workbook completo com 9 abas a partir dos dados atuais em Parquet.")
 
@@ -83,4 +85,3 @@ if reports:
 else:
     st.info("Nenhum relatório gerado ainda. Clique em 'Gerar Relatório' acima.")
 
-render_page_footer()

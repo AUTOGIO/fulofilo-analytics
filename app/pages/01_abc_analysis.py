@@ -16,12 +16,13 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_footer
+from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
 st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
 render_sidebar()
+render_page_header()
 render_hud_topbar("Análise ABC", "📊")
 
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
@@ -128,4 +129,3 @@ with tab3:
     display.columns = ["Classe","Produto","Categoria","Receita (R$)","Qtd","Lucro (R$)"]
     st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
-render_page_footer()

@@ -15,12 +15,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_footer
+from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 
 st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
 render_sidebar()
+render_page_header()
 render_hud_topbar("Matriz de Margem", "💹")
 
 st.markdown("""
@@ -122,4 +123,3 @@ with col2:
     bot_margin["Receita (R$)"] = bot_margin["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
     st.dataframe(bot_margin, use_container_width=True, hide_index=True)
 
-render_page_footer()

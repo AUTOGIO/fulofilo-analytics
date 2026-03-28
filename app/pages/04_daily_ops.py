@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
-from app.components.sidebar import render_sidebar, render_page_footer
+from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -74,6 +74,7 @@ def load_sales_history() -> pd.DataFrame:
 st.set_page_config(page_title="Operações Diárias — FulôFiló", page_icon="⚡", layout="wide")
 inject_hud_css()
 render_sidebar()
+render_page_header()
 render_hud_topbar("Operações Diárias", "⚡")
 
 st.markdown(f"**Hoje:** {date.today().strftime('%d/%m/%Y')}")
@@ -263,4 +264,3 @@ else:
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
         st.dataframe(show, use_container_width=True, hide_index=True)
 
-render_page_footer()

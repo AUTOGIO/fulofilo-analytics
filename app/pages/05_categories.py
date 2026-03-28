@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_footer
+from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
 
 RAW_DIR   = ROOT / "data" / "raw"
@@ -30,6 +30,7 @@ BASE_FILE = RAW_DIR / "product_catalog.csv"
 st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
 render_sidebar()
+render_page_header()
 render_hud_topbar("Gerenciador de Categorias", "🏷️")
 
 st.caption("Visualize, filtre e reassigne categorias de produtos. Mudanças são salvas no CSV e no DuckDB.")
@@ -195,4 +196,3 @@ if CAT_FILE.exists():
                        file_name="product_catalog_categorized.csv",
                        mime="text/csv")
 
-render_page_footer()

@@ -12,11 +12,7 @@ ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
 LOGO_SMALL  = str(ASSETS / "favicon.png")
 GMT_LOGO    = ASSETS / "GMT.png"
-BRAND_LOGOS = [
-    ASSETS / "Logo-17.png",
-    ASSETS / "Logo-22.png",
-    ASSETS / "Logo-38.jpg",
-]
+LOGO_17     = ASSETS / "Logo-17.png"
 
 _NAV = [
     ("app.py",                   "🏠", "Visão Geral"),
@@ -43,25 +39,14 @@ def inject_logo():
     )
 
 
-def render_page_footer():
-    """Render branding footer at the bottom of any page's main content area."""
-    logos = [p for p in [GMT_LOGO] + BRAND_LOGOS if p.exists()]
-    if not logos:
+def render_page_header():
+    """Render Logo-17 centered at the top of any page's main content area."""
+    if not LOGO_17.exists():
         return
-
-    st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:32px 0 16px;">', unsafe_allow_html=True)
-    st.markdown(
-        '<div style="text-align:center;font-size:0.65rem;letter-spacing:0.12em;'
-        'color:#4A5568;text-transform:uppercase;margin-bottom:12px;">'
-        'Desenvolvido por Giovannini Mare Technology'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-    cols = st.columns(len(logos))
-    for col, logo_path in zip(cols, logos):
-        with col:
-            st.image(str(logo_path), use_container_width=True)
-    st.markdown("<br>", unsafe_allow_html=True)
+    _, col_center, _ = st.columns([2, 1, 2])
+    with col_center:
+        st.image(str(LOGO_17), use_container_width=True)
+    st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
 
 def render_sidebar(active_page: str = ""):
@@ -142,9 +127,3 @@ def render_sidebar(active_page: str = ""):
             )
             st.image(str(GMT_LOGO), use_container_width=True)
 
-        # ── Company logos ──────────────────────────────────────────────────────
-        logos = [p for p in BRAND_LOGOS if p.exists()]
-        if logos:
-            st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:8px 0 6px;">', unsafe_allow_html=True)
-            for logo_path in logos:
-                st.image(str(logo_path), use_container_width=True)
