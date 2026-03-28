@@ -1,1 +1,5 @@
 Date,Product,Quantity,Unit_Price,Total,Payment_Method,Source
+2026-03-27,necessayr,1,15.0,15.0,Dinheiro,manual
+2026-03-28,chaveiro pequeno,4,15.0,60.0,Dinheiro,manual
+2026-03-28,bolsa,1,15.0,15.0,Dinheiro,manual
+2026-03-28,carteira_alca,3,15.0,45.0,Débito,manual

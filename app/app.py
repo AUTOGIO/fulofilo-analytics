@@ -1,6 +1,6 @@
 """
-FulôFiló Analytics Pro — Main Dashboard
-=========================================
+FulôFiló Analytics Pro — Main Dashboard (HUD Edition)
+======================================================
 Entry point for the Streamlit application.
 Run: uv run streamlit run app/app.py
 Access: http://localhost:8501
@@ -17,10 +17,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix
 from app.components.sidebar import render_sidebar
+from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
 # ── Page Config ──────────────────────────────────────────────────────────────
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent / "assets" / "favicon.png")
+_FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
 st.set_page_config(
     page_title="FulôFiló Analytics Pro",
     page_icon=_FAVICON,
@@ -28,51 +28,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Brand Colors ─────────────────────────────────────────────────────────────
-COLORS = {
-    "yellow":      "#F2C94C",
-    "green_light": "#6FCF97",
-    "green_dark":  "#2D6A4F",
-    "red":         "#E74C3C",
-    "white":       "#FAFAFA",
-    "black":       "#1A1A1A",
-}
-
-# ── Custom CSS ───────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #2D6A4F;
-        margin-bottom: 0.2rem;
-    }
-    .sub-header {
-        font-size: 1rem;
-        color: #888;
-        margin-bottom: 1.5rem;
-    }
-    .metric-card {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 1rem;
-        border-left: 4px solid #2D6A4F;
-    }
-    div[data-testid="metric-container"] {
-        background: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 1rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+# ── HUD Theme ─────────────────────────────────────────────────────────────────
+inject_hud_css()
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 render_sidebar(active_page='app.py')
 
-# ── Header ────────────────────────────────────────────────────────────────────
-st.markdown('<p class="main-header">🌺 FulôFiló Analytics Pro</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Painel de Gestão — Visão Geral 2024</p>', unsafe_allow_html=True)
+# ── Top Bar ───────────────────────────────────────────────────────────────────
+render_hud_topbar("Visão Geral", "🌺")
 
 # ── Load Data ─────────────────────────────────────────────────────────────────
 @st.cache_data(ttl=300)
@@ -89,13 +52,20 @@ margem_pct = (lucro / receita * 100) if receita else 0
 
 # ── KPI Cards ─────────────────────────────────────────────────────────────────
 c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("💰 Receita Total",  f"R$ {receita:,.2f}",   delta=None)
-c2.metric("📦 Unidades",       f"{int(quantidade):,}",  delta=None)
-c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}",      delta=None)
-c4.metric("📊 Margem",         f"{margem_pct:.1f}%",    delta=None)
-c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}",     delta=None)
+c1.metric("💰 Receita Total",  f"R$ {receita:,.2f}")
+c2.metric("📦 Unidades",       f"{int(quantidade):,}")
+c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}")
+c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
+c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
 
 st.divider()
+
+# ── ABC Color Map (HUD neon palette) ─────────────────────────────────────────
+COLORS = {
+    "A": "#00FF88",  # neon green
+    "B": "#FFD700",  # gold
+    "C": "#FF4455",  # neon red
+}
 
 # ── Charts ────────────────────────────────────────────────────────────────────
 if not abc_df.is_empty():
@@ -104,16 +74,16 @@ if not abc_df.is_empty():
     with left:
         st.subheader("📊 Top 15 Produtos por Receita (ABC)")
         top15 = abc_df.head(15).to_pandas()
-        color_map = {"A": COLORS["green_dark"], "B": COLORS["yellow"], "C": COLORS["red"]}
         fig = px.bar(
             top15, x="full_name", y="revenue",
             color="abc_class",
-            color_discrete_map=color_map,
+            color_discrete_map=COLORS,
             labels={"full_name": "Produto", "revenue": "Receita (R$)", "abc_class": "Classe"},
             title="Receita por Produto — Classificação ABC",
         )
-        fig.update_layout(xaxis_tickangle=-40, height=420, showlegend=True)
-        st.plotly_chart(fig, width="stretch")
+        fig.update_layout(xaxis_tickangle=-40, showlegend=True)
+        hud_plotly_layout(fig, height=420)
+        st.plotly_chart(fig, use_container_width=True)
 
     with right:
         st.subheader("🥧 Receita por Categoria")
@@ -122,15 +92,22 @@ if not abc_df.is_empty():
         ).sort("revenue", descending=True).to_pandas()
         fig2 = px.pie(
             cat_df, values="revenue", names="category",
-            color_discrete_sequence=px.colors.qualitative.Set2,
+            color_discrete_sequence=[
+                "#00D4FF","#00FF88","#FFD700","#FF4455",
+                "#A78BFA","#FB923C","#34D399","#F472B6",
+            ],
             title="Distribuição de Receita por Categoria",
         )
-        fig2.update_layout(height=420)
-        st.plotly_chart(fig2, width="stretch")
+        fig2.update_traces(
+            textfont_color="#E2E8F0",
+            marker=dict(line=dict(color="#080C18", width=2)),
+        )
+        hud_plotly_layout(fig2, height=420)
+        st.plotly_chart(fig2, use_container_width=True)
 
     st.divider()
 
-    # ABC Summary Table
+    # ── ABC Summary Table with badges ────────────────────────────────────────
     st.subheader("📋 Resumo ABC")
     abc_summary = abc_df.group_by("abc_class").agg([
         pl.col("full_name").count().alias("full_name"),
@@ -139,8 +116,13 @@ if not abc_df.is_empty():
     ]).sort("abc_class").to_pandas()
     abc_summary.columns = ["Classe", "Qtd Produtos", "Receita Total (R$)", "Lucro Total (R$)"]
     abc_summary["Receita Total (R$)"] = abc_summary["Receita Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    abc_summary["Lucro Total (R$)"] = abc_summary["Lucro Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    st.dataframe(abc_summary, width="stretch", hide_index=True)
+    abc_summary["Lucro Total (R$)"]   = abc_summary["Lucro Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
+    abc_summary["Classe"] = abc_summary["Classe"].apply(lambda c: abc_badge(c))
+
+    st.markdown(
+        abc_summary.to_html(escape=False, index=False),
+        unsafe_allow_html=True,
+    )
 
 else:
     st.info("⚙️ **Setup necessário:** Execute `etl/build_catalog.py` para carregar os dados de produtos.")

@@ -1,6 +1,6 @@
 """
-FulôFiló — Operações Diárias
-==============================
+FulôFiló — Operações Diárias (HUD Edition)
+==========================================
 Daily sales tracker with persistent CSV + Parquet write.
 Each form submission is immediately written to disk and the parquet is regenerated.
 """
@@ -17,17 +17,16 @@ from datetime import date, datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 from app.components.sidebar import render_sidebar
+from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 CSV_PATH     = PROJECT_ROOT / "data" / "raw" / "daily_sales_TEMPLATE.csv"
 PARQUET_PATH = PROJECT_ROOT / "data" / "parquet" / "daily_sales.parquet"
-
 CSV_COLUMNS  = ["Date", "Product", "Quantity", "Unit_Price", "Total", "Payment_Method", "Source"]
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def _ensure_csv_header():
-    """Create CSV with header if it does not exist or is empty."""
     if not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0:
         with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
@@ -35,7 +34,6 @@ def _ensure_csv_header():
 
 
 def append_sale(sale_date, product, quantity, unit_price, payment, notes=""):
-    """Append one row to the CSV and regenerate the Parquet file."""
     _ensure_csv_header()
     total = round(quantity * unit_price, 2)
     row = {
@@ -50,22 +48,15 @@ def append_sale(sale_date, product, quantity, unit_price, payment, notes=""):
     with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
         writer.writerow(row)
-
-    # Regenerate parquet so dashboard picks up new data immediately
     _rebuild_parquet()
     return total
 
 
 def _rebuild_parquet():
-    """Read full CSV and overwrite the Parquet file."""
     try:
         df = pl.read_csv(
             CSV_PATH,
-            schema_overrides={
-                "Quantity":   pl.Int64,
-                "Unit_Price": pl.Float64,
-                "Total":      pl.Float64,
-            },
+            schema_overrides={"Quantity": pl.Int64, "Unit_Price": pl.Float64, "Total": pl.Float64},
             try_parse_dates=True,
         )
         PARQUET_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -75,16 +66,16 @@ def _rebuild_parquet():
 
 
 def load_sales_history() -> pd.DataFrame:
-    """Load all sales from CSV into pandas. Returns empty DF if no data."""
     _ensure_csv_header()
-    df = pd.read_csv(CSV_PATH, parse_dates=["Date"])
-    return df
+    return pd.read_csv(CSV_PATH, parse_dates=["Date"])
 
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Operações Diárias — FulôFiló", page_icon="⚡", layout="wide")
+inject_hud_css()
 render_sidebar()
-st.title("⚡ Operações Diárias")
+render_hud_topbar("Operações Diárias", "⚡")
+
 st.markdown(f"**Hoje:** {date.today().strftime('%d/%m/%Y')}")
 
 # ── Quick Product Lookup ───────────────────────────────────────────────────────
@@ -147,19 +138,17 @@ if submitted:
             f"✅ **{product_name}** × {quantity} = **R$ {total:.2f}** ({payment}) — "
             f"salvo em `daily_sales_TEMPLATE.csv` e Parquet atualizado."
         )
-        st.rerun()   # refresh history table immediately
+        st.rerun()
 
 st.divider()
 
 # ── Daily Summary ─────────────────────────────────────────────────────────────
 st.subheader("📊 Resumo do Dia (Histórico)")
-
 history = load_sales_history()
 
 if history.empty:
     st.info("Nenhuma venda registrada ainda. Use o formulário acima para começar.")
 else:
-    # ── KPI strip for today ───────────────────────────────────────────────────
     today_str = date.today().strftime("%Y-%m-%d")
     today_df  = history[history["Date"].dt.strftime("%Y-%m-%d") == today_str]
 
@@ -168,9 +157,8 @@ else:
     k2.metric("Receita Hoje",      f"R$ {today_df['Total'].sum():.2f}")
     k3.metric("Ticket Médio Hoje", f"R$ {today_df['Total'].mean():.2f}" if len(today_df) else "R$ 0,00")
 
-    st.markdown("---")
+    st.divider()
 
-    # ── Bar chart — last 30 days ──────────────────────────────────────────────
     daily_agg = (
         history.groupby(history["Date"].dt.strftime("%Y-%m-%d"))["Total"]
         .sum()
@@ -180,15 +168,14 @@ else:
         .tail(30)
     )
     fig = px.bar(
-        daily_agg,
-        x="Data", y="Receita (R$)",
+        daily_agg, x="Data", y="Receita (R$)",
         title="Receita Diária — Últimos 30 dias",
-        color_discrete_sequence=["#2D6A4F"],
+        color_discrete_sequence=["#00D4FF"],
     )
-    fig.update_layout(height=350, xaxis_tickangle=-45)
+    fig.update_traces(marker_line_width=0)
+    hud_plotly_layout(fig, height=360)
     st.plotly_chart(fig, use_container_width=True)
 
-    # ── Detailed table ────────────────────────────────────────────────────────
     with st.expander("📋 Todas as vendas registradas", expanded=False):
         show = history.sort_values("Date", ascending=False).copy()
         show["Date"]       = show["Date"].dt.strftime("%d/%m/%Y")

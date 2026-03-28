@@ -1,8 +1,8 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 🏷️ Category Manager (Page 5)
-=========================================
+FulôFiló — 🏷️ Category Manager (HUD Edition)
+=============================================
 Interactive product category management:
 - View/filter all products with their Category/Subcategory
 - Inline reassignment via dropdowns
@@ -20,16 +20,18 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn
-
 from app.components.sidebar import render_sidebar
+from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
 
 RAW_DIR   = ROOT / "data" / "raw"
 CAT_FILE  = RAW_DIR / "product_catalog_categorized.csv"
 BASE_FILE = RAW_DIR / "product_catalog.csv"
 
 st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
+inject_hud_css()
+render_sidebar()
+render_hud_topbar("Gerenciador de Categorias", "🏷️")
 
-st.markdown("## 🏷️ Gerenciador de Categorias")
 st.caption("Visualize, filtre e reassigne categorias de produtos. Mudanças são salvas no CSV e no DuckDB.")
 
 # ── Load data ──────────────────────────────────────────────────────────────────
@@ -98,19 +100,19 @@ if sel_conf != "Todas":  view = view.filter(pl.col("CategoryConfidence") == sel_
 if search_term:          view = view.filter(pl.col("full_name").str.contains(search_term, literal=False))
 
 # ── Summary cards ──────────────────────────────────────────────────────────────
-total = df.shape[0]
-n_high    = (df["CategoryConfidence"] == "high").sum()
-n_medium  = (df["CategoryConfidence"] == "medium").sum()
+total       = df.shape[0]
+n_high      = (df["CategoryConfidence"] == "high").sum()
+n_medium    = (df["CategoryConfidence"] == "medium").sum()
 n_unmatched = (df["CategoryConfidence"] == "unmatched").sum()
-n_cats    = df["Category"].n_unique()
+n_cats      = df["Category"].n_unique()
 
 c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("Total SKUs",        total)
-c2.metric("✅ Alta confiança", n_high,   delta=f"{n_high/total:.0%}")
-c3.metric("🟡 Média",         n_medium, delta=f"{n_medium/total:.0%}")
+c1.metric("Total SKUs",           total)
+c2.metric("✅ Alta confiança",    n_high,      delta=f"{n_high/total:.0%}")
+c3.metric("🟡 Média",            n_medium,    delta=f"{n_medium/total:.0%}")
 c4.metric("❌ Não classificado", n_unmatched,
           delta=f"{n_unmatched/total:.0%}", delta_color="inverse")
-c5.metric("Categorias únicas", n_cats)
+c5.metric("Categorias únicas",    n_cats)
 
 st.divider()
 
@@ -142,11 +144,14 @@ if not unmatched_df.is_empty():
             st.cache_data.clear()
             st.rerun()
 
-# ── Main products table ────────────────────────────────────────────────────────
+# ── Main products table with confidence badges ─────────────────────────────────
 st.subheader(f"📋 Produtos ({view.shape[0]} de {total})")
 cols_show = [c for c in ["sku","full_name","category","Category","Subcategory","CategoryConfidence"]
              if c in view.columns]
-st.dataframe(view.select(cols_show).to_pandas(), use_container_width=True, hide_index=True)
+display = view.select(cols_show).to_pandas()
+if "CategoryConfidence" in display.columns:
+    display["CategoryConfidence"] = display["CategoryConfidence"].apply(conf_badge)
+st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 # ── Category summary ───────────────────────────────────────────────────────────
 st.divider()
@@ -160,11 +165,15 @@ try:
     """).pl()
     if not cat_rev.is_empty():
         import plotly.express as px
-        fig = px.bar(cat_rev.to_pandas(), x="category", y="total_rev",
-                     title="Receita Total por Categoria",
-                     labels={"total_rev":"Receita (R$)","category":"Categoria"},
-                     color="avg_margin", color_continuous_scale="Greens")
-        fig.update_layout(height=380)
+        fig = px.bar(
+            cat_rev.to_pandas(), x="category", y="total_rev",
+            title="Receita Total por Categoria",
+            labels={"total_rev":"Receita (R$)","category":"Categoria"},
+            color="avg_margin",
+            color_continuous_scale=[[0, "#00D4FF"], [1, "#00FF88"]],
+        )
+        fig.update_traces(marker_line_width=0)
+        hud_plotly_layout(fig, height=400)
         st.plotly_chart(fig, use_container_width=True)
 except Exception as e:
     st.info(f"Dados de receita não disponíveis: {e}")

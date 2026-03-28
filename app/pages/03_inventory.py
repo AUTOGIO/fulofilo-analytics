@@ -1,9 +1,9 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 📦 Gestão de Estoque (Enhanced)
-============================================
-Critical alert banner, reorder table with suggested qty, stacked value chart.
+FulôFiló — 📦 Gestão de Estoque (HUD Edition)
+===============================================
+Critical alert banner, reorder table with HUD alert pills, stacked value chart.
 """
 
 import sys
@@ -15,11 +15,14 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts
-
 from app.components.sidebar import render_sidebar
+from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
-st.title("📦 Gestão de Estoque")
+inject_hud_css()
+render_sidebar()
+render_hud_topbar("Gestão de Estoque", "📦")
+
 st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
 
 @st.cache_data(ttl=60)
@@ -40,7 +43,20 @@ criticos = pdf[pdf["alert"] == "🔴 Crítico"]
 if not criticos.empty:
     names = ", ".join(criticos["product"].tolist()[:5])
     extra = f" + {len(criticos)-5} mais" if len(criticos) > 5 else ""
-    st.error(f"🚨 **{len(criticos)} ITEM(NS) CRÍTICO(S):** {names}{extra} — estoque abaixo do mínimo!")
+    st.markdown(f"""
+<div style="
+    background: rgba(255,68,85,0.10);
+    border: 1px solid #FF4455;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 0 16px rgba(255,68,85,0.25);
+    font-size: 0.9rem;
+    color: #FF4455;
+">
+🚨 <strong>{len(criticos)} ITEM(NS) CRÍTICO(S):</strong> {names}{extra} — estoque abaixo do mínimo!
+</div>
+""", unsafe_allow_html=True)
 
 # ── KPI cards ──────────────────────────────────────────────────────────────────
 total   = len(pdf)
@@ -58,7 +74,11 @@ st.divider()
 # ── Tabs ───────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["📊 Níveis", "🔄 Reposição", "💰 Valor em Estoque"])
 
-COLOR_MAP = {"🔴 Crítico": "#E74C3C", "🟡 Baixo": "#F2C94C", "🟢 OK": "#2D6A4F"}
+COLOR_MAP = {
+    "🔴 Crítico": "#FF4455",
+    "🟡 Baixo":   "#FFD700",
+    "🟢 OK":      "#00FF88",
+}
 
 with tab1:
     alert_filter = st.multiselect(
@@ -73,20 +93,19 @@ with tab1:
         labels={"current_stock":"Estoque Atual","product":"Produto","alert":"Status"},
         title="Estoque Atual por Produto",
     )
-    fig.update_layout(height=max(380, len(view)*22), showlegend=True)
+    fig.update_traces(marker_line_width=0)
+    hud_plotly_layout(fig, height=max(380, len(view)*22))
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
     st.subheader("🔄 Itens abaixo do ponto de reposição")
     reorder = pdf[pdf["alert"].isin(["🔴 Crítico","🟡 Baixo"])].copy()
     if not reorder.empty:
-        # Try to get max_stock / reorder_qty from inventory parquet
         import polars as pl
-        inv_path = ROOT / "data" / "parquet" / "inventory.parquet"
+        inv_path  = ROOT / "data" / "parquet" / "inventory.parquet"
         prod_path = ROOT / "data" / "parquet" / "products.parquet"
         if inv_path.exists() and prod_path.exists():
-            inv = pl.read_parquet(inv_path).to_pandas()
-            prod = pl.read_parquet(prod_path).select(["sku","suggested_price","unit_cost"]).to_pandas()
+            inv  = pl.read_parquet(inv_path).to_pandas()
             merged = reorder.merge(inv[["product","reorder_qty"]], on="product", how="left")
             merged["Qtd Sugerida"] = merged["reorder_qty"].fillna(100).astype(int)
         else:
@@ -94,32 +113,27 @@ with tab2:
             merged["Qtd Sugerida"] = 100
 
         display = merged[["product","category","current_stock","min_stock","alert","Qtd Sugerida"]].copy()
+        display["alert"] = display["alert"].apply(lambda a: alert_badge(a))
         display.columns = ["Produto","Categoria","Estoque Atual","Mínimo","Status","Qtd Sugerida"]
+        st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
-        def row_style(row):
-            bg = "background-color: #ffd6d6" if "Crítico" in str(row["Status"]) else "background-color: #fff3cd"
-            return [bg]*len(row)
-
-        st.dataframe(
-            display.style.apply(row_style, axis=1),
-            use_container_width=True, hide_index=True,
-        )
-        # Export button (calls Excel builder for Sheet 4 only)
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("📥 Exportar lista de reposição (Excel)"):
             from excel.build_report import build_report
             import tempfile, datetime
             with tempfile.TemporaryDirectory() as tmp:
                 out = Path(tmp) / f"FuloFilo_Reposicao_{datetime.date.today()}.xlsx"
                 build_report(output_path=out)
-                st.download_button("⬇ Baixar Excel",
-                                   data=out.read_bytes(), file_name=out.name,
-                                   mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                st.download_button(
+                    "⬇ Baixar Excel", data=out.read_bytes(), file_name=out.name,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
     else:
         st.success("✅ Todos os produtos estão com estoque adequado!")
 
 with tab3:
     st.subheader("💰 Valor total em estoque por categoria")
-    inv_path = ROOT / "data" / "parquet" / "inventory.parquet"
+    inv_path  = ROOT / "data" / "parquet" / "inventory.parquet"
     prod_path = ROOT / "data" / "parquet" / "products.parquet"
     if inv_path.exists() and prod_path.exists():
         import polars as pl
@@ -132,11 +146,15 @@ with tab3:
                    .agg(pl.col("value").sum().alias("total_value"))
                    .sort("total_value", descending=True)
                    .to_pandas())
-        fig3 = px.bar(cat_val, x="category", y="total_value",
-                      title="Valor em Estoque por Categoria (R$)",
-                      labels={"total_value":"Valor (R$)","category":"Categoria"},
-                      color="total_value", color_continuous_scale="Greens")
-        fig3.update_layout(height=380)
+        fig3 = px.bar(
+            cat_val, x="category", y="total_value",
+            title="Valor em Estoque por Categoria (R$)",
+            labels={"total_value":"Valor (R$)","category":"Categoria"},
+            color="total_value",
+            color_continuous_scale=[[0, "#00FF88"], [1, "#00D4FF"]],
+        )
+        fig3.update_traces(marker_line_width=0)
+        hud_plotly_layout(fig3, height=400)
         st.plotly_chart(fig3, use_container_width=True)
         total_val = cat_val["total_value"].sum()
         st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")

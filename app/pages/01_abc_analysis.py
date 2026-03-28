@@ -1,9 +1,9 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 📊 Análise ABC (Enhanced)
-=======================================
-ABC Pareto with live filters, treemap, and metric cards.
+FulôFiló — 📊 Análise ABC (HUD Edition)
+=========================================
+ABC Pareto with live filters, treemap, metric cards, and HUD aesthetic.
 """
 
 import sys
@@ -16,11 +16,14 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis
-
 from app.components.sidebar import render_sidebar
+from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
 st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
-st.title("📊 Análise ABC — Classificação Pareto")
+inject_hud_css()
+render_sidebar()
+render_hud_topbar("Análise ABC", "📊")
+
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
 
 @st.cache_data(ttl=300)
@@ -33,7 +36,9 @@ if df.is_empty():
     st.warning("Execute `etl/build_catalog.py` para gerar os dados."); st.stop()
 
 pdf = df.to_pandas()
-COLORS = {"A": "#2D6A4F", "B": "#F2C94C", "C": "#E74C3C"}
+
+# HUD neon colors for ABC
+COLORS = {"A": "#00FF88", "B": "#FFD700", "C": "#FF4455"}
 
 # ── Sidebar filters ────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -71,29 +76,34 @@ c4.metric("🔴 Classe C",  f"{len(c_df)} produtos",  f"R$ {c_df['revenue'].sum(
 c5.metric("Receita filtrada",  f"R$ {total_rev:,.2f}")
 st.divider()
 
-# ── Pareto bar chart ──────────────────────────────────────────────────────────
+# ── Tabs ──────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["📊 Pareto", "🌳 Treemap", "📋 Tabela"])
 
 with tab1:
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=filtered["full_name"], y=filtered["revenue"],
-        marker_color=[COLORS.get(c,"#999") for c in filtered["abc_live"]],
+        marker_color=[COLORS.get(c,"#4A5568") for c in filtered["abc_live"]],
         name="Receita", hovertemplate="%{x}<br>R$ %{y:,.2f}",
+        marker_line_width=0,
     ))
     fig.add_trace(go.Scatter(
         x=filtered["full_name"], y=filtered["cum_pct_live"],
         name="% Acumulado", yaxis="y2",
-        line=dict(color="#F2C94C", width=3), mode="lines+markers",
+        line=dict(color="#FFD700", width=2.5), mode="lines+markers",
+        marker=dict(size=5, color="#FFD700"),
     ))
-    fig.add_hline(y=80, line_dash="dash", line_color="red",
-                  annotation_text="80% — corte Classe A")
+    fig.add_hline(y=80, line_dash="dash", line_color="#FF4455", opacity=0.7,
+                  annotation_text="80% — corte Classe A",
+                  annotation_font_color="#FF4455")
     fig.update_layout(
-        yaxis=dict(title="Receita (R$)"),
-        yaxis2=dict(title="% Acumulado", overlaying="y", side="right", range=[0,110]),
-        xaxis_tickangle=-45, height=460,
+        yaxis=dict(title="Receita (R$)", gridcolor="rgba(0,212,255,0.08)"),
+        yaxis2=dict(title="% Acumulado", overlaying="y", side="right", range=[0,110],
+                    gridcolor="rgba(0,0,0,0)"),
+        xaxis_tickangle=-45,
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
+    hud_plotly_layout(fig, height=480)
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
@@ -104,14 +114,16 @@ with tab2:
             title="Distribuição de Receita — Categoria → Produto",
             hover_data={"revenue": ":.2f", "qty_sold": True},
         )
-        fig2.update_layout(height=520)
+        fig2.update_traces(marker_line_width=1, marker_line_color="#080C18")
+        hud_plotly_layout(fig2, height=540)
         st.plotly_chart(fig2, use_container_width=True)
     else:
         st.info("Dados de categoria não disponíveis.")
 
 with tab3:
     display = filtered[["abc_live","full_name","category","revenue","qty_sold","profit"]].copy()
+    display["abc_live"] = display["abc_live"].apply(lambda c: abc_badge(c))
+    display["revenue"]  = display["revenue"].apply(lambda x: f"R$ {x:,.2f}")
+    display["profit"]   = display["profit"].apply(lambda x: f"R$ {x:,.2f}")
     display.columns = ["Classe","Produto","Categoria","Receita (R$)","Qtd","Lucro (R$)"]
-    display["Receita (R$)"] = display["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    display["Lucro (R$)"]   = display["Lucro (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    st.dataframe(display, use_container_width=True, hide_index=True)
+    st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
