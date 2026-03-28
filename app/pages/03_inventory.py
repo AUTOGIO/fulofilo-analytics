@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
+from app.utils.inventory_ops import load_inventory, adjust_stock, sync_to_excel
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
@@ -163,4 +164,55 @@ with tab3:
         st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")
     else:
         st.info("Dados de custo não disponíveis. Execute etl/build_catalog.py primeiro.")
+
+# ── Stock Adjustment + Excel Sync ──────────────────────────────────────────────
+st.divider()
+st.subheader("🔧 Ajustar Estoque")
+
+inv_full = load_inventory()
+if not inv_full.is_empty():
+    inv_pd_full = inv_full.to_pandas()
+
+    adj_col1, adj_col2 = st.columns([3, 1])
+
+    with adj_col1:
+        with st.form("stock_adjust_form", clear_on_submit=False):
+            fc1, fc2, fc3 = st.columns([3, 1, 1])
+            with fc1:
+                product_options = inv_pd_full["product"].tolist()
+                selected_product = st.selectbox("Produto", product_options)
+            with fc2:
+                cur_stock_vals = inv_pd_full.loc[
+                    inv_pd_full["product"] == selected_product, "current_stock"
+                ].values
+                slug_vals = inv_pd_full.loc[
+                    inv_pd_full["product"] == selected_product, "slug"
+                ].values
+                cur_stock = int(cur_stock_vals[0]) if len(cur_stock_vals) else 0
+                st.metric("Estoque Atual", cur_stock)
+            with fc3:
+                new_qty = st.number_input("Novo Estoque", min_value=0, value=cur_stock, step=1)
+
+            submitted_adj = st.form_submit_button("💾 Salvar Ajuste", use_container_width=True)
+
+        if submitted_adj and len(slug_vals):
+            ok = adjust_stock(str(slug_vals[0]), int(new_qty))
+            if ok:
+                st.success(
+                    f"✅ **{selected_product}**: {cur_stock} → **{int(new_qty)}** un. "
+                    f"· Parquet e Excel sincronizados ✔"
+                )
+                st.cache_data.clear()
+                st.rerun()
+            else:
+                st.error("❌ Falha ao ajustar estoque.")
+
+    with adj_col2:
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        if st.button("🔄 Sync tudo → Excel", use_container_width=True, type="primary"):
+            path = sync_to_excel()
+            if path:
+                st.success(f"✅ `{Path(path).name}` atualizado!")
+            else:
+                st.error("❌ Excel não encontrado.")
 

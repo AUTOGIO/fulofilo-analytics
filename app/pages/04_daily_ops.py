@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
+from app.utils.inventory_ops import decrement_stock
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -49,7 +50,10 @@ def append_sale(sale_date, product, quantity, unit_price, payment, notes=""):
         writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
         writer.writerow(row)
     _rebuild_parquet()
-    return total
+
+    # ── Auto-decrement inventory & sync to Excel ───────────────────────────────
+    inv_result = decrement_stock(product.strip(), quantity)
+    return total, inv_result
 
 
 def _rebuild_parquet():
@@ -136,11 +140,20 @@ if submitted:
     if not product_name.strip():
         st.error("❌ Informe o nome do produto.")
     else:
-        total = append_sale(sale_date, product_name, quantity, unit_price, payment, notes)
+        total, inv_result = append_sale(sale_date, product_name, quantity, unit_price, payment, notes)
         st.success(
             f"✅ **{product_name}** × {quantity} = **R$ {total:.2f}** ({payment}) — "
-            f"salvo em `daily_sales_TEMPLATE.csv` e Parquet atualizado."
+            f"salvo em CSV e Parquet."
         )
+        if inv_result:
+            delta = inv_result["old_stock"] - inv_result["new_stock"]
+            st.info(
+                f"📦 Estoque atualizado: **{inv_result['product']}** "
+                f"{inv_result['old_stock']} → **{inv_result['new_stock']}** "
+                f"(-{delta} un.) · Excel sincronizado ✔"
+            )
+        else:
+            st.warning("⚠️ Produto não encontrado no estoque — ajuste manual se necessário.")
         st.rerun()
 
 st.divider()
