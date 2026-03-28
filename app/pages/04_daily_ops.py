@@ -12,7 +12,7 @@ import pandas as pd
 import polars as pl
 import sys
 from pathlib import Path
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
