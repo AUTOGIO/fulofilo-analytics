@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn, get_data_mtime
-from app.components.sidebar import render_sidebar
+from app.components.sidebar import render_sidebar, render_page_footer
 from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
 
 RAW_DIR   = ROOT / "data" / "raw"
@@ -194,3 +194,5 @@ if CAT_FILE.exists():
     st.download_button("📥 Exportar CSV categorizado", csv_bytes,
                        file_name="product_catalog_categorized.csv",
                        mime="text/csv")
+
+render_page_footer()

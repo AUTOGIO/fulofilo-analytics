@@ -16,7 +16,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar
+from app.components.sidebar import render_sidebar, render_page_footer
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
 # ── Page Config ──────────────────────────────────────────────────────────────
@@ -127,3 +127,5 @@ if not abc_df.is_empty():
 else:
     st.info("⚙️ **Setup necessário:** Execute `etl/build_catalog.py` para carregar os dados de produtos.")
     st.code("uv run python etl/build_catalog.py\nuv run python etl/ingest_eleve.py", language="bash")
+
+render_page_footer()

@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
-from app.components.sidebar import render_sidebar
+from app.components.sidebar import render_sidebar, render_page_footer
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -262,3 +262,5 @@ else:
         show["Total"]      = show["Total"].apply(lambda x: f"R$ {x:.2f}")
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
         st.dataframe(show, use_container_width=True, hide_index=True)
+
+render_page_footer()

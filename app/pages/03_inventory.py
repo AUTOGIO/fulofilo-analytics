@@ -15,7 +15,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_data_mtime
-from app.components.sidebar import render_sidebar
+from app.components.sidebar import render_sidebar, render_page_footer
 from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
@@ -162,3 +162,5 @@ with tab3:
         st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")
     else:
         st.info("Dados de custo não disponíveis. Execute etl/build_catalog.py primeiro.")
+
+render_page_footer()

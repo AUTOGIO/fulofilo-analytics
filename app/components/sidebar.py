@@ -43,6 +43,27 @@ def inject_logo():
     )
 
 
+def render_page_footer():
+    """Render branding footer at the bottom of any page's main content area."""
+    logos = [p for p in [GMT_LOGO] + BRAND_LOGOS if p.exists()]
+    if not logos:
+        return
+
+    st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:32px 0 16px;">', unsafe_allow_html=True)
+    st.markdown(
+        '<div style="text-align:center;font-size:0.65rem;letter-spacing:0.12em;'
+        'color:#4A5568;text-transform:uppercase;margin-bottom:12px;">'
+        'Desenvolvido por Giovannini Mare Technology'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    cols = st.columns(len(logos))
+    for col, logo_path in zip(cols, logos):
+        with col:
+            st.image(str(logo_path), use_container_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+
 def render_sidebar(active_page: str = ""):
     """
     Render logo + full HUD-styled navigation sidebar.

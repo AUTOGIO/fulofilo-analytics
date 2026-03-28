@@ -12,7 +12,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from app.components.sidebar import render_sidebar
+from app.components.sidebar import render_sidebar, render_page_footer
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
@@ -82,3 +82,5 @@ if reports:
                            key=rpt.name)
 else:
     st.info("Nenhum relatório gerado ainda. Clique em 'Gerar Relatório' acima.")
+
+render_page_footer()
