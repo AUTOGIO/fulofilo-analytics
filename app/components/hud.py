@@ -45,6 +45,20 @@ ALERT_STYLE = {
     "🟢 OK":      (HUD["green"], "#080C18", HUD["glow_green"]),
 }
 
+# Action tag (ABC decision) → (bg, text, glow)
+ACTION_TAG_STYLE: dict[str, tuple[str, str, str]] = {
+    "🔥 SCALE":    (HUD["green"], "#080C18", HUD["glow_green"]),
+    "⚙️ OPTIMIZE": (HUD["gold"],  "#080C18", "0 0 14px rgba(255,215,0,0.35)"),
+    "🧹 REDUCE":   (HUD["red"],   "#fff",    HUD["glow_red"]),
+}
+
+# Priority level → (bg, text, glow)
+PRIORITY_STYLE: dict[str, tuple[str, str, str]] = {
+    "HIGH":   (HUD["red"],   "#fff",        HUD["glow_red"]),
+    "MEDIUM": (HUD["gold"],  "#080C18",     "0 0 14px rgba(255,215,0,0.35)"),
+    "LOW":    (HUD["muted"], HUD["text"],   "none"),
+}
+
 # Category confidence → (bg, text)
 CONF_STYLE = {
     "high":      (HUD["green"], "#080C18"),
@@ -316,6 +330,32 @@ def conf_badge(conf: str) -> str:
     return (
         f'<span class="hud-badge" style="'
         f'background:{bg}; color:{fg};">{conf.upper()}</span>'
+    )
+
+
+def action_tag_badge(tag: str) -> str:
+    """
+    Return an HTML span badge for an ABC action tag.
+    tag: one of "🔥 SCALE", "⚙️ OPTIMIZE", "🧹 REDUCE"
+    """
+    bg, fg, glow = ACTION_TAG_STYLE.get(tag, ("#2D3748", HUD["text_dim"], "none"))
+    return (
+        f'<span class="hud-badge" style="'
+        f"background:{bg}; color:{fg}; "
+        f'box-shadow:{glow};">{tag}</span>'
+    )
+
+
+def priority_badge(priority: str) -> str:
+    """
+    Return an HTML span badge for a decision priority level.
+    priority: "HIGH", "MEDIUM", or "LOW"
+    """
+    bg, fg, glow = PRIORITY_STYLE.get(priority, ("#2D3748", HUD["text_dim"], "none"))
+    return (
+        f'<span class="hud-badge" style="'
+        f"background:{bg}; color:{fg}; "
+        f'box-shadow:{glow};">{priority}</span>'
     )
 
 
