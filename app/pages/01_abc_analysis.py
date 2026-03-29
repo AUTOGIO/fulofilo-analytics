@@ -17,7 +17,11 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
+from app.components.hud import (
+    inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout,
+    action_tag_badge, priority_badge,
+)
+from core.decision_engine import enrich_with_decisions
 
 st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
@@ -122,10 +126,42 @@ with tab2:
         st.info("Dados de categoria não disponíveis.")
 
 with tab3:
-    display = filtered[["abc_live","full_name","category","revenue","qty_sold","profit"]].copy()
-    display["abc_live"] = display["abc_live"].apply(lambda c: abc_badge(c))
-    display["revenue"]  = display["revenue"].apply(lambda x: f"R$ {x:,.2f}")
-    display["profit"]   = display["profit"].apply(lambda x: f"R$ {x:,.2f}")
-    display.columns = ["Classe","Produto","Categoria","Receita (R$)","Qtd","Lucro (R$)"]
+    # ── Decision enrichment ────────────────────────────────────────────────────
+    # Use the live-computed ABC class (abc_live) as the input to the rules engine
+    dec = filtered.copy()
+    dec["abc_class"] = dec["abc_live"]
+    dec = enrich_with_decisions(dec)
+
+    # ── Priority filter (table-only, does not affect charts) ──────────────────
+    prio_opts = ["HIGH", "MEDIUM", "LOW"]
+    prio_filter = st.multiselect(
+        "🎯 Filtrar por Prioridade",
+        prio_opts,
+        default=prio_opts,
+        key="prio_filter_tab3",
+    )
+    if len(prio_filter) < 3:
+        dec = dec[dec["priority"].isin(prio_filter)]
+
+    st.caption(f"{len(dec)} produto(s) exibido(s)")
+
+    # ── Build display table ────────────────────────────────────────────────────
+    display = dec[[
+        "abc_live", "full_name", "category",
+        "revenue", "qty_sold", "profit",
+        "action_tag", "recommendation", "priority",
+    ]].copy()
+
+    display["abc_live"]     = display["abc_live"].apply(abc_badge)
+    display["action_tag"]   = display["action_tag"].apply(action_tag_badge)
+    display["priority"]     = display["priority"].apply(priority_badge)
+    display["revenue"]      = display["revenue"].apply(lambda x: f"R$ {x:,.2f}")
+    display["profit"]       = display["profit"].apply(lambda x: f"R$ {x:,.2f}")
+
+    display.columns = [
+        "Classe", "Produto", "Categoria",
+        "Receita (R$)", "Qtd", "Lucro (R$)",
+        "Tag", "Recomendação", "Prioridade",
+    ]
     st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
