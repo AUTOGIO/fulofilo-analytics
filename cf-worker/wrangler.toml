@@ -1,6 +1,7 @@
 name = "fulofilo-dashboard"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+account_id = "933e6be352787ffcd0129d7fe436de11"
 
 # Route: dashboard.giovannini.us → this worker
 # Zone ID is needed — get it from: Cloudflare Dashboard → giovannini.us → Overview → Zone ID

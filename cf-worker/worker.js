@@ -1,10 +1,14 @@
 /**
  * FulôFiló — Cloudflare Worker
  * Redirects dashboard.giovannini.us → Streamlit Cloud URL
- * Update STREAMLIT_URL after deploying on share.streamlit.io
+ *
+ * Deploy: bash scripts/deploy_cloudflare_worker.sh https://YOUR_APP.streamlit.app
+ *
+ * Error 1033 / "Tunnel error": this hostname must not be a Zero Trust Tunnel
+ * public hostname. Remove it from Tunnels; use proxied DNS + this Worker only.
  */
 
-const STREAMLIT_URL = "https://REPLACE_WITH_YOUR_STREAMLIT_URL.streamlit.app";
+const STREAMLIT_URL = "https://autogio-fulofilo.streamlit.app";
 
 export default {
   async fetch(request) {

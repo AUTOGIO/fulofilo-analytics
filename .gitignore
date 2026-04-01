@@ -1,6 +1,9 @@
 # FulôFiló Analytics Pro — .gitignore
 # ──────────────────────────────────────
 
+# Node (Cloudflare worker)
+cf-worker/node_modules/
+
 # Virtual environment
 .venv/
 
