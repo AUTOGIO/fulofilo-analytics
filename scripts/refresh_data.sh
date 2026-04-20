@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-PROJECT="/Users/eduardogiovannini/dev/products/FuloFilo"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV="$PROJECT/.venv/bin/python3"
 LOG_FILE="$PROJECT/logs/refresh.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")

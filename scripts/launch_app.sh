@@ -6,7 +6,7 @@
 # Usage: ./scripts/launch_app.sh
 # ============================================================
 
-PROJECT="/Users/eduardogiovannini/dev/products/FuloFilo"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
 STREAMLIT="$PROJECT/.venv/bin/streamlit"
 
 if [ ! -f "$STREAMLIT" ]; then
