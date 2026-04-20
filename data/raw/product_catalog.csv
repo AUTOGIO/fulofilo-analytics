@@ -55,40 +55,73 @@ sku,raw_key,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,u
 155,basica_anatomia,Camiseta Básica — Anatomia,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
 154,basica_4_passos,Camiseta Básica — 4 Passos,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
 180,baby_look_cordel,Baby Look — Cordel,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00210,caneca_agata_pq_fofoca,Caneca Ágata Pequena — fofoca,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00211,caneca_agata_pq_my_eggs,Caneca Ágata Pequena — MY EGGS,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00212,caneca_agata_pq_painho,Caneca Ágata Pequena — PAINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00213,caneca_agata_pq_mainha,Caneca Ágata Pequena — MAINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00214,caneca_agata_pq_voinho,Caneca Ágata Pequena — VOINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00215,caneca_agata_pq_voinha,Caneca Ágata Pequena — VÓINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00216,caneca_agata_pq_super_filho,Caneca Ágata Pequena — SUPER FILHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00217,caneca_agata_pq_super_filha,Caneca Ágata Pequena — SUPER FILHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00218,caneca_agata_pq_sogrinha,Caneca Ágata Pequena — SOGRINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00219,caneca_agata_pq_sograo,Caneca Ágata Pequena — SOGRÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00220,caneca_agata_pq_maninho,Caneca Ágata Pequena — MANINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00221,caneca_agata_pq_maninha,Caneca Ágata Pequena — MANINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00222,caneca_agata_pq_oxe,Caneca Ágata Pequena — OXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00223,caneca_agata_pq_oxente,Caneca Ágata Pequena — OXENTE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00224,caneca_agata_pq_eita,Caneca Ágata Pequena — EITA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00225,caneca_agata_pq_pronto,Caneca Ágata Pequena — PRONTO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00226,caneca_agata_pq_vixe,Caneca Ágata Pequena — VIXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00227,caneca_agata_pq_xero,Caneca Ágata Pequena — XÊRO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00228,caneca_agata_pq_se_avexe_nao,Caneca Ágata Pequena — SE AVEXE NÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00229,caneca_agata_pq_lembrei_de_tu,Caneca Ágata Pequena — LEMBREI DE TU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00230,caneca_agata_pq_arretado,Caneca Ágata Pequena — ARRETADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00231,caneca_agata_pq_arretada,Caneca Ágata Pequena — ARRETADA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00232,caneca_agata_pq_cuscuz_com_ovo,Caneca Ágata Pequena — CUSCUZ COM OVO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00233,caneca_agata_pq_cuscuz_cafe,Caneca Ágata Pequena — CUSCUZ CAFÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00234,caneca_agata_pq_cafune,Caneca Ágata Pequena — CAFUNÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00235,caneca_agata_pq_cafezin,Caneca Ágata Pequena — CAFÉZIN,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00236,caneca_agata_pq_te_amo_visse,Caneca Ágata Pequena — TE AMO VISSE!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00237,caneca_agata_pq_devendo_e_luxando,Caneca Ágata Pequena — DEVENDO E LUXANDO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00238,caneca_agata_pq_arrombado,Caneca Ágata Pequena — ARROMBADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00239,caneca_agata_pq_teu_cu,Caneca Ágata Pequena — TEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00240,caneca_agata_pq_meu_cu,Caneca Ágata Pequena — MEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00241,caneca_agata_pq_meus_ovo,Caneca Ágata Pequena — MEUS OVO!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00242,caneca_agata_pq_vei,Caneca Ágata Pequena — VÉI!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00243,caneca_agata_pq_cafe_nao_costuma_faia,Caneca Ágata Pequena — Café não costuma faiá,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00244,caneca_agata_pq_super_neto,Caneca Ágata Pequena — SUPER NETO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00245,caneca_agata_pq_super_neta,Caneca Ágata Pequena — SUPER NETA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
-00246,caneca_agata_pq_la_ele,Caneca Ágata Pequena — Lá ele,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+210,caneca_agata_pq_fofoca,Caneca Ágata Pequena — fofoca,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+211,caneca_agata_pq_my_eggs,Caneca Ágata Pequena — MY EGGS,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+212,caneca_agata_pq_painho,Caneca Ágata Pequena — PAINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+213,caneca_agata_pq_mainha,Caneca Ágata Pequena — MAINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+214,caneca_agata_pq_voinho,Caneca Ágata Pequena — VOINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+215,caneca_agata_pq_voinha,Caneca Ágata Pequena — VÓINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+216,caneca_agata_pq_super_filho,Caneca Ágata Pequena — SUPER FILHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+217,caneca_agata_pq_super_filha,Caneca Ágata Pequena — SUPER FILHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+218,caneca_agata_pq_sogrinha,Caneca Ágata Pequena — SOGRINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+219,caneca_agata_pq_sograo,Caneca Ágata Pequena — SOGRÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+220,caneca_agata_pq_maninho,Caneca Ágata Pequena — MANINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+221,caneca_agata_pq_maninha,Caneca Ágata Pequena — MANINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+222,caneca_agata_pq_oxe,Caneca Ágata Pequena — OXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+223,caneca_agata_pq_oxente,Caneca Ágata Pequena — OXENTE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+224,caneca_agata_pq_eita,Caneca Ágata Pequena — EITA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+225,caneca_agata_pq_pronto,Caneca Ágata Pequena — PRONTO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+226,caneca_agata_pq_vixe,Caneca Ágata Pequena — VIXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+227,caneca_agata_pq_xero,Caneca Ágata Pequena — XÊRO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+228,caneca_agata_pq_se_avexe_nao,Caneca Ágata Pequena — SE AVEXE NÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+229,caneca_agata_pq_lembrei_de_tu,Caneca Ágata Pequena — LEMBREI DE TU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+230,caneca_agata_pq_arretado,Caneca Ágata Pequena — ARRETADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+231,caneca_agata_pq_arretada,Caneca Ágata Pequena — ARRETADA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+232,caneca_agata_pq_cuscuz_com_ovo,Caneca Ágata Pequena — CUSCUZ COM OVO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+233,caneca_agata_pq_cuscuz_cafe,Caneca Ágata Pequena — CUSCUZ CAFÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+234,caneca_agata_pq_cafune,Caneca Ágata Pequena — CAFUNÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+235,caneca_agata_pq_cafezin,Caneca Ágata Pequena — CAFÉZIN,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+236,caneca_agata_pq_te_amo_visse,Caneca Ágata Pequena — TE AMO VISSE!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+237,caneca_agata_pq_devendo_e_luxando,Caneca Ágata Pequena — DEVENDO E LUXANDO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+238,caneca_agata_pq_arrombado,Caneca Ágata Pequena — ARROMBADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+239,caneca_agata_pq_teu_cu,Caneca Ágata Pequena — TEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+240,caneca_agata_pq_meu_cu,Caneca Ágata Pequena — MEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+241,caneca_agata_pq_meus_ovo,Caneca Ágata Pequena — MEUS OVO!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+242,caneca_agata_pq_vei,Caneca Ágata Pequena — VÉI!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+243,caneca_agata_pq_cafe_nao_costuma_faia,Caneca Ágata Pequena — Café não costuma faiá,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+244,caneca_agata_pq_super_neto,Caneca Ágata Pequena — SUPER NETO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+245,caneca_agata_pq_super_neta,Caneca Ágata Pequena — SUPER NETA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+246,caneca_agata_pq_la_ele,Caneca Ágata Pequena — Lá ele,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00247,caneca_agata_gd_my_eggs,Caneca Ágata Grande — MY EGGS,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00248,caneca_agata_gd_painho,Caneca Ágata Grande — PAINHO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00249,caneca_agata_gd_mainha,Caneca Ágata Grande — MAINHA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00250,caneca_agata_gd_voinho,Caneca Ágata Grande — VOINHO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00251,caneca_agata_gd_voinha,Caneca Ágata Grande — VÓINHA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00252,caneca_agata_gd_super_filho,Caneca Ágata Grande — SUPER FILHO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00253,caneca_agata_gd_super_filha,Caneca Ágata Grande — SUPER FILHA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00254,caneca_agata_gd_sograo,Caneca Ágata Grande — SOGRÃO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00255,caneca_agata_gd_sogrinha,Caneca Ágata Grande — SOGRINHA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00256,caneca_agata_gd_maninho,Caneca Ágata Grande — MANINHO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00257,caneca_agata_gd_maninha,Caneca Ágata Grande — MANINHA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00258,caneca_agata_gd_oxe,Caneca Ágata Grande — OXE,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00259,caneca_agata_gd_oxente,Caneca Ágata Grande — OXENTE,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00260,caneca_agata_gd_eita,Caneca Ágata Grande — EITA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00261,caneca_agata_gd_vixe,Caneca Ágata Grande — VIXE,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00262,caneca_agata_gd_xero,Caneca Ágata Grande — XÊRO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00263,caneca_agata_gd_se_avexe_nao,Caneca Ágata Grande — SE AVEXE NÃO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00264,caneca_agata_gd_lembrei_de_tu,Caneca Ágata Grande — LEMBREI DE TU,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00265,caneca_agata_gd_arretado,Caneca Ágata Grande — ARRETADO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00266,caneca_agata_gd_arretada,Caneca Ágata Grande — ARRETADA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00267,caneca_agata_gd_cafe_nao_costuma_faia,Caneca Ágata Grande — CAFÉ NÃO COSTUMA FAIÁ,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00268,caneca_agata_gd_cuscuz_cafe,Caneca Ágata Grande — CUSCUZ CAFÉ,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00269,caneca_agata_gd_cafune,Caneca Ágata Grande — CAFUNÉ,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00270,caneca_agata_gd_cafezin,Caneca Ágata Grande — CAFÉZIN,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00271,caneca_agata_gd_te_amo_visse,Caneca Ágata Grande — TE AMO VISSE!,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00272,caneca_agata_gd_devendo_e_luxando,Caneca Ágata Grande — DEVENDO E LUXANDO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00273,caneca_agata_gd_arrombado,Caneca Ágata Grande — ARROMBADO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00274,caneca_agata_gd_teu_cu,Caneca Ágata Grande — TEU CU,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00275,caneca_agata_gd_meu_cu,Caneca Ágata Grande — MEU CU,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00276,caneca_agata_gd_meus_ovo,Caneca Ágata Grande — MEUS OVO!,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00277,caneca_agata_gd_vei,Caneca Ágata Grande — VÉI!,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00278,caneca_agata_gd_super_neto,Caneca Ágata Grande — SUPER NETO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
+00279,caneca_agata_gd_super_neta,Caneca Ágata Grande — SUPER NETA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
