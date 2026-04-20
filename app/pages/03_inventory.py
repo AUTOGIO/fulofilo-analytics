@@ -127,6 +127,8 @@ CATEGORY_COLORS = {
     "Canecas Ágata Grande":  "#34D399",
     "Canecas Loucas":        "#FB923C",
     "Cangas":                "#F43F5E",
+    "Chaveiros Femininos":   "#F472B6",
+    "Chaveiros Masculinos":  "#60A5FA",
 }
 
 with tab1:
