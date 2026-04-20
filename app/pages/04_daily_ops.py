@@ -124,26 +124,56 @@ st.divider()
 st.subheader("📝 Registro de Vendas do Dia")
 st.markdown("Cada venda registrada aqui é **salva imediatamente** no CSV e no Parquet.")
 
+# Load product list for dropdown
+@st.cache_data
+def load_product_options():
+    try:
+        prod = pl.read_parquet(PROJECT_ROOT / "data" / "parquet" / "products.parquet")
+        df = prod.select(["slug","full_name","category","price"]).sort(["category","full_name"]).to_pandas()
+        # Build options: "Categoria — Nome" → (full_name, price)
+        options = {}
+        for _, r in df.iterrows():
+            label = f"{r['category']} — {r['full_name'].replace(r['category'] + ' — ', '').replace(r['category'] + ' — ', '')}"
+            options[label] = {"name": r["full_name"], "price": float(r["price"])}
+        return options
+    except Exception:
+        return {}
+
+product_options = load_product_options()
+product_labels  = list(product_options.keys())
+
+# Product selector (outside form for price auto-fill)
+selected_label = st.selectbox(
+    "🛍️ Produto",
+    options=product_labels,
+    index=0 if product_labels else None,
+    placeholder="Selecione um produto...",
+)
+selected_product = product_options.get(selected_label, {})
+default_price    = selected_product.get("price", 15.0)
+product_name     = selected_product.get("name", "")
+
 with st.form("daily_sale_form", clear_on_submit=True):
     col1, col2, col3 = st.columns(3)
     with col1:
-        sale_date    = st.date_input("Data", value=date.today())
-        product_name = st.text_input("Produto", placeholder="Ex: Nécessaire Stylo")
-    with col2:
+        sale_date  = st.date_input("Data", value=date.today())
         quantity   = st.number_input("Quantidade", min_value=1, value=1, step=1)
-        unit_price = st.number_input("Preço Unitário (R$)", min_value=0.01, value=15.00, step=0.50)
-    with col3:
-        payment = st.selectbox(
+    with col2:
+        unit_price = st.number_input("Preço Unitário (R$)", min_value=0.01,
+                                     value=default_price, step=0.50)
+        payment    = st.selectbox(
             "Forma de Pagamento",
             ["Dinheiro", "Pix", "Débito", "Crédito", "Crédito Parcelado"],
         )
+    with col3:
         notes = st.text_input("Observações", placeholder="Opcional")
+        st.markdown(f"<br><span style='color:#00D4FF;font-size:0.85rem;'>💰 Preço tabela: <b>R$ {default_price:.2f}</b></span>", unsafe_allow_html=True)
 
     submitted = st.form_submit_button("✅ Registrar Venda", use_container_width=True)
 
 if submitted:
-    if not product_name.strip():
-        st.error("❌ Informe o nome do produto.")
+    if not product_name:
+        st.error("❌ Selecione um produto.")
     else:
         total, inv_result = append_sale(sale_date, product_name, quantity, unit_price, payment, notes)
         st.success(
