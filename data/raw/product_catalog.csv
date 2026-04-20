@@ -222,26 +222,26 @@ sku,raw_key,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,u
 374,caneca_louca_anda_cum_fe_eu_vou_azul_marinho_com_mostarda,Caneca Louca — Anda cum fé eu vou azul marinho com mostarda,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
 375,caneca_louca_boa_uma_vida_com_cuscuz,Caneca Louca — Boa uma vida com cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
 376,caneca_louca_sanfoneiro_joao_pessoa,Caneca Louca — Sanfoneiro João Pessoa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00377,canga_estrela_do_mar_6,Canga — Estrela do Mar 6,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00378,canga_vista_se_de_si,Canga — Vista-se de Si,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00379,canga_coqueiros_18,Canga — Coqueiros 18,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00380,canga_eu_amo_nordeste,Canga — Eu Amo Nordeste,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00381,canga_se_avexe_nao,Canga — Se Avexe Não,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00382,canga_frases_1_para_hoje,Canga — Frases 1 (Para Hoje),Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00383,canga_oxente,Canga — Oxente,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00384,canga_oxente_quadrados,Canga — Oxente Quadrados,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00385,canga_confie,Canga — Confie,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00386,canga_a_vida_fica_melhor,Canga — A Vida Fica Melhor,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00387,canga_cactos_5,Canga — Cactos 5,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00388,canga_gatinhos,Canga — Gatinhos,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00389,canga_folhas_monsteira_1,Canga — Folhas Monsteira 1,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00390,canga_floral_90,Canga — Floral 90,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00391,canga_girias_nordestinas_cacto_verde,Canga — Gírias Nordestinas Cacto Verde,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00392,canga_flamingo_e_tucano,Canga — Flamingo e Tucano,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00393,canga_cordel_2_fundo_creme,Canga — Cordel 2 Fundo Creme,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00394,canga_vc_fica_linda_vestida,Canga — Vc Fica Linda Vestida,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00395,canga_nao_pare_ate_se_orgulhar_2,Canga — Não Pare Até Se Orgulhar 2,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00396,canga_cangaco_1_nao_sei_so_sei,Canga — Cangaço 1 — Não Sei Só Sei,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00397,canga_listras_onca_pink,Canga — Listras Onça Pink,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00398,canga_onca_tropical,Canga — Onça Tropical,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
-00399,canga_floral_114_i_love_paraiba,Canga — Floral 114 — I Love Paraíba,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+377,canga_estrela_do_mar_6,Canga — Estrela do Mar 6,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+378,canga_vista_se_de_si,Canga — Vista-se de Si,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+379,canga_coqueiros_18,Canga — Coqueiros 18,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+380,canga_eu_amo_nordeste,Canga — Eu Amo Nordeste,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+381,canga_se_avexe_nao,Canga — Se Avexe Não,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+382,canga_frases_1_para_hoje,Canga — Frases 1 (Para Hoje),Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+383,canga_oxente,Canga — Oxente,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+384,canga_oxente_quadrados,Canga — Oxente Quadrados,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+385,canga_confie,Canga — Confie,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+386,canga_a_vida_fica_melhor,Canga — A Vida Fica Melhor,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+387,canga_cactos_5,Canga — Cactos 5,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+388,canga_gatinhos,Canga — Gatinhos,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+389,canga_folhas_monsteira_1,Canga — Folhas Monsteira 1,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+390,canga_floral_90,Canga — Floral 90,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+391,canga_girias_nordestinas_cacto_verde,Canga — Gírias Nordestinas Cacto Verde,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+392,canga_flamingo_e_tucano,Canga — Flamingo e Tucano,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+393,canga_cordel_2_fundo_creme,Canga — Cordel 2 Fundo Creme,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+394,canga_vc_fica_linda_vestida,Canga — Vc Fica Linda Vestida,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+395,canga_nao_pare_ate_se_orgulhar_2,Canga — Não Pare Até Se Orgulhar 2,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+396,canga_cangaco_1_nao_sei_so_sei,Canga — Cangaço 1 — Não Sei Só Sei,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+397,canga_listras_onca_pink,Canga — Listras Onça Pink,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+398,canga_onca_tropical,Canga — Onça Tropical,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+399,canga_floral_114_i_love_paraiba,Canga — Floral 114 — I Love Paraíba,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
