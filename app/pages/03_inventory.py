@@ -118,21 +118,36 @@ COLOR_MAP = {
     "🟢 OK":      "#00FF88",
 }
 
+CATEGORY_COLORS = {
+    "Camisetas Básicas":     "#00D4FF",
+    "Baby Look":             "#FF79C6",
+    "Regatas":               "#FFD700",
+    "Camisetas Infantis":    "#A78BFA",
+    "Canecas Ágata Pequena": "#00FF88",
+    "Canecas Ágata Grande":  "#34D399",
+    "Canecas Loucas":        "#FB923C",
+    "Cangas":                "#F43F5E",
+}
+
 with tab1:
+    all_cats = sorted(pdf["category"].unique().tolist())
     alert_filter = st.multiselect(
         "Filtrar Status", ["🔴 Crítico","🟡 Baixo","🟢 OK"],
         default=["🔴 Crítico","🟡 Baixo","🟢 OK"]
     )
+    cat_filter = st.multiselect("Filtrar Categoria", all_cats, default=all_cats)
     view = pdf[pdf["alert"].isin(alert_filter)] if alert_filter else pdf
+    if cat_filter:
+        view = view[view["category"].isin(cat_filter)]
     fig = px.bar(
-        view.sort_values("current_stock"),
-        x="current_stock", y="product", color="alert",
-        color_discrete_map=COLOR_MAP, orientation="h",
-        labels={"current_stock":"Estoque Atual","product":"Produto","alert":"Status"},
-        title="Estoque Atual por Produto",
+        view.sort_values(["category","current_stock"]),
+        x="current_stock", y="product", color="category",
+        color_discrete_map=CATEGORY_COLORS, orientation="h",
+        labels={"current_stock":"Estoque Atual","product":"Produto","category":"Categoria"},
+        title="Estoque Atual por Produto — por Categoria",
     )
     fig.update_traces(marker_line_width=0)
-    hud_plotly_layout(fig, height=max(380, len(view)*22))
+    hud_plotly_layout(fig, height=max(420, len(view)*22))
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
