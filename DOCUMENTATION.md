@@ -1,9 +1,9 @@
 # FulôFiló Analytics Pro
 ## Technical Documentation and Operator Manual (Apple-Tailored Dashboard Track)
 
-Version: 2.0  
-Date: March 2026  
-Target: macOS 26.x on Apple Silicon (iMac M3 class), local-first
+Version: 2.1
+Date: April 2026
+Target: macOS on Apple Silicon (iMac M3 class), local-first
 
 ---
 
@@ -14,8 +14,13 @@ FulôFiló Analytics Pro is a local dashboard and reporting system for store ope
 Production track:
 - Streamlit dashboard (`app/`)
 - DuckDB views over Parquet (`app/db.py`)
-- Numbers-edited CSV masters (`data/raw/*_master.csv`)
+- Excel master workbook (`data/excel/FuloFilo_Master.xlsx`) — **canonical source of truth**
+- Sync pipeline (`scripts/sync_excel.sh`)
+
+Legacy track (migration fallback only — do not use for normal operations):
+- CSV masters under `data/raw/*_master.csv` (Numbers-edited)
 - Sync pipeline (`scripts/sync_native_sources.sh`)
+- See `scripts/adhoc/` for one-time migration scripts
 
 Non-production side tracks:
 - Visual POS CV pipeline (`visual_pos/`, `src/fulofilo_ai/`)
@@ -27,49 +32,66 @@ These side tracks are buildable but not part of canonical local dashboard operat
 
 ## 2. Source of Truth Contract
 
-Canonical source files under `data/raw/`:
-- `catalog_master.csv`
-- `inventory_master.csv`
-- `daily_sales_master.csv`
-- `cashflow_master.csv`
-- `category_overrides.csv`
+Canonical source: `data/excel/FuloFilo_Master.xlsx`
+
+Sheets:
+- `Catalog` — product master (SKU, name, category, cost, price)
+- `Inventory` — stock levels per SKU
+- `DailySales` — transaction history
+- `Cashflow` — revenue and expense entries
+- `CategoryOverrides` — manual category assignments
+- `Meta` — workbook metadata
 
 Rules:
-- Operators edit masters in Numbers.
-- Dashboard pages do not directly mutate source-owned datasets.
-- Parquet and DuckDB are generated read layers only.
+- Operators edit the Excel master directly in Microsoft Excel.
+- Dashboard pages are read-only for all source-owned datasets.
+- Parquet and DuckDB are generated read layers only; never edit them directly.
 
 Canonical sync command:
 ```bash
-bash scripts/sync_native_sources.sh
+bash scripts/sync_excel.sh
 ```
 
 Sync status artifact:
-- `data/raw/source_sync_status.json`
+- `data/excel/source_sync_status.json`
 
 ---
 
 ## 3. Architecture and Data Flow
 
 ```text
-Numbers (CSV masters under data/raw/)
+Microsoft Excel
+data/excel/FuloFilo_Master.xlsx
+  (Catalog, Inventory, DailySales, Cashflow, CategoryOverrides, Meta)
         |
         v
-scripts/sync_native_sources.py
-  - schema checks
-  - key integrity checks
-  - SKU validation policy
-  - derived models build
+scripts/sync_excel.py
+  - schema validation (required columns per sheet)
+  - SKU uniqueness checks
+  - referential integrity (Inventory/Overrides/Sales → Catalog)
+  - non-negativity checks (cost, price)
+  - sales total reconciliation (Total vs Quantity × Unit_Price, tol=0.02)
+  - SKU policy enforcement (balanced/strict)
+  - ABC classification (cumulative revenue: A≤80%, B≤95%, C>95%)
+  - margin computation (unit_profit, margin_pct)
         |
         v
-data/parquet/*.parquet
-data/fulofilo.duckdb (views)
+data/parquet/*.parquet  (products, inventory, daily_sales, cashflow,
+                         revenue_report, quantity_report, profit_report)
+data/fulofilo.duckdb    (views over parquet)
         |
         v
 Streamlit dashboard (read-only over source-owned data)
+  app/app.py          — Overview + KPIs
+  pages/01_abc_analysis.py    — ABC Pareto
+  pages/02_margin_matrix.py   — Margin scatter
+  pages/03_inventory.py       — Stock alerts
+  pages/04_daily_ops.py       — Sales history
+  pages/05_categories.py      — Category manager
+  pages/06_export_excel.py    — Excel report builder
         |
         v
-Excel export artifact (downstream reporting only)
+excel/build_report.py  (downstream 9-sheet Excel report — read-only artifact)
 ```
 
 ---
@@ -94,10 +116,12 @@ If venv is missing/corrupt, `FuloFilo.command` heals via `uv sync`.
 
 ## 5. Validation and SKU Policy
 
-Contract checks:
-- required columns for all 5 master CSVs
-- unique SKU constraints where applicable
-- referential integrity: inventory/overrides/sales SKU against catalog SKU
+Contract checks run against `data/excel/FuloFilo_Master.xlsx`:
+- required columns for all 6 master sheets
+- unique SKU constraints (Catalog, Inventory, CategoryOverrides)
+- referential integrity: Inventory/CategoryOverrides/DailySales SKU → Catalog SKU
+- non-negativity: unit_cost ≥ 0, suggested_price ≥ 0
+- sales reconciliation: Total vs Quantity × Unit_Price (tolerance 0.02)
 
 Daily sales SKU policy (`--sku-policy`):
 - `balanced` (default):
@@ -109,31 +133,32 @@ Daily sales SKU policy (`--sku-policy`):
 
 Strict mode:
 ```bash
-bash scripts/sync_native_sources.sh --sku-policy strict
+bash scripts/sync_excel.sh --sku-policy strict
 ```
 
 ---
 
 ## 6. Operating Procedure
 
-1. Open source files in Numbers:
+1. Open the Excel master workbook:
 ```bash
-bash scripts/open_native_sources.sh
+open data/excel/FuloFilo_Master.xlsx
 ```
 
-2. Edit business data in masters.
+2. Edit business data in the relevant sheet (Catalog, Inventory, DailySales, Cashflow, or CategoryOverrides).
 
 3. Run sync:
 ```bash
-bash scripts/sync_native_sources.sh
+bash scripts/sync_excel.sh
 ```
 
 4. Launch app:
 ```bash
 bash scripts/launch_app.sh
 ```
+Or double-click `FuloFilo.command` in Finder for a self-healing launcher.
 
-5. (Optional) generate Excel artifact:
+5. (Optional) generate Excel report artifact from within the dashboard (page 6 — Exportar Relatório) or via CLI:
 ```bash
 python3 excel/build_report.py
 ```
