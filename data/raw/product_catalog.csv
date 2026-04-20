@@ -1,57 +1,94 @@
 sku,raw_key,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,unit_profit,margin_pct,qty_sold,revenue,profit,avg_price,cum_revenue,cum_pct,abc_class
-00174,basica_tradutor,Camiseta Básica — Tradutor,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00170,basica_paisagem,Camiseta Básica — Paisagem,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00156,basica_barriga,Camiseta Básica — Barriga,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00209,infantil_joão_pessoa_paraíso,Camiseta Infantil — João Pessoa Paraíso,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00179,baby_look_cabedelo_peito,Baby Look — Cabedelo Peito,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00207,infantil_oxente,Camiseta Infantil — Oxente,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00205,infantil_lisa,Camiseta Infantil — Lisa,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00182,baby_look_escrita_fina,Baby Look — Escrita Fina,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00204,infantil_casa_vovó,Camiseta Infantil — Casa Vovó,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00203,regata_velho,Regata — Velho,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00202,regata_por_sol_peito,Regata — Por Sol Peito,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00200,regata_oxente,Regata — Oxente,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00199,regata_não_sei,Regata — Não Sei,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00198,regata_lisa,Regata — Lisa,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00197,regata_joão_pessoa_paraíso,Regata — João Pessoa Paraíso,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00201,regata_paisagem,Regata — Paisagem,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00195,regata_4_passos,Regata — 4 Passos,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00184,baby_look_fé,Baby Look — Fé,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00196,regata_barriga,Regata — Barriga,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
-00186,baby_look_lisa,Baby Look — Lisa,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00187,baby_look_meiga,Baby Look — Meiga,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00188,baby_look_não_sei,Baby Look — Não Sei,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00189,baby_look_oxente,Baby Look — Oxente,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00185,baby_look_joão_pessoa_paraíso,Baby Look — João Pessoa Paraíso,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00191,baby_look_por_sol,Baby Look — Por Sol,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00192,baby_look_por_sol_peito,Baby Look — Por Sol Peito,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00193,baby_look_tradutor,Baby Look — Tradutor,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00194,baby_look_velha,Baby Look — Velha,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00190,baby_look_paisagem,Baby Look — Paisagem,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00206,infantil_não_sei,Camiseta Infantil — Não Sei,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00163,basica_fé,Camiseta Básica — Fé,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00171,basica_por_sol,Camiseta Básica — Por Sol,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00172,basica_por_sol_peito,Camiseta Básica — Por Sol Peito,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00173,basica_sertão,Camiseta Básica — Sertão,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00167,basica_mulher_mandar,Camiseta Básica — Mulher Mandar,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00175,basica_velha,Camiseta Básica — Velha,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00176,basica_velho,Camiseta Básica — Velho,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00177,baby_look_4_passos,Baby Look — 4 Passos,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00178,baby_look_cabedelo,Baby Look — Cabedelo,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00168,basica_não_sei,Camiseta Básica — Não Sei,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00158,basica_cabedelo_peito,Camiseta Básica — Cabedelo Peito,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00169,basica_oxente,Camiseta Básica — Oxente,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00166,basica_meiga,Camiseta Básica — Meiga,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00183,baby_look_estado_civil,Baby Look — Estado Civil,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00181,baby_look_cuscuz,Baby Look — Cuscuz,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
-00165,basica_lisa,Camiseta Básica — Lisa,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00164,basica_joão_pessoa_paraíso,Camiseta Básica — João Pessoa Paraíso,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00162,basica_estado_civil,Camiseta Básica — Estado Civil,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00161,basica_escrita_fina,Camiseta Básica — Escrita Fina,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00160,basica_cuscuz,Camiseta Básica — Cuscuz,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00208,infantil_quadrinhos,Camiseta Infantil — Quadrinhos,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
-00159,basica_cordel,Camiseta Básica — Cordel,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00157,basica_cabedelo,Camiseta Básica — Cabedelo,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00155,basica_anatomia,Camiseta Básica — Anatomia,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00154,basica_4_passos,Camiseta Básica — 4 Passos,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
-00180,baby_look_cordel,Baby Look — Cordel,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+174,basica_tradutor,Camiseta Básica — Tradutor,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+170,basica_paisagem,Camiseta Básica — Paisagem,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+156,basica_barriga,Camiseta Básica — Barriga,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+209,infantil_joão_pessoa_paraíso,Camiseta Infantil — João Pessoa Paraíso,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+179,baby_look_cabedelo_peito,Baby Look — Cabedelo Peito,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+207,infantil_oxente,Camiseta Infantil — Oxente,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+205,infantil_lisa,Camiseta Infantil — Lisa,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+182,baby_look_escrita_fina,Baby Look — Escrita Fina,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+204,infantil_casa_vovó,Camiseta Infantil — Casa Vovó,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+203,regata_velho,Regata — Velho,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+202,regata_por_sol_peito,Regata — Por Sol Peito,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+200,regata_oxente,Regata — Oxente,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+199,regata_não_sei,Regata — Não Sei,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+198,regata_lisa,Regata — Lisa,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+197,regata_joão_pessoa_paraíso,Regata — João Pessoa Paraíso,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+201,regata_paisagem,Regata — Paisagem,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+195,regata_4_passos,Regata — 4 Passos,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+184,baby_look_fé,Baby Look — Fé,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+196,regata_barriga,Regata — Barriga,Regatas,3.0,30.0,10,30,27.0,90.0,0.0,0.0,0.0,30.0,0.0,0.0,C
+186,baby_look_lisa,Baby Look — Lisa,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+187,baby_look_meiga,Baby Look — Meiga,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+188,baby_look_não_sei,Baby Look — Não Sei,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+189,baby_look_oxente,Baby Look — Oxente,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+185,baby_look_joão_pessoa_paraíso,Baby Look — João Pessoa Paraíso,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+191,baby_look_por_sol,Baby Look — Por Sol,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+192,baby_look_por_sol_peito,Baby Look — Por Sol Peito,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+193,baby_look_tradutor,Baby Look — Tradutor,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+194,baby_look_velha,Baby Look — Velha,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+190,baby_look_paisagem,Baby Look — Paisagem,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+206,infantil_não_sei,Camiseta Infantil — Não Sei,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+163,basica_fé,Camiseta Básica — Fé,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+171,basica_por_sol,Camiseta Básica — Por Sol,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+172,basica_por_sol_peito,Camiseta Básica — Por Sol Peito,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+173,basica_sertão,Camiseta Básica — Sertão,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+167,basica_mulher_mandar,Camiseta Básica — Mulher Mandar,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+175,basica_velha,Camiseta Básica — Velha,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+176,basica_velho,Camiseta Básica — Velho,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+177,baby_look_4_passos,Baby Look — 4 Passos,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+178,baby_look_cabedelo,Baby Look — Cabedelo,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+168,basica_não_sei,Camiseta Básica — Não Sei,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+158,basica_cabedelo_peito,Camiseta Básica — Cabedelo Peito,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+169,basica_oxente,Camiseta Básica — Oxente,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+166,basica_meiga,Camiseta Básica — Meiga,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+183,baby_look_estado_civil,Baby Look — Estado Civil,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+181,baby_look_cuscuz,Baby Look — Cuscuz,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+165,basica_lisa,Camiseta Básica — Lisa,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+164,basica_joão_pessoa_paraíso,Camiseta Básica — João Pessoa Paraíso,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+162,basica_estado_civil,Camiseta Básica — Estado Civil,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+161,basica_escrita_fina,Camiseta Básica — Escrita Fina,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+160,basica_cuscuz,Camiseta Básica — Cuscuz,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+208,infantil_quadrinhos,Camiseta Infantil — Quadrinhos,Camisetas Infantis,8.0,32.0,10,30,24.0,75.0,0.0,0.0,0.0,32.0,0.0,0.0,C
+159,basica_cordel,Camiseta Básica — Cordel,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+157,basica_cabedelo,Camiseta Básica — Cabedelo,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+155,basica_anatomia,Camiseta Básica — Anatomia,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+154,basica_4_passos,Camiseta Básica — 4 Passos,Camisetas Básicas,7.0,25.0,10,30,18.0,72.0,0.0,0.0,0.0,25.0,0.0,0.0,C
+180,baby_look_cordel,Baby Look — Cordel,Baby Look,4.0,21.0,10,30,17.0,81.0,0.0,0.0,0.0,21.0,0.0,0.0,C
+00210,caneca_agata_pq_fofoca,Caneca Ágata Pequena — fofoca,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00211,caneca_agata_pq_my_eggs,Caneca Ágata Pequena — MY EGGS,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00212,caneca_agata_pq_painho,Caneca Ágata Pequena — PAINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00213,caneca_agata_pq_mainha,Caneca Ágata Pequena — MAINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00214,caneca_agata_pq_voinho,Caneca Ágata Pequena — VOINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00215,caneca_agata_pq_voinha,Caneca Ágata Pequena — VÓINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00216,caneca_agata_pq_super_filho,Caneca Ágata Pequena — SUPER FILHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00217,caneca_agata_pq_super_filha,Caneca Ágata Pequena — SUPER FILHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00218,caneca_agata_pq_sogrinha,Caneca Ágata Pequena — SOGRINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00219,caneca_agata_pq_sograo,Caneca Ágata Pequena — SOGRÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00220,caneca_agata_pq_maninho,Caneca Ágata Pequena — MANINHO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00221,caneca_agata_pq_maninha,Caneca Ágata Pequena — MANINHA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00222,caneca_agata_pq_oxe,Caneca Ágata Pequena — OXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00223,caneca_agata_pq_oxente,Caneca Ágata Pequena — OXENTE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00224,caneca_agata_pq_eita,Caneca Ágata Pequena — EITA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00225,caneca_agata_pq_pronto,Caneca Ágata Pequena — PRONTO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00226,caneca_agata_pq_vixe,Caneca Ágata Pequena — VIXE,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00227,caneca_agata_pq_xero,Caneca Ágata Pequena — XÊRO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00228,caneca_agata_pq_se_avexe_nao,Caneca Ágata Pequena — SE AVEXE NÃO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00229,caneca_agata_pq_lembrei_de_tu,Caneca Ágata Pequena — LEMBREI DE TU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00230,caneca_agata_pq_arretado,Caneca Ágata Pequena — ARRETADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00231,caneca_agata_pq_arretada,Caneca Ágata Pequena — ARRETADA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00232,caneca_agata_pq_cuscuz_com_ovo,Caneca Ágata Pequena — CUSCUZ COM OVO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00233,caneca_agata_pq_cuscuz_cafe,Caneca Ágata Pequena — CUSCUZ CAFÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00234,caneca_agata_pq_cafune,Caneca Ágata Pequena — CAFUNÉ,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00235,caneca_agata_pq_cafezin,Caneca Ágata Pequena — CAFÉZIN,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00236,caneca_agata_pq_te_amo_visse,Caneca Ágata Pequena — TE AMO VISSE!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00237,caneca_agata_pq_devendo_e_luxando,Caneca Ágata Pequena — DEVENDO E LUXANDO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00238,caneca_agata_pq_arrombado,Caneca Ágata Pequena — ARROMBADO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00239,caneca_agata_pq_teu_cu,Caneca Ágata Pequena — TEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00240,caneca_agata_pq_meu_cu,Caneca Ágata Pequena — MEU CU,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00241,caneca_agata_pq_meus_ovo,Caneca Ágata Pequena — MEUS OVO!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00242,caneca_agata_pq_vei,Caneca Ágata Pequena — VÉI!,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00243,caneca_agata_pq_cafe_nao_costuma_faia,Caneca Ágata Pequena — Café não costuma faiá,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00244,caneca_agata_pq_super_neto,Caneca Ágata Pequena — SUPER NETO,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00245,caneca_agata_pq_super_neta,Caneca Ágata Pequena — SUPER NETA,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
+00246,caneca_agata_pq_la_ele,Caneca Ágata Pequena — Lá ele,Canecas Ágata Pequena,7.5,19.0,10,20,11.5,60.53,0.0,0.0,0.0,19.0,0.0,0.0,C
