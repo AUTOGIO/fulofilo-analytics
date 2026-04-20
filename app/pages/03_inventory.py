@@ -176,9 +176,8 @@ with tab3:
     if inv_path.exists() and prod_path.exists():
         import polars as pl
         inv  = pl.read_parquet(inv_path)
-        # Use pre-computed unit_cost directly — avoids division-by-zero
-        # for products with qty_sold == 0 (which silently produces R$0 stock values).
-        prod = pl.read_parquet(prod_path).select(["slug", "unit_cost"])
+        # 'cost' is the parquet column name; alias to unit_cost for downstream join
+        prod = pl.read_parquet(prod_path).select([pl.col("slug"), pl.col("cost").alias("unit_cost")])
         merged_pl = inv.join(prod, left_on="slug", right_on="slug", how="left").with_columns(
             (pl.col("current_stock").cast(pl.Float64) * pl.col("unit_cost").fill_null(0.0)).alias("value")
         )
