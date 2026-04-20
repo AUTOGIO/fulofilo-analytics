@@ -1,384 +1,723 @@
 Date,Product,Quantity,Unit_Price,Total,Payment_Method,Source
-2026-03-27,necessayr,1,15.0,15.0,Dinheiro,manual
-2026-03-28,chaveiro pequeno,4,15.0,60.0,Dinheiro,manual
-2026-03-28,bolsa,1,15.0,15.0,Dinheiro,manual
-2026-03-28,carteira_alca,3,15.0,45.0,Débito,manual
-2026-01-27,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-01-27,Chaveiro Duplo,1,35.0,35.0,Pix,historical
-2026-01-27,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-01-27,Chaveiro Duplo,1,35.0,35.0,Pix,historical
-2026-01-27,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-01-27,Chaveiro Duplo,1,35.0,35.0,Pix,historical
-2026-01-27,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-01-28,Carteira Alça,1,45.0,45.0,Crédito,historical
-2026-01-28,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-01-28,Bolsa Palha,1,89.0,89.0,Pix,historical
-2026-01-28,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-01-28,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-01-29,Chaveiro Couro,1,30.0,30.0,Dinheiro,historical
-2026-01-29,Nécessaire Viagem,3,55.0,165.0,Dinheiro,historical
-2026-01-29,Bolsa Couro,1,120.0,120.0,Débito,historical
-2026-01-29,Nécessaire Grande,1,45.0,45.0,Crédito,historical
-2026-01-29,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-01-29,Nécessaire Stylo,1,35.0,35.0,Dinheiro,historical
-2026-01-29,Chaveiro Personalizado,1,25.0,25.0,Dinheiro,historical
-2026-01-30,Carteira Zip,2,55.0,110.0,Pix,historical
-2026-01-30,Chaveiro Duplo,1,35.0,35.0,Crédito,historical
-2026-01-30,Carteira Tricolor,1,60.0,60.0,Crédito,historical
-2026-01-30,Chaveiro Duplo,1,35.0,35.0,Débito,historical
-2026-01-30,Chaveiro Personalizado,1,25.0,25.0,Dinheiro,historical
-2026-01-30,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-01-30,Carteira Tricolor,3,60.0,180.0,Pix,historical
-2026-01-30,Carteira Envelope,1,65.0,65.0,Pix,historical
-2026-01-30,Bolsa Couro,1,120.0,120.0,Pix,historical
-2026-01-30,Nécessaire Viagem,1,55.0,55.0,Pix,historical
-2026-01-30,Carteira Tricolor,1,60.0,60.0,Débito,historical
-2026-01-31,Carteira Alça,1,45.0,45.0,Pix,historical
-2026-01-31,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-01-31,Nécessaire Pequena,1,30.0,30.0,Dinheiro,historical
-2026-01-31,Carteira Slim,1,50.0,50.0,Dinheiro,historical
-2026-01-31,Canga Listrada,2,45.0,90.0,Pix,historical
-2026-01-31,Bolsa Couro,1,120.0,120.0,Dinheiro,historical
-2026-01-31,Chaveiro Personalizado,2,25.0,50.0,Pix,historical
-2026-01-31,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-01-31,Body Estampado,2,70.0,140.0,Dinheiro,historical
-2026-01-31,Carteira Alça,1,45.0,45.0,Pix,historical
-2026-01-31,Chaveiro Xadrez,1,20.0,20.0,Pix,historical
-2026-01-31,Canga Estampada,1,50.0,50.0,Pix,historical
-2026-02-01,Nécessaire Grande,2,45.0,90.0,Pix,historical
-2026-02-01,Carteira Alça,2,45.0,90.0,Crédito,historical
-2026-02-01,Canga Listrada,2,45.0,90.0,Dinheiro,historical
-2026-02-01,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-02-01,Carteira Premium,1,75.0,75.0,Pix,historical
-2026-02-02,Chaveiro Duplo,1,35.0,35.0,Dinheiro,historical
-2026-02-02,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-02-02,Chaveiro Duplo,2,35.0,70.0,Crédito,historical
-2026-02-03,Carteira Envelope,1,65.0,65.0,Débito,historical
-2026-02-03,Chaveiro Duplo,1,35.0,35.0,Débito,historical
-2026-02-04,Nécessaire Viagem,2,55.0,110.0,Dinheiro,historical
-2026-02-04,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-02-04,Carteira Slim,1,50.0,50.0,Pix,historical
-2026-02-05,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-02-05,Carteira Slim,1,50.0,50.0,Pix,historical
-2026-02-05,Carteira Alça,1,45.0,45.0,Débito,historical
-2026-02-05,Chaveiro Personalizado,1,25.0,25.0,Débito,historical
-2026-02-05,Carteira Alça,2,45.0,90.0,Débito,historical
-2026-02-05,Bolsa Palha,2,89.0,178.0,Pix,historical
-2026-02-05,Chaveiro Pequeno,3,15.0,45.0,Pix,historical
-2026-02-06,Body Estampado,2,70.0,140.0,Pix,historical
-2026-02-06,Carteira Slim,1,50.0,50.0,Crédito,historical
-2026-02-06,Body Floral,1,65.0,65.0,Pix,historical
-2026-02-07,Carteira Alça,2,45.0,90.0,Débito,historical
-2026-02-07,Carteira Alça,1,45.0,45.0,Débito,historical
-2026-02-07,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-02-07,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-02-07,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-07,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-07,Chaveiro Pequeno,1,15.0,15.0,Dinheiro,historical
-2026-02-07,Carteira Slim,2,50.0,100.0,Dinheiro,historical
-2026-02-08,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-02-08,Nécessaire Grande,1,45.0,45.0,Crédito,historical
-2026-02-08,Body Estampado,1,70.0,70.0,Crédito,historical
-2026-02-08,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-02-08,Carteira Premium,2,75.0,150.0,Pix,historical
-2026-02-08,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-08,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-02-08,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-02-08,Bolsa Couro,1,120.0,120.0,Pix,historical
-2026-02-08,Carteira Premium,1,75.0,75.0,Dinheiro,historical
-2026-02-09,Canga Estampada,2,50.0,100.0,Pix,historical
-2026-02-09,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-02-09,Body Estampado,1,70.0,70.0,Pix,historical
-2026-02-09,Body Floral,1,65.0,65.0,Pix,historical
-2026-02-09,Carteira Alça,1,45.0,45.0,Crédito,historical
-2026-02-09,Chaveiro Couro,1,30.0,30.0,Dinheiro,historical
-2026-02-10,Carteira Mini,2,40.0,80.0,Pix,historical
-2026-02-10,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-02-10,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-10,Nécessaire Grande,1,45.0,45.0,Débito,historical
-2026-02-10,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-02-10,Chaveiro Xadrez,2,20.0,40.0,Pix,historical
-2026-02-11,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-11,Carteira Slim,1,50.0,50.0,Crédito,historical
-2026-02-11,Body Floral,2,65.0,130.0,Pix,historical
-2026-02-11,Body Floral,1,65.0,65.0,Dinheiro,historical
-2026-02-11,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-02-11,Canga Listrada,1,45.0,45.0,Dinheiro,historical
-2026-02-12,Chaveiro Personalizado,2,25.0,50.0,Pix,historical
-2026-02-12,Bolsa Couro,1,120.0,120.0,Crédito,historical
-2026-02-12,Nécessaire Viagem,1,55.0,55.0,Dinheiro,historical
-2026-02-12,Carteira Alça,2,45.0,90.0,Pix,historical
-2026-02-12,Carteira Tricolor,1,60.0,60.0,Débito,historical
-2026-02-12,Chaveiro Duplo,2,35.0,70.0,Débito,historical
-2026-02-12,Carteira Zip,2,55.0,110.0,Dinheiro,historical
-2026-02-12,Chaveiro Duplo,1,35.0,35.0,Crédito,historical
-2026-02-13,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-02-13,Carteira Zip,1,55.0,55.0,Crédito,historical
-2026-02-13,Body Estampado,1,70.0,70.0,Dinheiro,historical
-2026-02-13,Chaveiro Couro,3,30.0,90.0,Dinheiro,historical
-2026-02-13,Chaveiro Pequeno,1,15.0,15.0,Crédito,historical
-2026-02-14,Nécessaire Viagem,1,55.0,55.0,Pix,historical
-2026-02-14,Carteira Tricolor,1,60.0,60.0,Dinheiro,historical
-2026-02-14,Chaveiro Pequeno,1,15.0,15.0,Dinheiro,historical
-2026-02-14,Carteira Tricolor,1,60.0,60.0,Crédito,historical
-2026-02-14,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-02-14,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-02-14,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-02-14,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-02-14,Nécessaire Média,2,38.0,76.0,Dinheiro,historical
-2026-02-14,Carteira Slim,2,50.0,100.0,Dinheiro,historical
-2026-02-14,Carteira Alça,1,45.0,45.0,Crédito,historical
-2026-02-15,Carteira Premium,1,75.0,75.0,Débito,historical
-2026-02-15,Nécessaire Viagem,3,55.0,165.0,Pix,historical
-2026-02-15,Nécessaire Grande,1,45.0,45.0,Crédito,historical
-2026-02-15,Chaveiro Xadrez,3,20.0,60.0,Dinheiro,historical
-2026-02-15,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-02-15,Chaveiro Personalizado,1,25.0,25.0,Débito,historical
-2026-02-15,Nécessaire Grande,2,45.0,90.0,Débito,historical
-2026-02-15,Carteira Slim,1,50.0,50.0,Dinheiro,historical
-2026-02-16,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-02-16,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-02-16,Nécessaire Viagem,1,55.0,55.0,Débito,historical
-2026-02-16,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-16,Carteira Premium,2,75.0,150.0,Crédito,historical
-2026-02-16,Canga Listrada,2,45.0,90.0,Crédito,historical
-2026-02-16,Bolsa Palha,1,89.0,89.0,Pix,historical
-2026-02-17,Bolsa Couro,1,120.0,120.0,Dinheiro,historical
-2026-02-17,Bolsa Palha,1,89.0,89.0,Débito,historical
-2026-02-17,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-02-17,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-02-17,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-02-17,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-02-17,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-02-18,Nécessaire Stylo,1,35.0,35.0,Dinheiro,historical
-2026-02-18,Bolsa Palha,1,89.0,89.0,Pix,historical
-2026-02-18,Bolsa Couro,2,120.0,240.0,Crédito,historical
-2026-02-18,Carteira Mini,2,40.0,80.0,Dinheiro,historical
-2026-02-19,Carteira Tricolor,2,60.0,120.0,Crédito,historical
-2026-02-19,Carteira Envelope,1,65.0,65.0,Dinheiro,historical
-2026-02-19,Carteira Mini,1,40.0,40.0,Débito,historical
-2026-02-19,Chaveiro Pequeno,1,15.0,15.0,Crédito,historical
-2026-02-19,Nécessaire Pequena,2,30.0,60.0,Pix,historical
-2026-02-19,Canga Estampada,1,50.0,50.0,Crédito,historical
-2026-02-19,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-02-19,Nécessaire Grande,1,45.0,45.0,Débito,historical
-2026-02-20,Chaveiro Pequeno,1,15.0,15.0,Dinheiro,historical
-2026-02-20,Carteira Premium,1,75.0,75.0,Crédito,historical
-2026-02-20,Carteira Alça,3,45.0,135.0,Crédito,historical
-2026-02-20,Carteira Alça,1,45.0,45.0,Pix,historical
-2026-02-21,Carteira Envelope,3,65.0,195.0,Crédito,historical
-2026-02-21,Chaveiro Duplo,1,35.0,35.0,Pix,historical
-2026-02-21,Nécessaire Pequena,2,30.0,60.0,Dinheiro,historical
-2026-02-21,Bolsa Palha,1,89.0,89.0,Dinheiro,historical
-2026-02-21,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-02-21,Carteira Mini,1,40.0,40.0,Crédito,historical
-2026-02-21,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-02-21,Nécessaire Viagem,1,55.0,55.0,Dinheiro,historical
-2026-02-21,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-02-21,Nécessaire Stylo,2,35.0,70.0,Crédito,historical
-2026-02-21,Carteira Tricolor,1,60.0,60.0,Pix,historical
-2026-02-22,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-02-22,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-02-22,Nécessaire Viagem,1,55.0,55.0,Pix,historical
-2026-02-22,Carteira Zip,1,55.0,55.0,Crédito,historical
-2026-02-22,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-02-22,Bolsa Palha,2,89.0,178.0,Pix,historical
-2026-02-22,Carteira Slim,1,50.0,50.0,Débito,historical
-2026-02-22,Nécessaire Média,1,38.0,38.0,Dinheiro,historical
-2026-02-22,Nécessaire Grande,2,45.0,90.0,Débito,historical
-2026-02-22,Carteira Mini,2,40.0,80.0,Dinheiro,historical
-2026-02-23,Bolsa Couro,2,120.0,240.0,Pix,historical
-2026-02-23,Carteira Alça,1,45.0,45.0,Débito,historical
-2026-02-23,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-02-23,Chaveiro Pequeno,2,15.0,30.0,Pix,historical
-2026-02-24,Chaveiro Duplo,2,35.0,70.0,Crédito,historical
-2026-02-24,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-02-24,Nécessaire Stylo,1,35.0,35.0,Dinheiro,historical
-2026-02-24,Chaveiro Xadrez,1,20.0,20.0,Débito,historical
-2026-02-24,Nécessaire Stylo,1,35.0,35.0,Débito,historical
-2026-02-25,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-02-25,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-02-25,Carteira Zip,1,55.0,55.0,Débito,historical
-2026-02-25,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-02-25,Carteira Zip,1,55.0,55.0,Dinheiro,historical
-2026-02-25,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-02-25,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-02-26,Chaveiro Duplo,1,35.0,35.0,Dinheiro,historical
-2026-02-26,Canga Estampada,2,50.0,100.0,Dinheiro,historical
-2026-02-26,Chaveiro Duplo,1,35.0,35.0,Pix,historical
-2026-02-27,Carteira Envelope,1,65.0,65.0,Pix,historical
-2026-02-27,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-02-27,Nécessaire Grande,2,45.0,90.0,Pix,historical
-2026-02-27,Bolsa Couro,1,120.0,120.0,Débito,historical
-2026-02-27,Carteira Mini,1,40.0,40.0,Pix,historical
-2026-02-27,Carteira Alça,2,45.0,90.0,Pix,historical
-2026-02-27,Bolsa Palha,1,89.0,89.0,Pix,historical
-2026-02-27,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-02-27,Chaveiro Personalizado,1,25.0,25.0,Dinheiro,historical
-2026-02-28,Canga Estampada,1,50.0,50.0,Crédito,historical
-2026-02-28,Nécessaire Stylo,2,35.0,70.0,Dinheiro,historical
-2026-02-28,Nécessaire Viagem,1,55.0,55.0,Débito,historical
-2026-02-28,Carteira Alça,1,45.0,45.0,Crédito,historical
-2026-03-01,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-03-01,Canga Listrada,1,45.0,45.0,Dinheiro,historical
-2026-03-01,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-03-01,Chaveiro Couro,1,30.0,30.0,Pix,historical
-2026-03-01,Carteira Slim,1,50.0,50.0,Débito,historical
-2026-03-01,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-03-02,Bolsa Couro,1,120.0,120.0,Dinheiro,historical
-2026-03-02,Body Estampado,2,70.0,140.0,Dinheiro,historical
-2026-03-02,Carteira Slim,1,50.0,50.0,Pix,historical
-2026-03-02,Body Floral,2,65.0,130.0,Pix,historical
-2026-03-02,Chaveiro Pequeno,2,15.0,30.0,Dinheiro,historical
-2026-03-02,Carteira Premium,1,75.0,75.0,Dinheiro,historical
-2026-03-02,Nécessaire Média,2,38.0,76.0,Débito,historical
-2026-03-03,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-03-03,Nécessaire Pequena,1,30.0,30.0,Pix,historical
-2026-03-03,Chaveiro Xadrez,3,20.0,60.0,Pix,historical
-2026-03-03,Canga Estampada,1,50.0,50.0,Dinheiro,historical
-2026-03-03,Nécessaire Stylo,2,35.0,70.0,Pix,historical
-2026-03-04,Carteira Envelope,1,65.0,65.0,Dinheiro,historical
-2026-03-04,Chaveiro Couro,1,30.0,30.0,Débito,historical
-2026-03-04,Canga Listrada,1,45.0,45.0,Crédito,historical
-2026-03-04,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-03-04,Carteira Zip,1,55.0,55.0,Dinheiro,historical
-2026-03-05,Canga Listrada,2,45.0,90.0,Pix,historical
-2026-03-05,Carteira Premium,1,75.0,75.0,Crédito,historical
-2026-03-05,Chaveiro Xadrez,2,20.0,40.0,Pix,historical
-2026-03-05,Nécessaire Grande,1,45.0,45.0,Crédito,historical
-2026-03-05,Chaveiro Pequeno,1,15.0,15.0,Débito,historical
-2026-03-05,Nécessaire Grande,2,45.0,90.0,Dinheiro,historical
-2026-03-05,Carteira Alça,1,45.0,45.0,Dinheiro,historical
-2026-03-06,Bolsa Couro,1,120.0,120.0,Pix,historical
-2026-03-06,Canga Listrada,1,45.0,45.0,Dinheiro,historical
-2026-03-06,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-03-06,Nécessaire Stylo,1,35.0,35.0,Pix,historical
-2026-03-06,Carteira Mini,1,40.0,40.0,Pix,historical
-2026-03-06,Carteira Mini,1,40.0,40.0,Dinheiro,historical
-2026-03-07,Bolsa Palha,3,89.0,267.0,Dinheiro,historical
-2026-03-07,Carteira Premium,1,75.0,75.0,Dinheiro,historical
-2026-03-07,Body Estampado,1,70.0,70.0,Pix,historical
-2026-03-07,Bolsa Couro,1,120.0,120.0,Crédito,historical
-2026-03-07,Carteira Zip,2,55.0,110.0,Dinheiro,historical
-2026-03-07,Bolsa Palha,1,89.0,89.0,Dinheiro,historical
-2026-03-07,Bolsa Palha,1,89.0,89.0,Débito,historical
-2026-03-07,Bolsa Couro,1,120.0,120.0,Débito,historical
-2026-03-08,Carteira Zip,2,55.0,110.0,Crédito,historical
-2026-03-08,Carteira Premium,1,75.0,75.0,Dinheiro,historical
-2026-03-08,Canga Estampada,1,50.0,50.0,Crédito,historical
-2026-03-08,Carteira Alça,2,45.0,90.0,Pix,historical
-2026-03-08,Carteira Zip,1,55.0,55.0,Crédito,historical
-2026-03-08,Carteira Tricolor,1,60.0,60.0,Pix,historical
-2026-03-09,Canga Listrada,1,45.0,45.0,Crédito,historical
-2026-03-09,Bolsa Couro,2,120.0,240.0,Débito,historical
-2026-03-09,Chaveiro Xadrez,2,20.0,40.0,Pix,historical
-2026-03-09,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-03-09,Chaveiro Xadrez,2,20.0,40.0,Dinheiro,historical
-2026-03-10,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-03-10,Bolsa Couro,2,120.0,240.0,Crédito,historical
-2026-03-10,Canga Listrada,1,45.0,45.0,Débito,historical
-2026-03-10,Bolsa Couro,1,120.0,120.0,Pix,historical
-2026-03-11,Nécessaire Grande,2,45.0,90.0,Dinheiro,historical
-2026-03-11,Nécessaire Pequena,1,30.0,30.0,Pix,historical
-2026-03-11,Nécessaire Pequena,1,30.0,30.0,Pix,historical
-2026-03-12,Chaveiro Personalizado,1,25.0,25.0,Pix,historical
-2026-03-12,Chaveiro Pequeno,2,15.0,30.0,Dinheiro,historical
-2026-03-12,Carteira Tricolor,1,60.0,60.0,Dinheiro,historical
-2026-03-12,Carteira Envelope,1,65.0,65.0,Pix,historical
-2026-03-12,Chaveiro Personalizado,1,25.0,25.0,Crédito,historical
-2026-03-13,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-03-13,Carteira Alça,1,45.0,45.0,Débito,historical
-2026-03-13,Carteira Alça,1,45.0,45.0,Débito,historical
-2026-03-13,Body Floral,1,65.0,65.0,Pix,historical
-2026-03-13,Chaveiro Xadrez,2,20.0,40.0,Dinheiro,historical
-2026-03-13,Nécessaire Grande,1,45.0,45.0,Dinheiro,historical
-2026-03-13,Carteira Premium,1,75.0,75.0,Crédito,historical
-2026-03-13,Bolsa Couro,1,120.0,120.0,Crédito,historical
-2026-03-14,Carteira Tricolor,1,60.0,60.0,Dinheiro,historical
-2026-03-14,Chaveiro Pequeno,2,15.0,30.0,Crédito,historical
-2026-03-14,Carteira Alça,1,45.0,45.0,Pix,historical
-2026-03-14,Body Floral,1,65.0,65.0,Dinheiro,historical
-2026-03-14,Nécessaire Viagem,1,55.0,55.0,Crédito,historical
-2026-03-14,Chaveiro Duplo,1,35.0,35.0,Dinheiro,historical
-2026-03-14,Nécessaire Média,1,38.0,38.0,Pix,historical
-2026-03-14,Nécessaire Grande,2,45.0,90.0,Pix,historical
-2026-03-14,Carteira Zip,1,55.0,55.0,Crédito,historical
-2026-03-14,Nécessaire Pequena,1,30.0,30.0,Dinheiro,historical
-2026-03-15,Nécessaire Pequena,1,30.0,30.0,Pix,historical
-2026-03-15,Nécessaire Viagem,2,55.0,110.0,Crédito,historical
-2026-03-15,Carteira Envelope,2,65.0,130.0,Pix,historical
-2026-03-15,Carteira Alça,2,45.0,90.0,Débito,historical
-2026-03-15,Canga Listrada,1,45.0,45.0,Crédito,historical
-2026-03-15,Nécessaire Viagem,1,55.0,55.0,Pix,historical
-2026-03-16,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-03-16,Canga Listrada,2,45.0,90.0,Crédito,historical
-2026-03-16,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-03-17,Chaveiro Xadrez,1,20.0,20.0,Dinheiro,historical
-2026-03-17,Nécessaire Stylo,2,35.0,70.0,Crédito,historical
-2026-03-17,Chaveiro Xadrez,1,20.0,20.0,Pix,historical
-2026-03-17,Nécessaire Grande,2,45.0,90.0,Crédito,historical
-2026-03-17,Body Floral,1,65.0,65.0,Pix,historical
-2026-03-17,Nécessaire Grande,1,45.0,45.0,Dinheiro,historical
-2026-03-18,Carteira Slim,1,50.0,50.0,Pix,historical
-2026-03-18,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-03-18,Carteira Alça,1,45.0,45.0,Crédito,historical
-2026-03-18,Carteira Premium,1,75.0,75.0,Crédito,historical
-2026-03-18,Nécessaire Stylo,1,35.0,35.0,Crédito,historical
-2026-03-18,Nécessaire Grande,2,45.0,90.0,Crédito,historical
-2026-03-18,Body Estampado,1,70.0,70.0,Crédito,historical
-2026-03-19,Carteira Premium,3,75.0,225.0,Crédito,historical
-2026-03-19,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-03-19,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-03-20,Bolsa Palha,1,89.0,89.0,Dinheiro,historical
-2026-03-20,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-03-20,Chaveiro Pequeno,1,15.0,15.0,Pix,historical
-2026-03-20,Nécessaire Viagem,1,55.0,55.0,Dinheiro,historical
-2026-03-20,Nécessaire Stylo,2,35.0,70.0,Dinheiro,historical
-2026-03-20,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-03-20,Carteira Alça,3,45.0,135.0,Pix,historical
-2026-03-20,Carteira Envelope,2,65.0,130.0,Pix,historical
-2026-03-20,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-03-20,Carteira Tricolor,2,60.0,120.0,Crédito,historical
-2026-03-21,Chaveiro Couro,1,30.0,30.0,Crédito,historical
-2026-03-21,Carteira Envelope,1,65.0,65.0,Débito,historical
-2026-03-21,Carteira Premium,1,75.0,75.0,Pix,historical
-2026-03-22,Carteira Mini,2,40.0,80.0,Pix,historical
-2026-03-22,Nécessaire Pequena,2,30.0,60.0,Dinheiro,historical
-2026-03-22,Carteira Premium,3,75.0,225.0,Pix,historical
-2026-03-22,Canga Estampada,2,50.0,100.0,Crédito,historical
-2026-03-22,Nécessaire Média,1,38.0,38.0,Débito,historical
-2026-03-22,Chaveiro Xadrez,1,20.0,20.0,Pix,historical
-2026-03-22,Chaveiro Pequeno,1,15.0,15.0,Crédito,historical
-2026-03-22,Carteira Tricolor,1,60.0,60.0,Dinheiro,historical
-2026-03-23,Carteira Mini,1,40.0,40.0,Pix,historical
-2026-03-23,Bolsa Couro,1,120.0,120.0,Dinheiro,historical
-2026-03-23,Carteira Slim,2,50.0,100.0,Crédito,historical
-2026-03-23,Carteira Zip,1,55.0,55.0,Crédito,historical
-2026-03-23,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-03-24,Carteira Alça,3,45.0,135.0,Débito,historical
-2026-03-24,Chaveiro Pequeno,2,15.0,30.0,Pix,historical
-2026-03-24,Carteira Slim,1,50.0,50.0,Crédito,historical
-2026-03-24,Bolsa Palha,1,89.0,89.0,Crédito,historical
-2026-03-24,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-03-24,Bolsa Couro,1,120.0,120.0,Dinheiro,historical
-2026-03-24,Nécessaire Stylo,1,35.0,35.0,Dinheiro,historical
-2026-03-25,Nécessaire Grande,1,45.0,45.0,Pix,historical
-2026-03-25,Carteira Zip,1,55.0,55.0,Pix,historical
-2026-03-25,Nécessaire Pequena,1,30.0,30.0,Crédito,historical
-2026-03-26,Nécessaire Stylo,2,35.0,70.0,Pix,historical
-2026-03-26,Nécessaire Stylo,1,35.0,35.0,Dinheiro,historical
-2026-03-26,Chaveiro Pequeno,1,15.0,15.0,Dinheiro,historical
-2026-03-26,Body Estampado,1,70.0,70.0,Pix,historical
-2026-03-26,Bolsa Couro,1,120.0,120.0,Crédito,historical
-2026-03-26,Chaveiro Xadrez,1,20.0,20.0,Pix,historical
-2026-03-26,Chaveiro Xadrez,1,20.0,20.0,Crédito,historical
-2026-03-26,Carteira Slim,1,50.0,50.0,Crédito,historical
-2026-03-27,Nécessaire Média,2,38.0,76.0,Pix,historical
-2026-03-27,Bolsa Couro,1,120.0,120.0,Pix,historical
-2026-03-27,Nécessaire Média,1,38.0,38.0,Crédito,historical
-2026-03-27,Carteira Mini,1,40.0,40.0,Dinheiro,historical
-2026-03-27,Chaveiro Duplo,1,35.0,35.0,Crédito,historical
-2026-03-28,Necessaire Cacto Palavras,4,17.0,68.0,Pix,manual
-2026-03-28,Necessaire Tropical Folhas,12,26.0,312.0,Dinheiro,manual
-2026-03-28,Chaveiro Ellisa Tropical,4,30.0,120.0,Dinheiro,manual
-2026-03-28,Necessaire Coqueiro Escuro,60,15.0,900.0,Dinheiro,manual
+2026-03-21,Camiseta Básica — Barriga,1,25.0,25.0,Débito,sim
+2026-03-21,Caneca Louca — Amar é sertão amado amarela,1,12.6,12.6,Pix,sim
+2026-03-21,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Dinheiro,sim
+2026-03-21,Baby Look — Por Sol,3,18.9,56.7,Débito,sim
+2026-03-21,Caneca Ágata Grande — SUPER FILHO,1,21.0,21.0,Pix,sim
+2026-03-21,Camiseta Básica — Tradutor,3,25.0,75.0,Débito,sim
+2026-03-21,Caneca Ágata Grande — OXENTE,5,21.0,105.0,Dinheiro,sim
+2026-03-21,Caneca Louca — Paraíba linda azul,3,14.0,42.0,Débito,sim
+2026-03-21,Camiseta Básica — Barriga,1,22.5,22.5,Pix,sim
+2026-03-21,Camiseta Básica — Barriga,2,25.0,50.0,Pix,sim
+2026-03-22,Caneca Ágata Grande — ARRETADA,2,18.9,37.8,Dinheiro,sim
+2026-03-22,Caneca Ágata Pequena — VOINHO,1,19.0,19.0,Crédito,sim
+2026-03-22,Caneca Ágata Grande — VOINHO,1,21.0,21.0,Pix,sim
+2026-03-22,Caneca Louca — Tu me aperreia mas eu te amo,1,12.6,12.6,Crédito,sim
+2026-03-22,Caneca Ágata Pequena — CUSCUZ COM OVO,1,19.0,19.0,Crédito,sim
+2026-03-22,Caneca Ágata Pequena — PAINHO,1,19.0,19.0,Dinheiro,sim
+2026-03-22,Caneca Ágata Grande — SOGRÃO,2,21.0,42.0,Crédito Parcelado,sim
+2026-03-22,Camiseta Básica — Mulher Mandar,2,25.0,50.0,Pix,sim
+2026-03-22,Camiseta Básica — Meiga,2,25.0,50.0,Dinheiro,sim
+2026-03-22,Camiseta Infantil — João Pessoa Paraíso,2,32.0,64.0,Débito,sim
+2026-03-22,Camiseta Básica — Cordel,2,25.0,50.0,Pix,sim
+2026-03-22,Baby Look — Escrita Fina,1,21.0,21.0,Débito,sim
+2026-03-23,Caneca Louca — Maria bonita branca,1,14.0,14.0,Crédito,sim
+2026-03-23,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Crédito Parcelado,sim
+2026-03-23,Caneca Louca — Arretado demais,2,14.0,28.0,Pix,sim
+2026-03-23,Baby Look — Cordel,3,21.0,63.0,Pix,sim
+2026-03-23,Caneca Ágata Pequena — MY EGGS,2,19.0,38.0,Crédito Parcelado,sim
+2026-03-23,Caneca Ágata Pequena — PAINHO,2,19.0,38.0,Pix,sim
+2026-03-23,Caneca Ágata Pequena — VIXE,4,19.0,76.0,Débito,sim
+2026-03-23,Caneca Ágata Grande — CAFÉ NÃO COSTUMA FAIÁ,1,21.0,21.0,Pix,sim
+2026-03-23,Caneca Louca — Homi arretado azul,1,12.6,12.6,Pix,sim
+2026-03-23,Caneca Ágata Pequena — VIXE,1,19.0,19.0,Pix,sim
+2026-03-23,Camiseta Básica — Tradutor,1,25.0,25.0,Pix,sim
+2026-03-23,Camiseta Infantil — Lisa,2,32.0,64.0,Dinheiro,sim
+2026-03-24,Caneca Louca — Sogro,1,14.0,14.0,Pix,sim
+2026-03-24,Regata — Não Sei,2,30.0,60.0,Crédito Parcelado,sim
+2026-03-24,Camiseta Básica — Por Sol,1,25.0,25.0,Pix,sim
+2026-03-24,Camiseta Básica — Por Sol Peito,1,25.0,25.0,Pix,sim
+2026-03-24,Caneca Louca — Homi arretado verde,3,14.0,42.0,Pix,sim
+2026-03-24,Canga — Vc Fica Linda Vestida,4,31.0,124.0,Crédito,sim
+2026-03-24,Camiseta Básica — Mulher Mandar,1,25.0,25.0,Pix,sim
+2026-03-25,Camiseta Básica — Por Sol,4,25.0,100.0,Pix,sim
+2026-03-25,Caneca Ágata Grande — CAFÉ NÃO COSTUMA FAIÁ,2,21.0,42.0,Dinheiro,sim
+2026-03-25,Camiseta Básica — Barriga,1,25.0,25.0,Pix,sim
+2026-03-25,Baby Look — Cabedelo Peito,1,21.0,21.0,Dinheiro,sim
+2026-03-25,Camiseta Básica — Mulher Mandar,3,22.5,67.5,Pix,sim
+2026-03-25,Caneca Louca — Filha,4,14.0,56.0,Dinheiro,sim
+2026-03-25,Camiseta Básica — Tradutor,2,25.0,50.0,Pix,sim
+2026-03-25,Baby Look — Tradutor,1,21.0,21.0,Pix,sim
+2026-03-25,Caneca Ágata Pequena — SOGRÃO,4,19.0,76.0,Pix,sim
+2026-03-25,Caneca Ágata Pequena — EITA,1,19.0,19.0,Dinheiro,sim
+2026-03-26,Canga — Cangaço 1 — Não Sei Só Sei,3,31.0,93.0,Pix,sim
+2026-03-26,Caneca Louca — Tio,2,14.0,28.0,Débito,sim
+2026-03-26,Camiseta Básica — Escrita Fina,1,25.0,25.0,Crédito,sim
+2026-03-26,Camiseta Básica — Paisagem,1,25.0,25.0,Pix,sim
+2026-03-26,Caneca Ágata Pequena — CUSCUZ COM OVO,1,19.0,19.0,Pix,sim
+2026-03-26,Camiseta Infantil — Quadrinhos,3,32.0,96.0,Pix,sim
+2026-03-27,Camiseta Básica — Fé,1,25.0,25.0,Pix,sim
+2026-03-27,Regata — João Pessoa Paraíso,2,30.0,60.0,Crédito,sim
+2026-03-27,Caneca Ágata Grande — MAINHA,1,21.0,21.0,Dinheiro,sim
+2026-03-27,Regata — Velho,1,30.0,30.0,Crédito Parcelado,sim
+2026-03-27,Camiseta Básica — Fé,2,25.0,50.0,Pix,sim
+2026-03-27,Caneca Ágata Pequena — MEU CU,5,19.0,95.0,Crédito,sim
+2026-03-27,Baby Look — Escrita Fina,2,21.0,42.0,Pix,sim
+2026-03-27,Camiseta Básica — Cabedelo,2,25.0,50.0,Débito,sim
+2026-03-28,Baby Look — Paisagem,1,21.0,21.0,Crédito,sim
+2026-03-28,Baby Look — 4 Passos,1,21.0,21.0,Débito,sim
+2026-03-28,Baby Look — Cabedelo Peito,1,21.0,21.0,Crédito,sim
+2026-03-28,Canga — Coqueiros 18,2,31.0,62.0,Crédito Parcelado,sim
+2026-03-28,Caneca Ágata Pequena — Café não costuma faiá,1,19.0,19.0,Pix,sim
+2026-03-28,Canga — Coqueiros 18,1,31.0,31.0,Débito,sim
+2026-03-28,Baby Look — Por Sol,1,21.0,21.0,Dinheiro,sim
+2026-03-28,Baby Look — Velha,1,21.0,21.0,Dinheiro,sim
+2026-03-28,Caneca Ágata Grande — CUSCUZ CAFÉ,2,21.0,42.0,Pix,sim
+2026-03-28,Caneca Ágata Grande — VÓINHA,1,21.0,21.0,Débito,sim
+2026-03-28,Baby Look — Fé,1,21.0,21.0,Pix,sim
+2026-03-28,Camiseta Básica — Por Sol Peito,4,25.0,100.0,Crédito,sim
+2026-03-29,Regata — 4 Passos,1,30.0,30.0,Débito,sim
+2026-03-29,Caneca Ágata Pequena — VÓINHA,1,19.0,19.0,Dinheiro,sim
+2026-03-29,Caneca Louca — João Pessoa (2),2,14.0,28.0,Pix,sim
+2026-03-29,Caneca Ágata Grande — XÊRO,1,21.0,21.0,Pix,sim
+2026-03-29,Baby Look — 4 Passos,1,18.9,18.9,Crédito Parcelado,sim
+2026-03-29,Caneca Ágata Pequena — CAFÉZIN,1,19.0,19.0,Dinheiro,sim
+2026-03-29,Caneca Ágata Grande — SUPER FILHO,1,21.0,21.0,Débito,sim
+2026-03-29,Caneca Louca — Oxente colorido,3,14.0,42.0,Pix,sim
+2026-03-29,Caneca Louca — Tia,1,14.0,14.0,Crédito,sim
+2026-03-29,Camiseta Básica — Paisagem,1,25.0,25.0,Dinheiro,sim
+2026-03-29,Baby Look — Paisagem,1,21.0,21.0,Crédito,sim
+2026-03-29,Regata — 4 Passos,1,30.0,30.0,Crédito,sim
+2026-03-29,Camiseta Infantil — Não Sei,3,32.0,96.0,Débito,sim
+2026-03-30,Caneca Ágata Pequena — VOINHO,1,19.0,19.0,Pix,sim
+2026-03-30,Baby Look — Oxente,1,21.0,21.0,Débito,sim
+2026-03-30,Caneca Ágata Grande — MY EGGS,1,21.0,21.0,Pix,sim
+2026-03-30,Camiseta Básica — Por Sol Peito,3,25.0,75.0,Débito,sim
+2026-03-30,Caneca Louca — Cunhado,1,12.6,12.6,Pix,sim
+2026-03-30,Caneca Louca — Café bom da mulesta,4,14.0,56.0,Débito,sim
+2026-03-30,Caneca Ágata Pequena — VIXE,1,19.0,19.0,Pix,sim
+2026-03-30,Camiseta Básica — Fé,2,25.0,50.0,Pix,sim
+2026-03-30,Camiseta Infantil — João Pessoa Paraíso,2,28.8,57.6,Pix,sim
+2026-03-30,Caneca Ágata Pequena — fofoca,2,19.0,38.0,Dinheiro,sim
+2026-03-30,Camiseta Básica — Fé,1,25.0,25.0,Débito,sim
+2026-03-31,Baby Look — Cuscuz,1,21.0,21.0,Dinheiro,sim
+2026-03-31,Caneca Ágata Grande — MY EGGS,4,21.0,84.0,Pix,sim
+2026-03-31,Canga — Estrela do Mar 6,1,31.0,31.0,Crédito,sim
+2026-03-31,Caneca Ágata Pequena — VOINHO,1,19.0,19.0,Crédito,sim
+2026-03-31,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Crédito Parcelado,sim
+2026-03-31,Caneca Ágata Grande — CAFÉZIN,1,21.0,21.0,Dinheiro,sim
+2026-03-31,Caneca Louca — Nossa Senhora,3,14.0,42.0,Crédito,sim
+2026-03-31,Camiseta Básica — Não Sei,3,25.0,75.0,Débito,sim
+2026-03-31,Baby Look — Tradutor,3,21.0,63.0,Dinheiro,sim
+2026-03-31,Camiseta Básica — Velha,2,22.5,45.0,Dinheiro,sim
+2026-04-01,Caneca Louca — Primo (2),1,14.0,14.0,Dinheiro,sim
+2026-04-01,Caneca Louca — Tom café eu vou amarela com cacto preto,1,14.0,14.0,Crédito Parcelado,sim
+2026-04-01,Baby Look — 4 Passos,1,21.0,21.0,Pix,sim
+2026-04-01,Caneca Ágata Grande — VÓINHA,3,21.0,63.0,Pix,sim
+2026-04-02,Baby Look — Não Sei,2,21.0,42.0,Pix,sim
+2026-04-02,Caneca Louca — Avexada colorida,1,14.0,14.0,Pix,sim
+2026-04-02,Caneca Louca — Tio,1,12.6,12.6,Crédito,sim
+2026-04-02,Camiseta Básica — Lisa,1,25.0,25.0,Débito,sim
+2026-04-02,Caneca Ágata Pequena — MANINHA,2,19.0,38.0,Pix,sim
+2026-04-02,Caneca Ágata Grande — VÓINHA,2,21.0,42.0,Dinheiro,sim
+2026-04-02,Regata — Paisagem,1,30.0,30.0,Pix,sim
+2026-04-02,Baby Look — Cabedelo Peito,1,21.0,21.0,Dinheiro,sim
+2026-04-02,Caneca Louca — Avexada colorida,1,14.0,14.0,Débito,sim
+2026-04-02,Canga — Confie,1,31.0,31.0,Pix,sim
+2026-04-02,Baby Look — Escrita Fina,1,21.0,21.0,Pix,sim
+2026-04-03,Caneca Ágata Pequena — ARRETADA,1,19.0,19.0,Dinheiro,sim
+2026-04-03,Caneca Louca — Nossa Senhora,1,14.0,14.0,Pix,sim
+2026-04-03,Camiseta Básica — Anatomia,1,25.0,25.0,Pix,sim
+2026-04-03,Camiseta Básica — Cabedelo Peito,1,25.0,25.0,Dinheiro,sim
+2026-04-04,Camiseta Básica — Barriga,2,25.0,50.0,Dinheiro,sim
+2026-04-04,Caneca Ágata Pequena — CAFÉZIN,1,19.0,19.0,Pix,sim
+2026-04-04,Caneca Ágata Pequena — SUPER FILHA,2,17.1,34.2,Crédito Parcelado,sim
+2026-04-04,Camiseta Básica — João Pessoa Paraíso,2,25.0,50.0,Pix,sim
+2026-04-04,Baby Look — João Pessoa Paraíso,1,21.0,21.0,Débito,sim
+2026-04-04,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Crédito,sim
+2026-04-04,Camiseta Básica — Barriga,1,25.0,25.0,Dinheiro,sim
+2026-04-04,Caneca Louca — Avexada colorida,1,14.0,14.0,Pix,sim
+2026-04-04,Baby Look — Escrita Fina,1,21.0,21.0,Dinheiro,sim
+2026-04-04,Caneca Louca — Casal arretado,1,14.0,14.0,Pix,sim
+2026-04-04,Regata — Velho,1,30.0,30.0,Dinheiro,sim
+2026-04-04,Caneca Louca — Vovô,2,12.6,25.2,Pix,sim
+2026-04-04,Caneca Ágata Grande — ARROMBADO,2,18.9,37.8,Débito,sim
+2026-04-05,Caneca Ágata Pequena — CAFUNÉ,1,19.0,19.0,Pix,sim
+2026-04-05,Baby Look — Cordel,1,21.0,21.0,Crédito Parcelado,sim
+2026-04-05,Camiseta Infantil — Oxente,1,32.0,32.0,Pix,sim
+2026-04-05,Regata — Não Sei,2,30.0,60.0,Débito,sim
+2026-04-05,Camiseta Básica — Tradutor,1,25.0,25.0,Débito,sim
+2026-04-05,Caneca Louca — Primo (2),1,14.0,14.0,Dinheiro,sim
+2026-04-05,Camiseta Básica — Velha,2,25.0,50.0,Pix,sim
+2026-04-05,Camiseta Básica — Barriga,1,25.0,25.0,Crédito,sim
+2026-04-05,Camiseta Infantil — João Pessoa Paraíso,2,32.0,64.0,Débito,sim
+2026-04-05,Baby Look — Cabedelo Peito,1,21.0,21.0,Crédito,sim
+2026-04-05,Camiseta Básica — Anatomia,2,25.0,50.0,Crédito,sim
+2026-04-05,Baby Look — Tradutor,1,21.0,21.0,Dinheiro,sim
+2026-04-05,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Débito,sim
+2026-04-06,Caneca Louca — Cuscuz melhor fundo branco,2,14.0,28.0,Crédito,sim
+2026-04-06,Camiseta Infantil — Não Sei,1,32.0,32.0,Dinheiro,sim
+2026-04-06,Canga — Oxente Quadrados,1,31.0,31.0,Pix,sim
+2026-04-06,Caneca Ágata Pequena — OXENTE,1,19.0,19.0,Pix,sim
+2026-04-06,Caneca Ágata Grande — EITA,1,21.0,21.0,Pix,sim
+2026-04-06,Caneca Ágata Grande — ARRETADA,3,21.0,63.0,Débito,sim
+2026-04-07,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Crédito,sim
+2026-04-07,Caneca Louca — Homi arretado verde,1,14.0,14.0,Débito,sim
+2026-04-07,Regata — João Pessoa Paraíso,1,30.0,30.0,Crédito Parcelado,sim
+2026-04-07,Baby Look — Tradutor,2,21.0,42.0,Crédito,sim
+2026-04-07,Caneca Louca — Ela se veste,1,14.0,14.0,Débito,sim
+2026-04-07,Caneca Louca — Abestado,1,14.0,14.0,Crédito,sim
+2026-04-08,Caneca Ágata Grande — SOGRÃO,1,21.0,21.0,Crédito,sim
+2026-04-08,Regata — João Pessoa Paraíso,3,27.0,81.0,Débito,sim
+2026-04-08,Baby Look — Fé,1,21.0,21.0,Dinheiro,sim
+2026-04-08,Caneca Louca — Arriegua,1,14.0,14.0,Dinheiro,sim
+2026-04-08,Baby Look — Estado Civil,1,21.0,21.0,Pix,sim
+2026-04-08,Baby Look — Cabedelo Peito,3,21.0,63.0,Débito,sim
+2026-04-08,Camiseta Básica — Por Sol Peito,1,25.0,25.0,Dinheiro,sim
+2026-04-09,Caneca Ágata Grande — SOGRINHA,1,21.0,21.0,Crédito,sim
+2026-04-09,Camiseta Básica — Fé,1,25.0,25.0,Débito,sim
+2026-04-09,Camiseta Básica — Escrita Fina,1,22.5,22.5,Crédito,sim
+2026-04-09,Caneca Louca — Não me aperreie,3,14.0,42.0,Crédito,sim
+2026-04-09,Caneca Louca — Genro,1,14.0,14.0,Pix,sim
+2026-04-09,Camiseta Básica — Barriga,2,25.0,50.0,Débito,sim
+2026-04-09,Camiseta Básica — Paisagem,2,22.5,45.0,Débito,sim
+2026-04-09,Camiseta Básica — Fé,1,25.0,25.0,Pix,sim
+2026-04-09,Regata — Velho,2,30.0,60.0,Pix,sim
+2026-04-09,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Crédito,sim
+2026-04-10,Caneca Ágata Grande — SUPER FILHO,1,21.0,21.0,Pix,sim
+2026-04-10,Canga — Não Pare Até Se Orgulhar 2,2,31.0,62.0,Crédito Parcelado,sim
+2026-04-10,Caneca Louca — Dona Encrenca,2,12.6,25.2,Dinheiro,sim
+2026-04-10,Camiseta Infantil — Casa Vovó,2,32.0,64.0,Débito,sim
+2026-04-10,Canga — Vista-se de Si,1,27.9,27.9,Crédito,sim
+2026-04-10,Caneca Ágata Pequena — VÉI!,1,17.1,17.1,Débito,sim
+2026-04-10,Caneca Louca — Cuscuz melhor fundo preto,1,14.0,14.0,Crédito,sim
+2026-04-10,Baby Look — Não Sei,1,21.0,21.0,Pix,sim
+2026-04-11,Regata — Barriga,2,30.0,60.0,Dinheiro,sim
+2026-04-11,Caneca Ágata Grande — TEU CU,2,21.0,42.0,Dinheiro,sim
+2026-04-11,Canga — Coqueiros 18,2,31.0,62.0,Pix,sim
+2026-04-11,Baby Look — Fé,5,21.0,105.0,Crédito,sim
+2026-04-11,Caneca Ágata Pequena — MY EGGS,1,19.0,19.0,Crédito,sim
+2026-04-11,Caneca Louca — Amo o sertão,1,14.0,14.0,Crédito Parcelado,sim
+2026-04-11,Camiseta Básica — Fé,5,25.0,125.0,Pix,sim
+2026-04-11,Caneca Louca — Nervosa claro que não,2,14.0,28.0,Pix,sim
+2026-04-11,Caneca Louca — Oxente letras coloridas fundo branco,2,14.0,28.0,Crédito Parcelado,sim
+2026-04-11,Canga — Confie,2,31.0,62.0,Crédito,sim
+2026-04-11,Camiseta Básica — Fé,2,25.0,50.0,Pix,sim
+2026-04-11,Baby Look — Escrita Fina,1,21.0,21.0,Pix,sim
+2026-04-11,Regata — Por Sol Peito,2,30.0,60.0,Pix,sim
+2026-04-11,Caneca Ágata Pequena — CUSCUZ CAFÉ,3,19.0,57.0,Pix,sim
+2026-04-11,Caneca Ágata Pequena — fofoca,5,19.0,95.0,Pix,sim
+2026-04-11,Camiseta Básica — Lisa,1,25.0,25.0,Pix,sim
+2026-04-12,Camiseta Básica — Barriga,2,25.0,50.0,Pix,sim
+2026-04-12,Canga — Confie,1,31.0,31.0,Pix,sim
+2026-04-12,Caneca Ágata Grande — ARROMBADO,2,21.0,42.0,Débito,sim
+2026-04-12,Camiseta Básica — Por Sol Peito,1,25.0,25.0,Dinheiro,sim
+2026-04-12,Regata — Velho,1,30.0,30.0,Pix,sim
+2026-04-12,Camiseta Básica — Cabedelo,1,25.0,25.0,Pix,sim
+2026-04-12,Camiseta Básica — Lisa,3,25.0,75.0,Dinheiro,sim
+2026-04-12,Caneca Ágata Pequena — VÓINHA,1,19.0,19.0,Débito,sim
+2026-04-12,Caneca Louca — Mul braba,2,14.0,28.0,Dinheiro,sim
+2026-04-12,Baby Look — João Pessoa Paraíso,1,21.0,21.0,Pix,sim
+2026-04-12,Camiseta Básica — Cuscuz,1,25.0,25.0,Dinheiro,sim
+2026-04-13,Caneca Louca — Não me aperreie,3,14.0,42.0,Dinheiro,sim
+2026-04-13,Camiseta Básica — Cabedelo,3,25.0,75.0,Pix,sim
+2026-04-13,Caneca Ágata Grande — VÓINHA,1,18.9,18.9,Crédito,sim
+2026-04-13,Caneca Ágata Pequena — SUPER FILHO,1,19.0,19.0,Pix,sim
+2026-04-13,Caneca Ágata Grande — VOINHO,1,21.0,21.0,Pix,sim
+2026-04-13,Caneca Ágata Grande — CAFUNÉ,2,21.0,42.0,Pix,sim
+2026-04-13,Camiseta Básica — Cabedelo Peito,2,25.0,50.0,Débito,sim
+2026-04-13,Camiseta Infantil — Oxente,1,32.0,32.0,Pix,sim
+2026-04-13,Regata — Por Sol Peito,2,30.0,60.0,Débito,sim
+2026-04-13,Camiseta Básica — Por Sol,2,22.5,45.0,Pix,sim
+2026-04-14,Caneca Louca — Cunhado,1,14.0,14.0,Dinheiro,sim
+2026-04-14,Regata — Velho,1,30.0,30.0,Dinheiro,sim
+2026-04-14,Caneca Ágata Grande — SUPER FILHO,1,21.0,21.0,Pix,sim
+2026-04-14,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Pix,sim
+2026-04-14,Caneca Ágata Pequena — VOINHO,1,19.0,19.0,Pix,sim
+2026-04-14,Canga — Oxente,2,31.0,62.0,Pix,sim
+2026-04-14,Camiseta Básica — Por Sol Peito,1,22.5,22.5,Crédito,sim
+2026-04-15,Baby Look — Paisagem,1,21.0,21.0,Dinheiro,sim
+2026-04-15,Camiseta Básica — Estado Civil,1,25.0,25.0,Dinheiro,sim
+2026-04-15,Camiseta Básica — Paisagem,1,25.0,25.0,Pix,sim
+2026-04-15,Caneca Louca — Amar é sertão amado amarela,4,14.0,56.0,Dinheiro,sim
+2026-04-15,Caneca Ágata Pequena — PRONTO,2,19.0,38.0,Dinheiro,sim
+2026-04-15,Canga — Eu Amo Nordeste,5,31.0,155.0,Pix,sim
+2026-04-15,Camiseta Infantil — Casa Vovó,2,32.0,64.0,Pix,sim
+2026-04-15,Camiseta Básica — Sertão,1,25.0,25.0,Pix,sim
+2026-04-15,Caneca Ágata Pequena — SUPER NETA,1,19.0,19.0,Pix,sim
+2026-04-16,Canga — Gírias Nordestinas Cacto Verde,1,31.0,31.0,Dinheiro,sim
+2026-04-16,Camiseta Básica — Não Sei,1,25.0,25.0,Dinheiro,sim
+2026-04-16,Caneca Louca — Teu cu,5,14.0,70.0,Dinheiro,sim
+2026-04-16,Camiseta Básica — Meiga,5,25.0,125.0,Dinheiro,sim
+2026-04-16,Baby Look — Cuscuz,1,21.0,21.0,Débito,sim
+2026-04-16,Camiseta Básica — Cabedelo Peito,1,25.0,25.0,Dinheiro,sim
+2026-04-16,Regata — Velho,3,30.0,90.0,Dinheiro,sim
+2026-04-16,Camiseta Básica — Tradutor,2,25.0,50.0,Pix,sim
+2026-04-16,Caneca Ágata Grande — LEMBREI DE TU,1,21.0,21.0,Pix,sim
+2026-04-16,Caneca Ágata Pequena — SE AVEXE NÃO,1,19.0,19.0,Débito,sim
+2026-04-16,Canga — Floral 114 — I Love Paraíba,3,31.0,93.0,Débito,sim
+2026-04-16,Camiseta Infantil — João Pessoa Paraíso,1,32.0,32.0,Pix,sim
+2026-04-17,Camiseta Básica — 4 Passos,1,25.0,25.0,Débito,sim
+2026-04-17,Camiseta Infantil — Lisa,2,32.0,64.0,Débito,sim
+2026-04-17,Caneca Louca — Paraíba linda azul,2,14.0,28.0,Pix,sim
+2026-04-17,Caneca Ágata Grande — SE AVEXE NÃO,3,21.0,63.0,Pix,sim
+2026-04-17,Baby Look — Velha,4,21.0,84.0,Débito,sim
+2026-04-17,Caneca Louca — Casal arretado fundo azul desenho infantilizado,1,14.0,14.0,Débito,sim
+2026-04-17,Caneca Louca — Avexada colorida,2,14.0,28.0,Pix,sim
+2026-04-17,Caneca Louca — Nora,1,14.0,14.0,Pix,sim
+2026-04-17,Camiseta Básica — Não Sei,3,22.5,67.5,Dinheiro,sim
+2026-04-17,Regata — Barriga,2,30.0,60.0,Pix,sim
+2026-04-17,Camiseta Básica — Paisagem,1,25.0,25.0,Crédito,sim
+2026-04-18,Canga — Coqueiros 18,1,31.0,31.0,Pix,sim
+2026-04-18,Camiseta Básica — Mulher Mandar,1,25.0,25.0,Pix,sim
+2026-04-18,Camiseta Básica — Cabedelo,3,25.0,75.0,Débito,sim
+2026-04-18,Camiseta Básica — Barriga,3,25.0,75.0,Pix,sim
+2026-04-18,Caneca Ágata Grande — SOGRINHA,1,18.9,18.9,Pix,sim
+2026-04-18,Caneca Louca — Nervosa claro que não,2,14.0,28.0,Pix,sim
+2026-04-18,Baby Look — Fé,1,21.0,21.0,Débito,sim
+2026-04-18,Camiseta Infantil — João Pessoa Paraíso,3,32.0,96.0,Pix,sim
+2026-04-18,Caneca Ágata Pequena — VOINHO,1,19.0,19.0,Dinheiro,sim
+2026-04-18,Baby Look — Lisa,2,21.0,42.0,Crédito Parcelado,sim
+2026-04-19,Canga — Confie,2,31.0,62.0,Pix,sim
+2026-04-19,Caneca Louca — Abestado,1,14.0,14.0,Débito,sim
+2026-04-19,Baby Look — Cabedelo Peito,1,21.0,21.0,Pix,sim
+2026-04-19,Caneca Ágata Pequena — CAFUNÉ,1,19.0,19.0,Pix,sim
+2026-04-19,Caneca Ágata Pequena — ARROMBADO,2,19.0,38.0,Dinheiro,sim
+2026-04-19,Camiseta Básica — Paisagem,2,25.0,50.0,Pix,sim
+2026-04-19,Camiseta Básica — Estado Civil,3,25.0,75.0,Pix,sim
+2026-04-19,Regata — Paisagem,1,27.0,27.0,Dinheiro,sim
+2026-04-19,Baby Look — Cabedelo,1,21.0,21.0,Pix,sim
+2026-04-19,Caneca Louca — Flamengo,1,14.0,14.0,Crédito Parcelado,sim
+2026-03-21,Chaveiro Feminino — Maria,2,12.0,24.0,Pix,sim
+2026-03-21,Chaveiro Feminino — Ana Clara,3,12.0,36.0,Débito,sim
+2026-03-21,Chaveiro Feminino — Andrea,2,12.0,24.0,Débito,sim
+2026-03-21,Chaveiro Masculino — Artur,3,12.0,36.0,Débito,sim
+2026-03-21,Chaveiro Masculino — Marcio,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Masculino — Alberto,1,12.0,12.0,Débito,sim
+2026-03-21,Chaveiro Feminino — Ana Clara,1,11.04,11.04,Dinheiro,sim
+2026-03-21,Chaveiro Feminino — Patricia,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Feminino — Valentina,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Feminino — Bia,5,12.0,60.0,Débito,sim
+2026-03-21,Chaveiro Feminino — Raquel,4,12.0,48.0,Dinheiro,sim
+2026-03-21,Chaveiro Feminino — Carla,1,12.0,12.0,Débito,sim
+2026-03-21,Chaveiro Feminino — Paola,5,12.0,60.0,Pix,sim
+2026-03-21,Chaveiro Masculino — Cassio,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Masculino — Noah,5,12.0,60.0,Pix,sim
+2026-03-21,Chaveiro Feminino — Yara,3,12.0,36.0,Crédito,sim
+2026-03-21,Chaveiro Feminino — Sandra,1,12.0,12.0,Débito,sim
+2026-03-21,Chaveiro Masculino — Joao,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Feminino — Beatriz,1,12.0,12.0,Pix,sim
+2026-03-21,Chaveiro Masculino — Reginaldo,4,12.0,48.0,Dinheiro,sim
+2026-03-21,Chaveiro Feminino — Daniela,1,12.0,12.0,Pix,sim
+2026-03-22,Chaveiro Feminino — Tania,1,12.0,12.0,Pix,sim
+2026-03-22,Chaveiro Feminino — Luciana,1,12.0,12.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Kaua,2,12.0,24.0,Pix,sim
+2026-03-22,Chaveiro Feminino — Luana,4,12.0,48.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Manoel,1,12.0,12.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Fagner,1,12.0,12.0,Débito,sim
+2026-03-22,Chaveiro Masculino — Geovane,1,12.0,12.0,Crédito Parcelado,sim
+2026-03-22,Chaveiro Masculino — Moises,2,12.0,24.0,Pix,sim
+2026-03-22,Chaveiro Feminino — Fernanda,3,12.0,36.0,Dinheiro,sim
+2026-03-22,Chaveiro Feminino — Bia,4,12.0,48.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Theo,3,12.0,36.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Fabiano,4,12.0,48.0,Débito,sim
+2026-03-22,Chaveiro Feminino — Cecilia,1,12.0,12.0,Pix,sim
+2026-03-22,Chaveiro Feminino — Leticia,1,12.0,12.0,Crédito,sim
+2026-03-22,Chaveiro Masculino — Enzo,3,12.0,36.0,Pix,sim
+2026-03-22,Chaveiro Masculino — Iago,3,12.0,36.0,Crédito,sim
+2026-03-23,Chaveiro Feminino — Adriana,2,12.0,24.0,Dinheiro,sim
+2026-03-23,Chaveiro Masculino — Ruan,5,12.0,60.0,Dinheiro,sim
+2026-03-23,Chaveiro Masculino — Julio,5,12.0,60.0,Crédito,sim
+2026-03-23,Chaveiro Feminino — Paloma,2,12.0,24.0,Débito,sim
+2026-03-23,Chaveiro Masculino — Lorenzo,2,12.0,24.0,Débito,sim
+2026-03-23,Chaveiro Masculino — Yuri,3,12.0,36.0,Pix,sim
+2026-03-23,Chaveiro Feminino — Aline,1,12.0,12.0,Dinheiro,sim
+2026-03-23,Chaveiro Masculino — Geovane,2,12.0,24.0,Pix,sim
+2026-03-23,Chaveiro Masculino — Marcos,1,12.0,12.0,Pix,sim
+2026-03-23,Chaveiro Feminino — Joana,4,12.0,48.0,Crédito,sim
+2026-03-23,Chaveiro Masculino — Fernando,1,12.0,12.0,Débito,sim
+2026-03-23,Chaveiro Feminino — Lili,1,12.0,12.0,Débito,sim
+2026-03-23,Chaveiro Masculino — Francisco,1,12.0,12.0,Crédito Parcelado,sim
+2026-03-23,Chaveiro Masculino — Alexandre,2,12.0,24.0,Dinheiro,sim
+2026-03-24,Chaveiro Feminino — Vera,6,12.0,72.0,Pix,sim
+2026-03-24,Chaveiro Masculino — Josias,1,12.0,12.0,Pix,sim
+2026-03-24,Chaveiro Masculino — Fabiano,1,11.04,11.04,Pix,sim
+2026-03-24,Chaveiro Feminino — Eduarda,1,12.0,12.0,Pix,sim
+2026-03-24,Chaveiro Feminino — Alice,2,12.0,24.0,Pix,sim
+2026-03-24,Chaveiro Masculino — Luan,1,12.0,12.0,Pix,sim
+2026-03-24,Chaveiro Feminino — Carol,2,12.0,24.0,Dinheiro,sim
+2026-03-24,Chaveiro Feminino — Ana,4,12.0,48.0,Pix,sim
+2026-03-24,Chaveiro Feminino — Laura,5,12.0,60.0,Débito,sim
+2026-03-25,Chaveiro Masculino — Gilmar,3,12.0,36.0,Pix,sim
+2026-03-25,Chaveiro Masculino — Isaac,2,12.0,24.0,Crédito,sim
+2026-03-25,Chaveiro Masculino — Getulio,2,12.0,24.0,Dinheiro,sim
+2026-03-25,Chaveiro Feminino — Karolina,1,12.0,12.0,Dinheiro,sim
+2026-03-25,Chaveiro Feminino — Carol,1,12.0,12.0,Dinheiro,sim
+2026-03-25,Chaveiro Masculino — Silvio,3,11.04,33.12,Pix,sim
+2026-03-25,Chaveiro Masculino — Fabio,1,12.0,12.0,Pix,sim
+2026-03-25,Chaveiro Feminino — Raquel,3,12.0,36.0,Pix,sim
+2026-03-25,Chaveiro Masculino — Kaue,4,12.0,48.0,Débito,sim
+2026-03-26,Chaveiro Feminino — Diana,2,12.0,24.0,Pix,sim
+2026-03-26,Chaveiro Masculino — Ruan,1,11.04,11.04,Pix,sim
+2026-03-26,Chaveiro Masculino — Adriano,1,12.0,12.0,Débito,sim
+2026-03-26,Chaveiro Feminino — Alice,1,12.0,12.0,Débito,sim
+2026-03-26,Chaveiro Masculino — Emerson,3,12.0,36.0,Pix,sim
+2026-03-26,Chaveiro Feminino — Eliana,1,12.0,12.0,Débito,sim
+2026-03-26,Chaveiro Masculino — Italo,5,12.0,60.0,Pix,sim
+2026-03-26,Chaveiro Masculino — Geraldo,3,12.0,36.0,Pix,sim
+2026-03-26,Chaveiro Feminino — Aline,1,12.0,12.0,Débito,sim
+2026-03-26,Chaveiro Feminino — Andrea,1,12.0,12.0,Débito,sim
+2026-03-26,Chaveiro Feminino — Bianca,5,12.0,60.0,Pix,sim
+2026-03-26,Chaveiro Masculino — Miguel,1,12.0,12.0,Pix,sim
+2026-03-26,Chaveiro Masculino — Renato,1,12.0,12.0,Crédito Parcelado,sim
+2026-03-27,Chaveiro Feminino — Ana,2,12.0,24.0,Pix,sim
+2026-03-27,Chaveiro Masculino — Raul,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Masculino — Alexandre,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Clara,3,12.0,36.0,Débito,sim
+2026-03-27,Chaveiro Feminino — Denise,4,12.0,48.0,Dinheiro,sim
+2026-03-27,Chaveiro Masculino — Erico,2,12.0,24.0,Dinheiro,sim
+2026-03-27,Chaveiro Feminino — Daniela,2,12.0,24.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Vanessa,1,12.0,12.0,Débito,sim
+2026-03-27,Chaveiro Feminino — Kamila,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Alessandra,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Fernanda,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Masculino — Anderson,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Larissa,1,12.0,12.0,Pix,sim
+2026-03-27,Chaveiro Feminino — Regina,5,11.04,55.2,Pix,sim
+2026-03-27,Chaveiro Masculino — Bruno,3,12.0,36.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Nathan,1,12.0,12.0,Pix,sim
+2026-03-28,Chaveiro Feminino — Ale,1,12.0,12.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Rodrigo,2,12.0,24.0,Dinheiro,sim
+2026-03-28,Chaveiro Feminino — Ana Clara,4,12.0,48.0,Dinheiro,sim
+2026-03-28,Chaveiro Masculino — Adriano,1,12.0,12.0,Dinheiro,sim
+2026-03-28,Chaveiro Feminino — Joana,1,12.0,12.0,Dinheiro,sim
+2026-03-28,Chaveiro Feminino — Amanda,1,12.0,12.0,Dinheiro,sim
+2026-03-28,Chaveiro Feminino — Eliana,1,12.0,12.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Emerson,2,12.0,24.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Jeova,1,11.04,11.04,Dinheiro,sim
+2026-03-28,Chaveiro Masculino — Rodrigo,3,12.0,36.0,Débito,sim
+2026-03-28,Chaveiro Masculino — Icaro,2,12.0,24.0,Débito,sim
+2026-03-28,Chaveiro Masculino — Raimundo,4,12.0,48.0,Pix,sim
+2026-03-28,Chaveiro Feminino — Clara,2,12.0,24.0,Débito,sim
+2026-03-28,Chaveiro Feminino — Kamila,2,12.0,24.0,Pix,sim
+2026-03-28,Chaveiro Feminino — Ana Clara,1,12.0,12.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Emanuel,2,11.04,22.08,Pix,sim
+2026-03-28,Chaveiro Feminino — Jessica,1,12.0,12.0,Pix,sim
+2026-03-28,Chaveiro Masculino — Yago,3,12.0,36.0,Pix,sim
+2026-03-28,Chaveiro Feminino — Bianca,3,12.0,36.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Barbara,4,12.0,48.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Andrea,1,12.0,12.0,Pix,sim
+2026-03-29,Chaveiro Masculino — Wanderley,1,12.0,12.0,Pix,sim
+2026-03-29,Chaveiro Masculino — Humberto,3,12.0,36.0,Pix,sim
+2026-03-29,Chaveiro Masculino — Nathan,2,12.0,24.0,Crédito Parcelado,sim
+2026-03-29,Chaveiro Masculino — Ivo,1,12.0,12.0,Dinheiro,sim
+2026-03-29,Chaveiro Masculino — Danilo,2,12.0,24.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Bia,2,12.0,24.0,Dinheiro,sim
+2026-03-29,Chaveiro Feminino — Ana,2,12.0,24.0,Dinheiro,sim
+2026-03-29,Chaveiro Feminino — Kamila,3,12.0,36.0,Débito,sim
+2026-03-29,Chaveiro Feminino — Alana,1,12.0,12.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Cecilia,5,12.0,60.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Beatriz,3,12.0,36.0,Pix,sim
+2026-03-29,Chaveiro Masculino — Adriano,2,12.0,24.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Ale,3,12.0,36.0,Pix,sim
+2026-03-29,Chaveiro Feminino — Alice,2,12.0,24.0,Dinheiro,sim
+2026-03-29,Chaveiro Feminino — Laura,1,11.04,11.04,Pix,sim
+2026-03-29,Chaveiro Masculino — Pedro,5,12.0,60.0,Crédito,sim
+2026-03-29,Chaveiro Masculino — Kaique,2,12.0,24.0,Débito,sim
+2026-03-29,Chaveiro Masculino — Sebastiao,2,12.0,24.0,Débito,sim
+2026-03-29,Chaveiro Masculino — Lucio,2,11.04,22.08,Dinheiro,sim
+2026-03-30,Chaveiro Feminino — Bruna,2,12.0,24.0,Pix,sim
+2026-03-30,Chaveiro Masculino — Eugenio,1,12.0,12.0,Dinheiro,sim
+2026-03-30,Chaveiro Masculino — Felix,3,12.0,36.0,Dinheiro,sim
+2026-03-30,Chaveiro Feminino — Alessandra,4,12.0,48.0,Dinheiro,sim
+2026-03-30,Chaveiro Feminino — Alice,2,12.0,24.0,Pix,sim
+2026-03-30,Chaveiro Feminino — Yara,1,12.0,12.0,Débito,sim
+2026-03-30,Chaveiro Feminino — Luciana,1,12.0,12.0,Débito,sim
+2026-03-30,Chaveiro Feminino — Bianca,1,12.0,12.0,Pix,sim
+2026-03-30,Chaveiro Feminino — Marina,2,12.0,24.0,Dinheiro,sim
+2026-03-30,Chaveiro Masculino — Vicente,6,12.0,72.0,Crédito,sim
+2026-03-30,Chaveiro Feminino — Bianca,4,12.0,48.0,Pix,sim
+2026-03-30,Chaveiro Masculino — Frederico,3,12.0,36.0,Pix,sim
+2026-03-30,Chaveiro Feminino — Tati,1,12.0,12.0,Dinheiro,sim
+2026-03-31,Chaveiro Feminino — Elaine,2,12.0,24.0,Débito,sim
+2026-03-31,Chaveiro Feminino — Larissa,4,12.0,48.0,Dinheiro,sim
+2026-03-31,Chaveiro Feminino — Tania,1,12.0,12.0,Crédito Parcelado,sim
+2026-03-31,Chaveiro Feminino — Bia,3,12.0,36.0,Pix,sim
+2026-03-31,Chaveiro Masculino — Saulo,5,12.0,60.0,Pix,sim
+2026-03-31,Chaveiro Masculino — Heitor,5,12.0,60.0,Débito,sim
+2026-03-31,Chaveiro Masculino — Gilmar,5,12.0,60.0,Dinheiro,sim
+2026-03-31,Chaveiro Masculino — Israel,2,12.0,24.0,Pix,sim
+2026-03-31,Chaveiro Feminino — Alice,1,12.0,12.0,Pix,sim
+2026-03-31,Chaveiro Masculino — Nathan,5,12.0,60.0,Dinheiro,sim
+2026-04-01,Chaveiro Masculino — Lourenco,1,12.0,12.0,Débito,sim
+2026-04-01,Chaveiro Feminino — Gabi,2,12.0,24.0,Dinheiro,sim
+2026-04-01,Chaveiro Masculino — Luiz,5,12.0,60.0,Pix,sim
+2026-04-01,Chaveiro Masculino — Alisson,3,12.0,36.0,Crédito,sim
+2026-04-01,Chaveiro Masculino — Jonathan,2,12.0,24.0,Débito,sim
+2026-04-01,Chaveiro Masculino — Enzo,5,12.0,60.0,Dinheiro,sim
+2026-04-01,Chaveiro Feminino — Sandra,1,12.0,12.0,Débito,sim
+2026-04-01,Chaveiro Feminino — Eduarda,2,12.0,24.0,Dinheiro,sim
+2026-04-01,Chaveiro Masculino — Ivo,1,12.0,12.0,Pix,sim
+2026-04-01,Chaveiro Masculino — Eugenio,5,12.0,60.0,Pix,sim
+2026-04-01,Chaveiro Masculino — Marcio,1,12.0,12.0,Pix,sim
+2026-04-01,Chaveiro Feminino — Camila,1,12.0,12.0,Pix,sim
+2026-04-02,Chaveiro Feminino — Rita,1,12.0,12.0,Dinheiro,sim
+2026-04-02,Chaveiro Masculino — Giovane,1,12.0,12.0,Débito,sim
+2026-04-02,Chaveiro Feminino — Alice,1,12.0,12.0,Pix,sim
+2026-04-02,Chaveiro Masculino — Saulo,1,12.0,12.0,Débito,sim
+2026-04-02,Chaveiro Masculino — Wanderley,3,12.0,36.0,Pix,sim
+2026-04-02,Chaveiro Feminino — Cris,1,12.0,12.0,Dinheiro,sim
+2026-04-02,Chaveiro Feminino — Denise,6,12.0,72.0,Pix,sim
+2026-04-02,Chaveiro Feminino — Natalia,5,12.0,60.0,Pix,sim
+2026-04-02,Chaveiro Masculino — Gilmar,1,12.0,12.0,Pix,sim
+2026-04-02,Chaveiro Masculino — Vicente,2,12.0,24.0,Crédito Parcelado,sim
+2026-04-02,Chaveiro Masculino — Edmilson,6,12.0,72.0,Crédito,sim
+2026-04-02,Chaveiro Feminino — Rafaela,1,12.0,12.0,Dinheiro,sim
+2026-04-02,Chaveiro Feminino — Brenda,2,12.0,24.0,Pix,sim
+2026-04-02,Chaveiro Feminino — Sara,2,12.0,24.0,Débito,sim
+2026-04-02,Chaveiro Feminino — Silvia,2,12.0,24.0,Dinheiro,sim
+2026-04-02,Chaveiro Masculino — Joao,2,12.0,24.0,Crédito,sim
+2026-04-03,Chaveiro Feminino — Cecilia,1,11.04,11.04,Pix,sim
+2026-04-03,Chaveiro Masculino — Ronaldo,3,12.0,36.0,Pix,sim
+2026-04-03,Chaveiro Masculino — Jonas,5,12.0,60.0,Crédito Parcelado,sim
+2026-04-03,Chaveiro Masculino — Renato,6,11.04,66.24,Pix,sim
+2026-04-03,Chaveiro Masculino — Henrique,1,12.0,12.0,Débito,sim
+2026-04-03,Chaveiro Feminino — Ale,3,12.0,36.0,Pix,sim
+2026-04-03,Chaveiro Feminino — Clara,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-03,Chaveiro Feminino — Cris,3,12.0,36.0,Pix,sim
+2026-04-03,Chaveiro Feminino — Laura,1,12.0,12.0,Pix,sim
+2026-04-03,Chaveiro Feminino — Fernanda,2,12.0,24.0,Dinheiro,sim
+2026-04-03,Chaveiro Feminino — Alice,4,12.0,48.0,Débito,sim
+2026-04-03,Chaveiro Feminino — Monica,3,12.0,36.0,Débito,sim
+2026-04-03,Chaveiro Feminino — Karolina,3,12.0,36.0,Dinheiro,sim
+2026-04-03,Chaveiro Masculino — Jonathan,2,12.0,24.0,Dinheiro,sim
+2026-04-03,Chaveiro Feminino — Diana,2,12.0,24.0,Crédito Parcelado,sim
+2026-04-04,Chaveiro Masculino — Samuel,3,12.0,36.0,Débito,sim
+2026-04-04,Chaveiro Masculino — Reinaldo,1,12.0,12.0,Pix,sim
+2026-04-04,Chaveiro Feminino — Kamila,1,12.0,12.0,Débito,sim
+2026-04-04,Chaveiro Masculino — Ruan,4,12.0,48.0,Dinheiro,sim
+2026-04-04,Chaveiro Feminino — Daniela,1,12.0,12.0,Dinheiro,sim
+2026-04-04,Chaveiro Feminino — Ana Clara,2,12.0,24.0,Débito,sim
+2026-04-04,Chaveiro Feminino — Beatriz,1,12.0,12.0,Pix,sim
+2026-04-04,Chaveiro Feminino — Denise,3,12.0,36.0,Débito,sim
+2026-04-04,Chaveiro Feminino — Melissa,4,11.04,44.16,Pix,sim
+2026-04-04,Chaveiro Feminino — Cecilia,1,12.0,12.0,Pix,sim
+2026-04-04,Chaveiro Masculino — Miguel,2,12.0,24.0,Pix,sim
+2026-04-04,Chaveiro Feminino — Amanda,1,12.0,12.0,Dinheiro,sim
+2026-04-04,Chaveiro Feminino — Aline,1,12.0,12.0,Pix,sim
+2026-04-04,Chaveiro Feminino — Isa,1,12.0,12.0,Pix,sim
+2026-04-04,Chaveiro Feminino — Beatriz,2,12.0,24.0,Pix,sim
+2026-04-05,Chaveiro Masculino — Fagner,1,12.0,12.0,Pix,sim
+2026-04-05,Chaveiro Masculino — Cassio,5,12.0,60.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Patricia,2,12.0,24.0,Crédito Parcelado,sim
+2026-04-05,Chaveiro Masculino — Miguel,2,12.0,24.0,Débito,sim
+2026-04-05,Chaveiro Feminino — Valentina,3,12.0,36.0,Crédito Parcelado,sim
+2026-04-05,Chaveiro Masculino — Jonas,1,12.0,12.0,Débito,sim
+2026-04-05,Chaveiro Feminino — Carla,6,12.0,72.0,Débito,sim
+2026-04-05,Chaveiro Feminino — Alana,1,11.04,11.04,Pix,sim
+2026-04-05,Chaveiro Feminino — Ana,1,12.0,12.0,Crédito,sim
+2026-04-05,Chaveiro Masculino — Josias,3,12.0,36.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Mariana,1,12.0,12.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Rita,4,12.0,48.0,Débito,sim
+2026-04-05,Chaveiro Masculino — Elias,1,11.04,11.04,Pix,sim
+2026-04-05,Chaveiro Feminino — Clara,2,12.0,24.0,Dinheiro,sim
+2026-04-05,Chaveiro Masculino — Caique,1,12.0,12.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Cris,1,12.0,12.0,Pix,sim
+2026-04-05,Chaveiro Masculino — Iago,1,12.0,12.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Ana,4,12.0,48.0,Pix,sim
+2026-04-05,Chaveiro Feminino — Denise,3,12.0,36.0,Dinheiro,sim
+2026-04-05,Chaveiro Masculino — Evandro,2,12.0,24.0,Dinheiro,sim
+2026-04-05,Chaveiro Masculino — Henrique,5,12.0,60.0,Pix,sim
+2026-04-05,Chaveiro Masculino — Ivo,5,12.0,60.0,Crédito,sim
+2026-04-05,Chaveiro Masculino — Iago,3,12.0,36.0,Dinheiro,sim
+2026-04-05,Chaveiro Feminino — Barbara,1,12.0,12.0,Dinheiro,sim
+2026-04-06,Chaveiro Masculino — Bernardo,4,12.0,48.0,Dinheiro,sim
+2026-04-06,Chaveiro Feminino — Paola,2,12.0,24.0,Pix,sim
+2026-04-06,Chaveiro Feminino — Carol,1,12.0,12.0,Pix,sim
+2026-04-06,Chaveiro Masculino — Bento,3,12.0,36.0,Pix,sim
+2026-04-06,Chaveiro Masculino — Ruan,2,12.0,24.0,Dinheiro,sim
+2026-04-06,Chaveiro Feminino — Rita,1,12.0,12.0,Pix,sim
+2026-04-06,Chaveiro Masculino — Enzo,1,12.0,12.0,Dinheiro,sim
+2026-04-06,Chaveiro Masculino — Giovane,2,12.0,24.0,Dinheiro,sim
+2026-04-06,Chaveiro Masculino — Douglas,2,12.0,24.0,Pix,sim
+2026-04-06,Chaveiro Masculino — Reinaldo,1,11.04,11.04,Dinheiro,sim
+2026-04-07,Chaveiro Masculino — Luiz,1,12.0,12.0,Débito,sim
+2026-04-07,Chaveiro Masculino — Celso,1,12.0,12.0,Pix,sim
+2026-04-07,Chaveiro Feminino — Thais,2,12.0,24.0,Pix,sim
+2026-04-07,Chaveiro Feminino — Bruna,1,12.0,12.0,Dinheiro,sim
+2026-04-07,Chaveiro Masculino — Bruno,2,12.0,24.0,Crédito,sim
+2026-04-07,Chaveiro Feminino — Melissa,2,12.0,24.0,Dinheiro,sim
+2026-04-07,Chaveiro Feminino — Adriana,1,12.0,12.0,Dinheiro,sim
+2026-04-07,Chaveiro Feminino — Livia,1,12.0,12.0,Débito,sim
+2026-04-08,Chaveiro Masculino — John,3,12.0,36.0,Crédito,sim
+2026-04-08,Chaveiro Feminino — Clara,1,12.0,12.0,Pix,sim
+2026-04-08,Chaveiro Feminino — Cris,3,12.0,36.0,Pix,sim
+2026-04-08,Chaveiro Masculino — Maicon,1,12.0,12.0,Pix,sim
+2026-04-08,Chaveiro Feminino — Maria,2,12.0,24.0,Pix,sim
+2026-04-08,Chaveiro Masculino — Alex,4,12.0,48.0,Pix,sim
+2026-04-08,Chaveiro Feminino — Amanda,1,12.0,12.0,Pix,sim
+2026-04-08,Chaveiro Feminino — Tati,1,12.0,12.0,Dinheiro,sim
+2026-04-08,Chaveiro Feminino — Rosa,4,12.0,48.0,Pix,sim
+2026-04-09,Chaveiro Masculino — Nicolas,2,12.0,24.0,Pix,sim
+2026-04-09,Chaveiro Masculino — Henrique,1,12.0,12.0,Pix,sim
+2026-04-09,Chaveiro Feminino — Luana,1,12.0,12.0,Dinheiro,sim
+2026-04-09,Chaveiro Feminino — Cris,2,12.0,24.0,Pix,sim
+2026-04-09,Chaveiro Masculino — Mauro,2,12.0,24.0,Crédito,sim
+2026-04-09,Chaveiro Feminino — Raquel,4,12.0,48.0,Pix,sim
+2026-04-09,Chaveiro Feminino — Daiane,1,12.0,12.0,Pix,sim
+2026-04-09,Chaveiro Masculino — Edgar,1,12.0,12.0,Crédito,sim
+2026-04-09,Chaveiro Masculino — Elias,3,12.0,36.0,Dinheiro,sim
+2026-04-09,Chaveiro Feminino — Sara,3,12.0,36.0,Pix,sim
+2026-04-09,Chaveiro Masculino — Julio,3,11.04,33.12,Pix,sim
+2026-04-09,Chaveiro Feminino — Jessica,1,12.0,12.0,Dinheiro,sim
+2026-04-09,Chaveiro Feminino — Rita,2,12.0,24.0,Débito,sim
+2026-04-09,Chaveiro Masculino — Helio,5,11.04,55.2,Débito,sim
+2026-04-10,Chaveiro Feminino — Thais,2,12.0,24.0,Pix,sim
+2026-04-10,Chaveiro Masculino — Kleber,2,12.0,24.0,Débito,sim
+2026-04-10,Chaveiro Feminino — Rosa,1,12.0,12.0,Dinheiro,sim
+2026-04-10,Chaveiro Feminino — Joana,1,12.0,12.0,Dinheiro,sim
+2026-04-10,Chaveiro Masculino — Andre,3,11.04,33.12,Dinheiro,sim
+2026-04-10,Chaveiro Feminino — Ana Clara,2,12.0,24.0,Débito,sim
+2026-04-10,Chaveiro Feminino — Sandra,1,12.0,12.0,Dinheiro,sim
+2026-04-10,Chaveiro Masculino — Geovane,4,12.0,48.0,Crédito Parcelado,sim
+2026-04-10,Chaveiro Feminino — Aline,2,12.0,24.0,Débito,sim
+2026-04-10,Chaveiro Feminino — Diana,4,12.0,48.0,Pix,sim
+2026-04-10,Chaveiro Feminino — Diana,1,12.0,12.0,Pix,sim
+2026-04-10,Chaveiro Masculino — Alberto,4,12.0,48.0,Dinheiro,sim
+2026-04-10,Chaveiro Masculino — Davi,3,12.0,36.0,Pix,sim
+2026-04-10,Chaveiro Masculino — Diogo,1,11.04,11.04,Débito,sim
+2026-04-10,Chaveiro Feminino — Bianca,2,12.0,24.0,Pix,sim
+2026-04-10,Chaveiro Masculino — Lucio,3,12.0,36.0,Débito,sim
+2026-04-10,Chaveiro Masculino — Mateus,3,12.0,36.0,Dinheiro,sim
+2026-04-11,Chaveiro Masculino — Cassio,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Feminino — Laura,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Feminino — Diana,3,12.0,36.0,Pix,sim
+2026-04-11,Chaveiro Feminino — Andrea,1,12.0,12.0,Dinheiro,sim
+2026-04-11,Chaveiro Feminino — Gabi,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Helio,3,12.0,36.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Thiago,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Miguel,6,12.0,72.0,Débito,sim
+2026-04-11,Chaveiro Feminino — Karolina,3,12.0,36.0,Crédito,sim
+2026-04-11,Chaveiro Masculino — Jair,4,12.0,48.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Bruno,1,12.0,12.0,Dinheiro,sim
+2026-04-11,Chaveiro Feminino — Vanessa,4,12.0,48.0,Débito,sim
+2026-04-11,Chaveiro Masculino — Gabriel,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Kaue,2,12.0,24.0,Crédito Parcelado,sim
+2026-04-11,Chaveiro Feminino — Alice,1,12.0,12.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Gilmar,4,12.0,48.0,Pix,sim
+2026-04-11,Chaveiro Masculino — Josias,2,12.0,24.0,Pix,sim
+2026-04-12,Chaveiro Masculino — Geovane,5,12.0,60.0,Dinheiro,sim
+2026-04-12,Chaveiro Masculino — Gilson,1,11.04,11.04,Pix,sim
+2026-04-12,Chaveiro Feminino — Diana,1,12.0,12.0,Débito,sim
+2026-04-12,Chaveiro Feminino — Denise,4,12.0,48.0,Dinheiro,sim
+2026-04-12,Chaveiro Masculino — Nathan,1,12.0,12.0,Pix,sim
+2026-04-12,Chaveiro Feminino — Ana Clara,2,12.0,24.0,Crédito,sim
+2026-04-12,Chaveiro Masculino — Emanuel,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-12,Chaveiro Masculino — Leandro,3,12.0,36.0,Pix,sim
+2026-04-12,Chaveiro Masculino — Andre,1,12.0,12.0,Pix,sim
+2026-04-12,Chaveiro Feminino — Maria,3,12.0,36.0,Dinheiro,sim
+2026-04-12,Chaveiro Masculino — Ronaldo,2,12.0,24.0,Débito,sim
+2026-04-12,Chaveiro Masculino — Francisco,2,12.0,24.0,Dinheiro,sim
+2026-04-12,Chaveiro Masculino — Reginaldo,2,12.0,24.0,Pix,sim
+2026-04-12,Chaveiro Feminino — Valeria,1,12.0,12.0,Pix,sim
+2026-04-12,Chaveiro Feminino — Carla,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-12,Chaveiro Masculino — Erico,1,12.0,12.0,Débito,sim
+2026-04-12,Chaveiro Feminino — Bia,1,12.0,12.0,Dinheiro,sim
+2026-04-12,Chaveiro Feminino — Rita,1,12.0,12.0,Dinheiro,sim
+2026-04-13,Chaveiro Feminino — Cris,1,12.0,12.0,Dinheiro,sim
+2026-04-13,Chaveiro Masculino — Benedito,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-13,Chaveiro Masculino — Antonio,1,12.0,12.0,Dinheiro,sim
+2026-04-13,Chaveiro Masculino — Murilo,1,12.0,12.0,Dinheiro,sim
+2026-04-13,Chaveiro Feminino — Brenda,2,12.0,24.0,Pix,sim
+2026-04-13,Chaveiro Masculino — Yuri,1,12.0,12.0,Débito,sim
+2026-04-13,Chaveiro Masculino — Sebastiao,1,12.0,12.0,Pix,sim
+2026-04-13,Chaveiro Feminino — Vera,2,12.0,24.0,Crédito,sim
+2026-04-13,Chaveiro Masculino — Mauricio,1,12.0,12.0,Pix,sim
+2026-04-13,Chaveiro Feminino — Vera,2,12.0,24.0,Pix,sim
+2026-04-13,Chaveiro Feminino — Adriana,4,12.0,48.0,Débito,sim
+2026-04-13,Chaveiro Feminino — Bianca,3,12.0,36.0,Pix,sim
+2026-04-13,Chaveiro Feminino — Monica,2,12.0,24.0,Dinheiro,sim
+2026-04-13,Chaveiro Masculino — Isaac,4,12.0,48.0,Dinheiro,sim
+2026-04-13,Chaveiro Feminino — Beatriz,1,12.0,12.0,Pix,sim
+2026-04-13,Chaveiro Masculino — Manoel,1,12.0,12.0,Pix,sim
+2026-04-13,Chaveiro Feminino — Mariana,1,12.0,12.0,Pix,sim
+2026-04-14,Chaveiro Masculino — Andre,1,12.0,12.0,Pix,sim
+2026-04-14,Chaveiro Feminino — Joana,1,12.0,12.0,Pix,sim
+2026-04-14,Chaveiro Masculino — John,2,12.0,24.0,Pix,sim
+2026-04-14,Chaveiro Feminino — Amanda,2,12.0,24.0,Pix,sim
+2026-04-14,Chaveiro Feminino — Ana,1,11.04,11.04,Dinheiro,sim
+2026-04-14,Chaveiro Feminino — Jessica,3,12.0,36.0,Pix,sim
+2026-04-14,Chaveiro Feminino — Thais,1,12.0,12.0,Dinheiro,sim
+2026-04-14,Chaveiro Masculino — George,1,12.0,12.0,Pix,sim
+2026-04-14,Chaveiro Masculino — Davi,3,11.04,33.12,Dinheiro,sim
+2026-04-15,Chaveiro Feminino — Carol,1,12.0,12.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Camila,1,12.0,12.0,Débito,sim
+2026-04-15,Chaveiro Feminino — Rita,1,12.0,12.0,Crédito,sim
+2026-04-15,Chaveiro Feminino — Ale,1,12.0,12.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Aline,5,12.0,60.0,Débito,sim
+2026-04-15,Chaveiro Masculino — Flavio,4,12.0,48.0,Dinheiro,sim
+2026-04-15,Chaveiro Masculino — Benedito,4,12.0,48.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Carla,1,12.0,12.0,Débito,sim
+2026-04-15,Chaveiro Feminino — Luciana,1,12.0,12.0,Dinheiro,sim
+2026-04-15,Chaveiro Masculino — Raimundo,2,12.0,24.0,Crédito,sim
+2026-04-15,Chaveiro Feminino — Bia,1,12.0,12.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Marina,2,12.0,24.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Mariana,1,12.0,12.0,Dinheiro,sim
+2026-04-15,Chaveiro Feminino — Valentina,3,12.0,36.0,Pix,sim
+2026-04-15,Chaveiro Feminino — Adriana,1,12.0,12.0,Débito,sim
+2026-04-15,Chaveiro Masculino — Bento,2,12.0,24.0,Dinheiro,sim
+2026-04-16,Chaveiro Feminino — Alana,3,12.0,36.0,Pix,sim
+2026-04-16,Chaveiro Masculino — Lourenco,1,12.0,12.0,Dinheiro,sim
+2026-04-16,Chaveiro Feminino — Adriana,4,12.0,48.0,Pix,sim
+2026-04-16,Chaveiro Feminino — Cecilia,1,12.0,12.0,Débito,sim
+2026-04-16,Chaveiro Feminino — Priscila,5,12.0,60.0,Pix,sim
+2026-04-16,Chaveiro Feminino — Larissa,2,12.0,24.0,Pix,sim
+2026-04-16,Chaveiro Masculino — Leonardo,3,12.0,36.0,Débito,sim
+2026-04-16,Chaveiro Feminino — Bianca,1,12.0,12.0,Débito,sim
+2026-04-16,Chaveiro Masculino — Giovane,4,12.0,48.0,Dinheiro,sim
+2026-04-16,Chaveiro Masculino — Enzo,4,12.0,48.0,Dinheiro,sim
+2026-04-16,Chaveiro Masculino — Gilson,3,12.0,36.0,Débito,sim
+2026-04-16,Chaveiro Feminino — Ana Clara,4,12.0,48.0,Pix,sim
+2026-04-16,Chaveiro Feminino — Daiane,3,12.0,36.0,Crédito,sim
+2026-04-16,Chaveiro Feminino — Ana,1,12.0,12.0,Pix,sim
+2026-04-17,Chaveiro Feminino — Ana Clara,1,12.0,12.0,Débito,sim
+2026-04-17,Chaveiro Feminino — Rebeca,1,12.0,12.0,Crédito,sim
+2026-04-17,Chaveiro Feminino — Raquel,1,12.0,12.0,Dinheiro,sim
+2026-04-17,Chaveiro Feminino — Bianca,1,12.0,12.0,Pix,sim
+2026-04-17,Chaveiro Masculino — Frederico,2,12.0,24.0,Pix,sim
+2026-04-17,Chaveiro Masculino — Reinaldo,1,12.0,12.0,Dinheiro,sim
+2026-04-17,Chaveiro Feminino — Denise,1,12.0,12.0,Crédito,sim
+2026-04-17,Chaveiro Feminino — Nicole,2,12.0,24.0,Crédito,sim
+2026-04-17,Chaveiro Feminino — Cecilia,3,12.0,36.0,Pix,sim
+2026-04-18,Chaveiro Feminino — Aline,1,12.0,12.0,Débito,sim
+2026-04-18,Chaveiro Masculino — Mateus,4,12.0,48.0,Dinheiro,sim
+2026-04-18,Chaveiro Masculino — Nicolas,1,12.0,12.0,Débito,sim
+2026-04-18,Chaveiro Masculino — Leonardo,1,12.0,12.0,Crédito,sim
+2026-04-18,Chaveiro Masculino — Gael,3,12.0,36.0,Pix,sim
+2026-04-18,Chaveiro Feminino — Julia,1,12.0,12.0,Pix,sim
+2026-04-18,Chaveiro Masculino — Osvaldo,1,12.0,12.0,Pix,sim
+2026-04-18,Chaveiro Feminino — Sara,1,12.0,12.0,Crédito,sim
+2026-04-18,Chaveiro Feminino — Rafaela,1,12.0,12.0,Pix,sim
+2026-04-18,Chaveiro Feminino — Carol,1,11.04,11.04,Dinheiro,sim
+2026-04-18,Chaveiro Masculino — Alberto,3,12.0,36.0,Pix,sim
+2026-04-18,Chaveiro Masculino — Josue,1,12.0,12.0,Pix,sim
+2026-04-18,Chaveiro Feminino — Eduarda,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-18,Chaveiro Feminino — Eduarda,1,12.0,12.0,Débito,sim
+2026-04-18,Chaveiro Feminino — Gabi,1,11.04,11.04,Pix,sim
+2026-04-18,Chaveiro Masculino — Helio,2,12.0,24.0,Dinheiro,sim
+2026-04-19,Chaveiro Feminino — Diana,2,12.0,24.0,Dinheiro,sim
+2026-04-19,Chaveiro Masculino — Sebastiao,2,12.0,24.0,Pix,sim
+2026-04-19,Chaveiro Masculino — Moises,1,12.0,12.0,Pix,sim
+2026-04-19,Chaveiro Masculino — George,1,12.0,12.0,Débito,sim
+2026-04-19,Chaveiro Masculino — Benedito,1,12.0,12.0,Crédito,sim
+2026-04-19,Chaveiro Feminino — Alessandra,3,12.0,36.0,Débito,sim
+2026-04-19,Chaveiro Feminino — Vanessa,1,12.0,12.0,Débito,sim
+2026-04-19,Chaveiro Masculino — Erick,1,11.04,11.04,Pix,sim
+2026-04-19,Chaveiro Masculino — Jonas,1,12.0,12.0,Pix,sim
+2026-04-19,Chaveiro Feminino — Alice,1,12.0,12.0,Crédito Parcelado,sim
+2026-04-19,Chaveiro Masculino — Kaua,1,12.0,12.0,Pix,sim
+2026-04-19,Chaveiro Masculino — Nathan,1,12.0,12.0,Pix,sim
+2026-04-19,Chaveiro Masculino — Frederico,2,12.0,24.0,Crédito,sim
+2026-04-19,Chaveiro Feminino — Rosa,2,11.04,22.08,Débito,sim
+2026-04-19,Chaveiro Feminino — Bia,3,12.0,36.0,Crédito,sim
+2026-04-19,Chaveiro Masculino — Igor,1,12.0,12.0,Débito,sim
