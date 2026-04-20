@@ -125,100 +125,123 @@ sku,raw_key,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,u
 277,caneca_agata_gd_vei,Caneca Ágata Grande — VÉI!,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
 278,caneca_agata_gd_super_neto,Caneca Ágata Grande — SUPER NETO,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
 279,caneca_agata_gd_super_neta,Caneca Ágata Grande — SUPER NETA,Canecas Ágata Grande,9.0,21.0,10,20,12.0,57.14,0.0,0.0,0.0,21.0,0.0,0.0,C
-00280,caneca_louca_a_vida_aqui_so_nao,Caneca Louca — A vida aqui só não,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00281,caneca_louca_abestado,Caneca Louca — Abestado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00282,caneca_louca_acorda_mundinha,Caneca Louca — Acorda mundinha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00283,caneca_louca_amar_e_sertao_amado_amarela,Caneca Louca — Amar é sertão amado amarela,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00284,caneca_louca_amo_o_sertao,Caneca Louca — Amo o sertão,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00285,caneca_louca_arretada_cangaceira_magra,Caneca Louca — Arretada cangaceira magra,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00286,caneca_louca_arretado_fundo_amarelo_com_boneco_cangaceiro,Caneca Louca — Arretado fundo amarelo com boneco cangaceiro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00287,caneca_louca_arriegua,Caneca Louca — Arriegua,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00288,caneca_louca_avexada_colorida,Caneca Louca — Avexada colorida,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00289,caneca_louca_avexado_colorido,Caneca Louca — Avexado colorido,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00290,caneca_louca_casal_arretado_fundo_azul_desenho_infantilizado,Caneca Louca — Casal arretado fundo azul desenho infantilizado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00291,caneca_louca_casal_arretado_fundo_amarelo,Caneca Louca — Casal arretado fundo amarelo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00292,caneca_louca_cuscuz_melhor_fundo_branco,Caneca Louca — Cuscuz melhor fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00293,caneca_louca_cuscuz_melhor_fundo_preto,Caneca Louca — Cuscuz melhor fundo preto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00294,caneca_louca_desmantelado,Caneca Louca — Desmantelado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00295,caneca_louca_devendo_e_luxando,Caneca Louca — Devendo e luxando,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00296,caneca_louca_dona_encrenca,Caneca Louca — Dona Encrenca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00297,caneca_louca_ela_se_veste,Caneca Louca — Ela se veste,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00298,caneca_louca_filha,Caneca Louca — Filha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00299,caneca_louca_filho,Caneca Louca — Filho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00300,caneca_louca_flamengo,Caneca Louca — Flamengo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00301,caneca_louca_homi_arretado_verde,Caneca Louca — Homi arretado verde,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00302,caneca_louca_homi_arretado_azul,Caneca Louca — Homi arretado azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00303,caneca_louca_homi_arretado_branco,Caneca Louca — Homi arretado branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00304,caneca_louca_irma,Caneca Louca — Irmã,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00305,caneca_louca_irmao,Caneca Louca — Irmão,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00306,caneca_louca_jacare_sax_desenho_meu,Caneca Louca — Jacaré sax desenho meu,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00307,caneca_louca_joao_pessoa_letreiro_tambau,Caneca Louca — João Pessoa letreiro tambaú,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00308,caneca_louca_love_cuscuz,Caneca Louca — Love cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00309,caneca_louca_mae,Caneca Louca — Mãe,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00310,caneca_louca_maria_bonita_branca,Caneca Louca — Maria bonita branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00311,caneca_louca_meiga_que_nem_letras_coloridas,Caneca Louca — Meiga que nem letras coloridas,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00312,caneca_louca_mul_arretada_lilas,Caneca Louca — Mul arretada lilás,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00313,caneca_louca_mul_arretada_rosa,Caneca Louca — Mul arretada rosa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00314,caneca_louca_mul_arretada_branca,Caneca Louca — Mul arretada branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00315,caneca_louca_nego,Caneca Louca — Nego,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00316,caneca_louca_nervosa_claro_que_nao,Caneca Louca — Nervosa claro que não,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00317,caneca_louca_neta,Caneca Louca — Neta,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00318,caneca_louca_neto,Caneca Louca — Neto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00319,caneca_louca_nossa_senhora,Caneca Louca — Nossa Senhora,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00320,caneca_louca_oxente_achou_que_ia_te_esquecer_fundo_azul,Caneca Louca — Oxente achou que ia te esquecer — fundo azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00321,caneca_louca_oxente_faixa_cinza_esverdeada_estrelinhas,Caneca Louca — Oxente faixa cinza esverdeada estrelinhas,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00322,caneca_louca_oxente_preta_e_branca,Caneca Louca — Oxente preta e branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00323,caneca_louca_pai,Caneca Louca — Pai,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00324,caneca_louca_paraiba_linda_amarela,Caneca Louca — Paraíba linda amarela,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00325,caneca_louca_paraiba_linda_azul,Caneca Louca — Paraíba linda azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00326,caneca_louca_quando_a_gente_gosta_a_gente_cuida,Caneca Louca — Quando a gente gosta a gente cuida,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00327,caneca_louca_sao_francisco,Caneca Louca — São Francisco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00328,caneca_louca_sobrinha,Caneca Louca — Sobrinha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00329,caneca_louca_sobrinho,Caneca Louca — Sobrinho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00330,caneca_louca_sossegue_o_facho_fundo_amarelo,Caneca Louca — Sossegue o facho fundo amarelo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00331,caneca_louca_sossegue_o_facho_fundo_cinza,Caneca Louca — Sossegue o facho fundo cinza,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00332,caneca_louca_sou_eu_tao_meiga_boneca_infantil,Caneca Louca — Sou eu tão meiga boneca infantil,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00333,caneca_louca_te_amo_mais_que_cuscuz,Caneca Louca — Te amo mais que cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00334,caneca_louca_te_amo_visse_marrom_chocolate,Caneca Louca — Te amo visse marrom chocolate,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00335,caneca_louca_tia,Caneca Louca — Tia,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00336,caneca_louca_tio,Caneca Louca — Tio,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00337,caneca_louca_tom_cafe_eu_vou_amarela_com_cacto_preto,Caneca Louca — Tom café eu vou amarela com cacto preto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00338,caneca_louca_tu_a_manteiga,Caneca Louca — Tu a manteiga,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00339,caneca_louca_tu_vens_cinza,Caneca Louca — Tu vens cinza,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00340,caneca_louca_vovo,Caneca Louca — Vovó,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00341,caneca_louca_vovo,Caneca Louca — Vovô,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00342,caneca_louca_primo,Caneca Louca — Primo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00343,caneca_louca_prima,Caneca Louca — Prima,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00344,caneca_louca_cunhada,Caneca Louca — Cunhada,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00345,caneca_louca_cunhado,Caneca Louca — Cunhado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00346,caneca_louca_genro,Caneca Louca — Genro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00347,caneca_louca_nora,Caneca Louca — Nora,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00348,caneca_louca_oxente_letras_coloridas_fundo_branco,Caneca Louca — Oxente letras coloridas fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00349,caneca_louca_anda_cum_fe_letras_coloridas_fundo_branco,Caneca Louca — Anda cum fé letras coloridas fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00350,caneca_louca_tu_me_aperreia_mas_eu_te_amo,Caneca Louca — Tu me aperreia mas eu te amo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00351,caneca_louca_sogro,Caneca Louca — Sogro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00352,caneca_louca_sogra,Caneca Louca — Sogra,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00353,caneca_louca_primo_2,Caneca Louca — Primo (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00354,caneca_louca_prima_2,Caneca Louca — Prima (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00355,caneca_louca_teu_cu,Caneca Louca — Teu cu,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00356,caneca_louca_oxe_eita_perainda,Caneca Louca — Oxe eita perainda,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00357,caneca_louca_cafe_bom_da_mulesta,Caneca Louca — Café bom da mulesta,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00358,caneca_louca_oxente_colorido,Caneca Louca — Oxente colorido,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00359,caneca_louca_mul_braba,Caneca Louca — Mul braba,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00360,caneca_louca_jacare_sax_desenho_novo,Caneca Louca — Jacaré sax desenho novo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00361,caneca_louca_oxente_uma_fuleiragem,Caneca Louca — Oxente uma fuleiragem,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00362,caneca_louca_arretada_fundo_azul,Caneca Louca — Arretada fundo azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00363,caneca_louca_arretado,Caneca Louca — Arretado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00364,caneca_louca_oxente_lembrei_de_vc_com_carinho,Caneca Louca — Oxente lembrei de vc com carinho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00365,caneca_louca_arretado_demais,Caneca Louca — Arretado demais,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00366,caneca_louca_casal_arretado,Caneca Louca — Casal arretado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00367,caneca_louca_a_fe_nao_costuma,Caneca Louca — A fé não costuma,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00368,caneca_louca_eita_massa,Caneca Louca — Eita massa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00369,caneca_louca_nordeste_sol,Caneca Louca — Nordeste sol,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00370,caneca_louca_nordeste_sol_lugar_onde_o_sol_se_poe_primeiro,Caneca Louca — Nordeste sol — lugar onde o sol se põe primeiro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00371,caneca_louca_joao_pessoa_2,Caneca Louca — João Pessoa (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00372,caneca_louca_joao_pessoa,Caneca Louca — João Pessoa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00373,caneca_louca_nao_me_aperreie,Caneca Louca — Não me aperreie,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00374,caneca_louca_anda_cum_fe_eu_vou_azul_marinho_com_mostarda,Caneca Louca — Anda cum fé eu vou azul marinho com mostarda,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00375,caneca_louca_boa_uma_vida_com_cuscuz,Caneca Louca — Boa uma vida com cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
-00376,caneca_louca_sanfoneiro_joao_pessoa,Caneca Louca — Sanfoneiro João Pessoa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+280,caneca_louca_a_vida_aqui_so_nao,Caneca Louca — A vida aqui só não,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+281,caneca_louca_abestado,Caneca Louca — Abestado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+282,caneca_louca_acorda_mundinha,Caneca Louca — Acorda mundinha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+283,caneca_louca_amar_e_sertao_amado_amarela,Caneca Louca — Amar é sertão amado amarela,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+284,caneca_louca_amo_o_sertao,Caneca Louca — Amo o sertão,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+285,caneca_louca_arretada_cangaceira_magra,Caneca Louca — Arretada cangaceira magra,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+286,caneca_louca_arretado_fundo_amarelo_com_boneco_cangaceiro,Caneca Louca — Arretado fundo amarelo com boneco cangaceiro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+287,caneca_louca_arriegua,Caneca Louca — Arriegua,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+288,caneca_louca_avexada_colorida,Caneca Louca — Avexada colorida,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+289,caneca_louca_avexado_colorido,Caneca Louca — Avexado colorido,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+290,caneca_louca_casal_arretado_fundo_azul_desenho_infantilizado,Caneca Louca — Casal arretado fundo azul desenho infantilizado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+291,caneca_louca_casal_arretado_fundo_amarelo,Caneca Louca — Casal arretado fundo amarelo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+292,caneca_louca_cuscuz_melhor_fundo_branco,Caneca Louca — Cuscuz melhor fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+293,caneca_louca_cuscuz_melhor_fundo_preto,Caneca Louca — Cuscuz melhor fundo preto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+294,caneca_louca_desmantelado,Caneca Louca — Desmantelado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+295,caneca_louca_devendo_e_luxando,Caneca Louca — Devendo e luxando,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+296,caneca_louca_dona_encrenca,Caneca Louca — Dona Encrenca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+297,caneca_louca_ela_se_veste,Caneca Louca — Ela se veste,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+298,caneca_louca_filha,Caneca Louca — Filha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+299,caneca_louca_filho,Caneca Louca — Filho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+300,caneca_louca_flamengo,Caneca Louca — Flamengo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+301,caneca_louca_homi_arretado_verde,Caneca Louca — Homi arretado verde,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+302,caneca_louca_homi_arretado_azul,Caneca Louca — Homi arretado azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+303,caneca_louca_homi_arretado_branco,Caneca Louca — Homi arretado branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+304,caneca_louca_irma,Caneca Louca — Irmã,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+305,caneca_louca_irmao,Caneca Louca — Irmão,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+306,caneca_louca_jacare_sax_desenho_meu,Caneca Louca — Jacaré sax desenho meu,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+307,caneca_louca_joao_pessoa_letreiro_tambau,Caneca Louca — João Pessoa letreiro tambaú,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+308,caneca_louca_love_cuscuz,Caneca Louca — Love cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+309,caneca_louca_mae,Caneca Louca — Mãe,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+310,caneca_louca_maria_bonita_branca,Caneca Louca — Maria bonita branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+311,caneca_louca_meiga_que_nem_letras_coloridas,Caneca Louca — Meiga que nem letras coloridas,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+312,caneca_louca_mul_arretada_lilas,Caneca Louca — Mul arretada lilás,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+313,caneca_louca_mul_arretada_rosa,Caneca Louca — Mul arretada rosa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+314,caneca_louca_mul_arretada_branca,Caneca Louca — Mul arretada branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+315,caneca_louca_nego,Caneca Louca — Nego,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+316,caneca_louca_nervosa_claro_que_nao,Caneca Louca — Nervosa claro que não,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+317,caneca_louca_neta,Caneca Louca — Neta,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+318,caneca_louca_neto,Caneca Louca — Neto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+319,caneca_louca_nossa_senhora,Caneca Louca — Nossa Senhora,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+320,caneca_louca_oxente_achou_que_ia_te_esquecer_fundo_azul,Caneca Louca — Oxente achou que ia te esquecer — fundo azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+321,caneca_louca_oxente_faixa_cinza_esverdeada_estrelinhas,Caneca Louca — Oxente faixa cinza esverdeada estrelinhas,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+322,caneca_louca_oxente_preta_e_branca,Caneca Louca — Oxente preta e branca,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+323,caneca_louca_pai,Caneca Louca — Pai,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+324,caneca_louca_paraiba_linda_amarela,Caneca Louca — Paraíba linda amarela,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+325,caneca_louca_paraiba_linda_azul,Caneca Louca — Paraíba linda azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+326,caneca_louca_quando_a_gente_gosta_a_gente_cuida,Caneca Louca — Quando a gente gosta a gente cuida,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+327,caneca_louca_sao_francisco,Caneca Louca — São Francisco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+328,caneca_louca_sobrinha,Caneca Louca — Sobrinha,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+329,caneca_louca_sobrinho,Caneca Louca — Sobrinho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+330,caneca_louca_sossegue_o_facho_fundo_amarelo,Caneca Louca — Sossegue o facho fundo amarelo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+331,caneca_louca_sossegue_o_facho_fundo_cinza,Caneca Louca — Sossegue o facho fundo cinza,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+332,caneca_louca_sou_eu_tao_meiga_boneca_infantil,Caneca Louca — Sou eu tão meiga boneca infantil,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+333,caneca_louca_te_amo_mais_que_cuscuz,Caneca Louca — Te amo mais que cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+334,caneca_louca_te_amo_visse_marrom_chocolate,Caneca Louca — Te amo visse marrom chocolate,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+335,caneca_louca_tia,Caneca Louca — Tia,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+336,caneca_louca_tio,Caneca Louca — Tio,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+337,caneca_louca_tom_cafe_eu_vou_amarela_com_cacto_preto,Caneca Louca — Tom café eu vou amarela com cacto preto,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+338,caneca_louca_tu_a_manteiga,Caneca Louca — Tu a manteiga,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+339,caneca_louca_tu_vens_cinza,Caneca Louca — Tu vens cinza,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+340,caneca_louca_vovo,Caneca Louca — Vovó,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+341,caneca_louca_vovo,Caneca Louca — Vovô,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+342,caneca_louca_primo,Caneca Louca — Primo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+343,caneca_louca_prima,Caneca Louca — Prima,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+344,caneca_louca_cunhada,Caneca Louca — Cunhada,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+345,caneca_louca_cunhado,Caneca Louca — Cunhado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+346,caneca_louca_genro,Caneca Louca — Genro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+347,caneca_louca_nora,Caneca Louca — Nora,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+348,caneca_louca_oxente_letras_coloridas_fundo_branco,Caneca Louca — Oxente letras coloridas fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+349,caneca_louca_anda_cum_fe_letras_coloridas_fundo_branco,Caneca Louca — Anda cum fé letras coloridas fundo branco,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+350,caneca_louca_tu_me_aperreia_mas_eu_te_amo,Caneca Louca — Tu me aperreia mas eu te amo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+351,caneca_louca_sogro,Caneca Louca — Sogro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+352,caneca_louca_sogra,Caneca Louca — Sogra,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+353,caneca_louca_primo_2,Caneca Louca — Primo (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+354,caneca_louca_prima_2,Caneca Louca — Prima (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+355,caneca_louca_teu_cu,Caneca Louca — Teu cu,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+356,caneca_louca_oxe_eita_perainda,Caneca Louca — Oxe eita perainda,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+357,caneca_louca_cafe_bom_da_mulesta,Caneca Louca — Café bom da mulesta,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+358,caneca_louca_oxente_colorido,Caneca Louca — Oxente colorido,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+359,caneca_louca_mul_braba,Caneca Louca — Mul braba,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+360,caneca_louca_jacare_sax_desenho_novo,Caneca Louca — Jacaré sax desenho novo,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+361,caneca_louca_oxente_uma_fuleiragem,Caneca Louca — Oxente uma fuleiragem,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+362,caneca_louca_arretada_fundo_azul,Caneca Louca — Arretada fundo azul,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+363,caneca_louca_arretado,Caneca Louca — Arretado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+364,caneca_louca_oxente_lembrei_de_vc_com_carinho,Caneca Louca — Oxente lembrei de vc com carinho,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+365,caneca_louca_arretado_demais,Caneca Louca — Arretado demais,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+366,caneca_louca_casal_arretado,Caneca Louca — Casal arretado,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+367,caneca_louca_a_fe_nao_costuma,Caneca Louca — A fé não costuma,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+368,caneca_louca_eita_massa,Caneca Louca — Eita massa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+369,caneca_louca_nordeste_sol,Caneca Louca — Nordeste sol,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+370,caneca_louca_nordeste_sol_lugar_onde_o_sol_se_poe_primeiro,Caneca Louca — Nordeste sol — lugar onde o sol se põe primeiro,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+371,caneca_louca_joao_pessoa_2,Caneca Louca — João Pessoa (2),Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+372,caneca_louca_joao_pessoa,Caneca Louca — João Pessoa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+373,caneca_louca_nao_me_aperreie,Caneca Louca — Não me aperreie,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+374,caneca_louca_anda_cum_fe_eu_vou_azul_marinho_com_mostarda,Caneca Louca — Anda cum fé eu vou azul marinho com mostarda,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+375,caneca_louca_boa_uma_vida_com_cuscuz,Caneca Louca — Boa uma vida com cuscuz,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+376,caneca_louca_sanfoneiro_joao_pessoa,Caneca Louca — Sanfoneiro João Pessoa,Canecas Loucas,4.0,14.0,10,20,10.0,71.43,0.0,0.0,0.0,14.0,0.0,0.0,C
+00377,canga_estrela_do_mar_6,Canga — Estrela do Mar 6,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00378,canga_vista_se_de_si,Canga — Vista-se de Si,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00379,canga_coqueiros_18,Canga — Coqueiros 18,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00380,canga_eu_amo_nordeste,Canga — Eu Amo Nordeste,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00381,canga_se_avexe_nao,Canga — Se Avexe Não,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00382,canga_frases_1_para_hoje,Canga — Frases 1 (Para Hoje),Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00383,canga_oxente,Canga — Oxente,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00384,canga_oxente_quadrados,Canga — Oxente Quadrados,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00385,canga_confie,Canga — Confie,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00386,canga_a_vida_fica_melhor,Canga — A Vida Fica Melhor,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00387,canga_cactos_5,Canga — Cactos 5,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00388,canga_gatinhos,Canga — Gatinhos,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00389,canga_folhas_monsteira_1,Canga — Folhas Monsteira 1,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00390,canga_floral_90,Canga — Floral 90,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00391,canga_girias_nordestinas_cacto_verde,Canga — Gírias Nordestinas Cacto Verde,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00392,canga_flamingo_e_tucano,Canga — Flamingo e Tucano,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00393,canga_cordel_2_fundo_creme,Canga — Cordel 2 Fundo Creme,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00394,canga_vc_fica_linda_vestida,Canga — Vc Fica Linda Vestida,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00395,canga_nao_pare_ate_se_orgulhar_2,Canga — Não Pare Até Se Orgulhar 2,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00396,canga_cangaco_1_nao_sei_so_sei,Canga — Cangaço 1 — Não Sei Só Sei,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00397,canga_listras_onca_pink,Canga — Listras Onça Pink,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00398,canga_onca_tropical,Canga — Onça Tropical,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
+00399,canga_floral_114_i_love_paraiba,Canga — Floral 114 — I Love Paraíba,Cangas,9.5,31.0,20,30,21.5,69.35,0.0,0.0,0.0,31.0,0.0,0.0,C
