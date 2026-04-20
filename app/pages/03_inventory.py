@@ -161,7 +161,7 @@ with tab2:
             import tempfile, datetime
             with tempfile.TemporaryDirectory() as tmp:
                 out = Path(tmp) / f"FuloFilo_Reposicao_{datetime.date.today()}.xlsx"
-                build_report(output_path=out)
+                build_report(output_path=out, selected_sheets={"Inventory"})
                 st.download_button(
                     "⬇ Baixar Excel", data=out.read_bytes(), file_name=out.name,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -176,9 +176,9 @@ with tab3:
     if inv_path.exists() and prod_path.exists():
         import polars as pl
         inv  = pl.read_parquet(inv_path)
-        prod = pl.read_parquet(prod_path).select(["slug","cost","qty_sold"]).with_columns(
-            (pl.col("cost") / pl.col("qty_sold").cast(pl.Float64)).alias("unit_cost")
-        ).select(["slug","unit_cost"])
+        # Use pre-computed unit_cost directly — avoids division-by-zero
+        # for products with qty_sold == 0 (which silently produces R$0 stock values).
+        prod = pl.read_parquet(prod_path).select(["slug", "unit_cost"])
         merged_pl = inv.join(prod, left_on="slug", right_on="slug", how="left").with_columns(
             (pl.col("current_stock").cast(pl.Float64) * pl.col("unit_cost").fill_null(0.0)).alias("value")
         )

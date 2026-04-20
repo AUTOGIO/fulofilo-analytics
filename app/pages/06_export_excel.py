@@ -44,7 +44,8 @@ if st.button("⚡ Gerar Relatório", type="primary", use_container_width=True):
         from excel.build_report import build_report
         bar.progress(30, "Construindo abas...")
         t0 = time.time()
-        out_path = build_report()
+        active_sheets = {name for name, checked in selected.items() if checked} or None
+        out_path = build_report(selected_sheets=active_sheets)
         elapsed  = time.time() - t0
         bar.progress(100, "✅ Concluído!")
 

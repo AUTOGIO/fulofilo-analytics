@@ -69,7 +69,9 @@ COLORS = {
 }
 
 # ── Charts ────────────────────────────────────────────────────────────────────
-if not abc_df.is_empty():
+has_sales = not abc_df.is_empty() and float(abc_df["revenue"].sum()) > 0
+
+if has_sales:
     left, right = st.columns(2)
 
     with left:
@@ -109,7 +111,7 @@ if not abc_df.is_empty():
     st.divider()
 
     # ── ABC Summary Table with badges ────────────────────────────────────────
-    st.subheader("📋 Resumo ABC")
+    st.subheader("📋 Resumo ABC — Vendas")
     abc_summary = abc_df.group_by("abc_class").agg([
         pl.col("full_name").count().alias("full_name"),
         pl.col("revenue").sum().alias("revenue"),
@@ -126,6 +128,70 @@ if not abc_df.is_empty():
     )
 
 else:
-    st.info("⚙️ **Setup necessário:** Execute `etl/build_catalog.py` para carregar os dados de produtos.")
-    st.code("uv run python etl/build_catalog.py\nuv run python etl/ingest_eleve.py", language="bash")
+    # ── Catalog-ready state (no sales yet) ───────────────────────────────────
+    st.markdown("""
+<div style="
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 12px;
+    padding: 20px 28px;
+    margin-bottom: 20px;
+">
+<h4 style="color:#00D4FF;margin:0 0 6px;">⚡ Catálogo carregado — aguardando primeiras vendas</h4>
+<p style="color:#718096;margin:0;font-size:0.9rem;">
+    Registre vendas na aba <strong>DailySales</strong> do Excel master e execute
+    <code>bash scripts/sync_excel.sh</code> para atualizar o dashboard.
+</p>
+</div>
+""", unsafe_allow_html=True)
+
+    # ── Catalog overview by type ──────────────────────────────────────────────
+    conn = get_conn()
+    try:
+        cat_counts = conn.execute("""
+            SELECT category,
+                   COUNT(*)              AS skus,
+                   MIN(price)            AS preco_min,
+                   MAX(price)            AS preco_max,
+                   ROUND(AVG(margin_pct),1) AS margem_media
+            FROM products
+            GROUP BY category
+            ORDER BY category
+        """).pl().to_pandas()
+
+        st.subheader("👕 Catálogo de Camisetas")
+        cols = st.columns(len(cat_counts))
+        cat_colors = {"Camisetas Básicas":"#00D4FF","Baby Look":"#00FF88",
+                      "Regatas":"#FFD700","Camisetas Infantis":"#A78BFA"}
+        for col, (_, row) in zip(cols, cat_counts.iterrows()):
+            color = cat_colors.get(row["category"], "#E2E8F0")
+            col.markdown(f"""
+<div style="
+    background:rgba(255,255,255,0.04);
+    border:1px solid {color}44;
+    border-top:3px solid {color};
+    border-radius:10px;
+    padding:16px;
+    text-align:center;
+">
+<div style="color:{color};font-size:1.6rem;font-weight:700;">{int(row['skus'])}</div>
+<div style="color:#E2E8F0;font-size:0.85rem;font-weight:600;margin:4px 0;">{row['category']}</div>
+<div style="color:#718096;font-size:0.75rem;">R${row['preco_min']:.0f}–R${row['preco_max']:.0f}</div>
+<div style="color:{color};font-size:0.75rem;opacity:0.8;">{row['margem_media']:.1f}% margem média</div>
+</div>
+""", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        inv = conn.execute("""
+            SELECT category, SUM(current_stock) AS total_units
+            FROM inventory GROUP BY category ORDER BY category
+        """).pl().to_pandas()
+
+        st.subheader("📦 Estoque Inicial")
+        c1, c2, c3, c4 = st.columns(4)
+        for col, (_, row) in zip([c1,c2,c3,c4], inv.iterrows()):
+            col.metric(row["category"], f"{int(row['total_units']):,} un.")
+
+    except Exception:
+        st.info("Execute `bash scripts/sync_excel.sh` para carregar o catálogo.")
 

@@ -688,13 +688,18 @@ def build_pivot_cat_month(ws, data: dict[str, pl.DataFrame]):
 # ══════════════════════════════════════════════════════════════════════════════
 # MAIN ORCHESTRATOR
 # ══════════════════════════════════════════════════════════════════════════════
-def build_report(output_path: Path | str | None = None) -> Path:
+def build_report(
+    output_path: Path | str | None = None,
+    selected_sheets: set[str] | list[str] | None = None,
+) -> Path:
     """
-    Build the complete FulôFiló Excel workbook.
+    Build the FulôFiló Excel workbook.
 
     Args:
-        output_path: Optional explicit output path. Defaults to
-                     excel/FuloFilo_Report_YYYY-MM-DD.xlsx
+        output_path:      Optional explicit output path. Defaults to
+                          excel/FuloFilo_Report_YYYY-MM-DD.xlsx
+        selected_sheets:  Optional set/list of sheet names to include.
+                          When None or empty, all 9 sheets are generated.
 
     Returns:
         Path to the generated .xlsx file.
@@ -714,7 +719,7 @@ def build_report(output_path: Path | str | None = None) -> Path:
     wb = Workbook()
     wb.remove(wb.active)   # remove default empty sheet
 
-    sheet_defs = [
+    all_sheet_defs = [
         ("Dashboard",          build_dashboard),
         ("ABC Analysis",       build_abc),
         ("Margin Matrix",      build_margin_matrix),
@@ -725,6 +730,12 @@ def build_report(output_path: Path | str | None = None) -> Path:
         ("Product Categories", build_categories),
         ("Pivot Cat×Month",    build_pivot_cat_month),
     ]
+
+    if selected_sheets:
+        sel = set(selected_sheets)
+        sheet_defs = [(n, fn) for n, fn in all_sheet_defs if n in sel] or all_sheet_defs
+    else:
+        sheet_defs = all_sheet_defs
 
     for sheet_name, builder_fn in sheet_defs:
         print(f"  → Building sheet: {sheet_name}")
