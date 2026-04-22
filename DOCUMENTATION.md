@@ -42,6 +42,19 @@ Sheets:
 - `CategoryOverrides` — manual category assignments
 - `Meta` — workbook metadata
 
+**Row 1 headers (exact names, as implemented in `scripts/sync_excel.py`):**
+
+| Sheet | Columns |
+|-------|---------|
+| Catalog | `sku`, `full_name`, `category`, `unit_cost`, `suggested_price`, `min_stock`, `reorder_qty` |
+| Inventory | `sku`, `product`, `category`, `current_stock`, `min_stock`, `reorder_qty`, `supplier`, `lead_time_days`, `notes` |
+| DailySales | `Date`, `sku`, `Product`, `Quantity`, `Unit_Price`, `Total`, `Payment_Method`, `Source` |
+| Cashflow | `Date`, `Type`, `Category`, `Description`, `Amount`, `Payment_Method` |
+| CategoryOverrides | `sku`, `category`, `subcategory`, `confidence` |
+| Meta | `key`, `value` |
+
+First-time workbook: `uv run python scripts/bootstrap_excel_master.py`
+
 Rules:
 - Operators edit the Excel master directly in Microsoft Excel.
 - Dashboard pages are read-only for all source-owned datasets.
