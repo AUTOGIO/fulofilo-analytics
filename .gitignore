@@ -1,50 +1,84 @@
 # FulôFiló Analytics Pro — .gitignore
 # ──────────────────────────────────────
 
-# Node (Cloudflare worker)
-cf-worker/node_modules/
-
-# Virtual environment
-.venv/
-
-# DuckDB WAL (transient, not the db itself)
-data/fulofilo.duckdb.wal
-
-# NOTE: data/fulofilo.duckdb and data/parquet/ are intentionally tracked
-# so Streamlit Cloud can load them without a separate ETL step.
-
-# Python bytecode
+# ── Python ─────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.egg-info/
+build/
+dist/
 
-# IDE / Editor
-.cursor/
+# ── Virtualenvs / package caches ───────
+.venv/
+venv/
+.uv-cache/
+uv.lock
+
+# ── Test / tooling caches ──────────────
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ── Node (Cloudflare worker) ───────────
+cf-worker/node_modules/
+cf-worker/.wrangler/
+node_modules/
+
+# ── Editors / IDEs ─────────────────────
 .vscode/
 .idea/
+.cursor/
+.claude/
 *.swp
 *.swo
+*~
 
-# macOS
+# ── OS noise ───────────────────────────
 .DS_Store
 .AppleDouble
 .LSOverride
 ._*
 .Spotlight-V100
 .Trashes
+Thumbs.db
+desktop.ini
 
-# Logs
+# ── Logs ───────────────────────────────
 logs/
 *.log
 
-# Generated Excel reports (keep template, not dated outputs)
+# ── Secrets / env ──────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+secrets/
+*.pem
+*.key
+
+# ── Temporary / scratch ────────────────
+tmp/
+.tmp/
+*.tmp
+*.bak
+*.orig
+
+# ── Generated reports / exports ────────
 excel/FuloFilo_Report_*.xlsx
+FuloFilo_Report_*.xlsx
+reports/*.tmp.xlsx
+sales_automation_bundle.zip
 
-# YOLO training runs (large binary artifacts)
+# ── DuckDB transients (keep the .duckdb file) ──
+data/fulofilo.duckdb.wal
+
+# ── Visual POS (YOLO) — large binary artifacts ──
 visual_pos/runs/
-
-# Visual reconciliation generated artifacts
 data/source_catalog/
 data/raw_checkout/
 data/synthetic/
@@ -57,19 +91,5 @@ data/manifests/catalog_manifest.json
 data/manifests/scene_manifest.csv
 data/manifests/split_manifest.csv
 
-# uv lock (reproducible via pyproject.toml)
-uv.lock
-
-# Secrets / env files
-.env
-.env.*
-secrets/
-
-# Temporary files
-tmp/
-*.tmp
-*.bak
-
-__pycache__/
-*.pyc
-
+# NOTE: data/fulofilo.duckdb and data/parquet/ are intentionally tracked
+# so Streamlit Cloud can load them without a separate ETL step.
