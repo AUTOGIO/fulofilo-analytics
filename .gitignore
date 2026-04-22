@@ -77,8 +77,6 @@ sales_automation_bundle.zip
 # ── DuckDB transients (keep the .duckdb file) ──
 data/fulofilo.duckdb.wal
 
-# ── Visual POS (YOLO) — large binary artifacts ──
-visual_pos/runs/
 data/source_catalog/
 data/raw_checkout/
 data/synthetic/

@@ -2,11 +2,7 @@
 
 Dashboard and reporting stack for FulôFiló, optimized for macOS on Apple Silicon.
 
-This repository has two tracks:
-- `Dashboard` (production): Streamlit + DuckDB + Parquet, fed by an Excel master workbook.
-- `Visual POS` (experimental): YOLO/CV workflow under `visual_pos/` and `src/fulofilo_ai/`.
-
-The canonical daily operation in production is the dashboard track.
+The canonical daily operation in production is the dashboard track: Streamlit + DuckDB + Parquet, fed by an Excel master workbook.
 
 ## Canonical Operating Model
 
@@ -82,5 +78,4 @@ during the migration period. It reads from `data/raw/*_master.csv` files.
 
 ## Out of Scope for Dashboard Runbook
 
-- `visual_pos/` and `src/fulofilo_ai/` are not part of the canonical dashboard launch path.
 - `cf-worker/` is deployment infrastructure and not required for local dashboard operations.

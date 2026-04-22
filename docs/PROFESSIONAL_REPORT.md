@@ -149,7 +149,6 @@ flowchart LR
 | Dashboard | **Streamlit** | Multi-page app |
 | Charts | **Plotly** | HUD-themed layouts |
 | Excel I/O | **openpyxl** | Report builder |
-| ML / CV (side track) | **Ultralytics YOLO**, **Torch**, OpenCV (`visual_pos/`) | Not on canonical dashboard launch path |
 
 ---
 
@@ -336,7 +335,7 @@ The sync script enforces:
 | Publish | Generate Excel report | Analyst |
 | Maintain | Dependency updates (`uv lock` / `uv sync`), log rotation | Engineering |
 
-**Side tracks (out of canonical runbook):** `visual_pos/`, `cf-worker/`, Cloudflare deploy scripts.
+**Side tracks (out of canonical runbook):** `cf-worker/`, Cloudflare deploy scripts.
 
 ---
 

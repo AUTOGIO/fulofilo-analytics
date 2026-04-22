@@ -61,7 +61,6 @@ FuloFilo/
 │   ├── README.md               # This file
 │   ├── SHORTCUTS.md            # macOS automation setup
 │   └── DATA_DICTIONARY.md      # Schema reference
-└── visual_pos/                 # YOLO visual POS (experimental)
 ```
 
 ## ETL Pipeline
@@ -101,7 +100,6 @@ dashboard_data.json (Eleve Vendas)
 | Dashboard | Streamlit |
 | Charts | Plotly |
 | Excel export | openpyxl |
-| Computer vision | Ultralytics YOLO |
 
 ## Hardware Target
 

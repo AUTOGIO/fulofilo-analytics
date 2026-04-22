@@ -23,7 +23,6 @@ Legacy track (migration fallback only — do not use for normal operations):
 - See `scripts/adhoc/` for one-time migration scripts
 
 Non-production side tracks:
-- Visual POS CV pipeline (`visual_pos/`, `src/fulofilo_ai/`)
 - Cloudflare worker deployment helper (`cf-worker/`) — custom domain redirects to Streamlit Cloud; use `bash scripts/deploy_cloudflare_worker.sh https://…streamlit.app` (not a Tunnel; see header in `cf-worker/worker.js` if you see Error 1033)
 
 These side tracks are buildable but not part of canonical local dashboard operations.

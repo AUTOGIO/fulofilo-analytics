@@ -88,7 +88,6 @@ Added missing patterns:
 4. **Consolidate docs** — `DOCUMENTATION.md` at root overlaps with `docs/`. Consider moving into `docs/` and keeping README lean.
 5. **Review `FF_Dados_Fiscais` duplicates** (`Saida copy.xls`, `Saida-2.xls`, `Saida-3.xls`) — delete stale copies.
 6. **Consider switching to `uv.lock` tracked** instead of ignored, for reproducible installs. Current `pyproject.toml` alone doesn't pin exact versions.
-7. **Split repo?** `visual_pos/` + `src/fulofilo_ai/` (ML experiment) have a very different release cadence than the dashboard — consider a separate repo if they stabilize.
 
 ---
 
