@@ -4,6 +4,12 @@ FulôFiló Analytics Pro — Excel Report Builder
 Generates a professional 9-sheet .xlsx workbook from parquet data.
 Target: Microsoft 365 Universal Binary on macOS M3.
 
+IMPORTANT — Reports are READ-ONLY outputs.
+    Generated workbooks (excel/FuloFilo_Report_*.xlsx) must never be used as
+    sync targets or operational write destinations. All live data mutations
+    (inventory adjustments, daily sales sync) write exclusively to
+    data/excel/FuloFilo_Master.xlsx. Reports are derived artifacts only.
+
 Usage:
     python excel/build_report.py
     # OR

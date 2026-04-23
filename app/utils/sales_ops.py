@@ -1,14 +1,20 @@
 """
 sales_ops.py — Daily Sales ↔ Excel "Daily Ops" Sheet Sync
 ==========================================================
-Keeps the Excel workbook's "Daily Ops" sheet in sync with
+Keeps FuloFilo_Master.xlsx "Daily Ops" sheet in sync with
 data/raw/daily_sales_TEMPLATE.csv (the manual sales log).
+
+Canonical write target: data/excel/FuloFilo_Master.xlsx  (Daily Ops sheet)
+Generated report workbooks under excel/ are READ-ONLY outputs — never mutated here.
+
+If the "Daily Ops" sheet does not exist in the master workbook it is created
+automatically so this function is safe to call on a fresh master.
 
 Public API
 ----------
 sync_csv_to_excel_daily_ops()
     Read the full CSV, aggregate by day, and rewrite the
-    "Daily Ops" sheet in the latest FuloFilo_Report_*.xlsx.
+    "Daily Ops" sheet in FuloFilo_Master.xlsx.
     Called automatically after every sale registration.
 """
 
@@ -21,9 +27,9 @@ import openpyxl
 from openpyxl.cell.cell import MergedCell
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
-ROOT      = Path(__file__).resolve().parent.parent.parent
-CSV_PATH  = ROOT / "data" / "raw" / "daily_sales_TEMPLATE.csv"
-EXCEL_DIR = ROOT / "excel"
+ROOT        = Path(__file__).resolve().parent.parent.parent
+CSV_PATH    = ROOT / "data" / "raw" / "daily_sales_TEMPLATE.csv"
+MASTER_PATH = ROOT / "data" / "excel" / "FuloFilo_Master.xlsx"
 
 # ── Style constants (match build_report.py HUD palette) ───────────────────────
 _C_HEADER   = "FF080C18"   # near-black
@@ -38,11 +44,6 @@ HEADERS = [
     "Data", "Receita (R$)", "Transações", "Ticket Médio (R$)",
     "Produto Top", "Método Pagto", "Qtd Vendida", "Fonte",
 ]
-
-
-def _latest_excel() -> Path | None:
-    reports = sorted(EXCEL_DIR.glob("FuloFilo_Report_*.xlsx"), reverse=True)
-    return reports[0] if reports else None
 
 
 def _safe_set(cell, value) -> None:
@@ -75,11 +76,12 @@ def _style_data(cell, row_idx: int, is_currency: bool = False) -> None:
 def sync_csv_to_excel_daily_ops() -> str | None:
     """
     Aggregate daily_sales_TEMPLATE.csv by date and write all rows
-    into the Excel 'Daily Ops' sheet. Replaces existing data rows.
-    Returns path to saved Excel or None on failure.
+    into FuloFilo_Master.xlsx 'Daily Ops' sheet. Replaces existing data rows.
+    Creates the sheet if it does not yet exist in the master workbook.
+    Returns path to saved master workbook, or None on failure.
     """
-    xlsx_path = _latest_excel()
-    if not xlsx_path:
+    if not MASTER_PATH.exists():
+        print(f"[sales_ops] Master workbook not found: {MASTER_PATH}")
         return None
     if not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0:
         return None
@@ -109,10 +111,10 @@ def sync_csv_to_excel_daily_ops() -> str | None:
             .sort_values("data", ascending=False)   # most recent first
         )
 
-        # ── Open workbook ─────────────────────────────────────────────────────
-        wb = openpyxl.load_workbook(xlsx_path)
+        # ── Open master workbook — create sheet if missing ────────────────────
+        wb = openpyxl.load_workbook(MASTER_PATH)
         if "Daily Ops" not in wb.sheetnames:
-            return None
+            wb.create_sheet("Daily Ops")
         ws = wb["Daily Ops"]
 
         # Clear all existing data (keep row 1 for header)
@@ -171,8 +173,8 @@ def sync_csv_to_excel_daily_ops() -> str | None:
             cell.font   = Font(bold=True, color=_C_CYAN, name="Calibri", size=10)
             cell.border = _THIN_BORDER
 
-        wb.save(xlsx_path)
-        return str(xlsx_path)
+        wb.save(MASTER_PATH)
+        return str(MASTER_PATH)
 
     except Exception as exc:  # noqa: BLE001
         print(f"[sales_ops] sync_csv_to_excel_daily_ops failed: {exc}")

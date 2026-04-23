@@ -58,6 +58,9 @@ Rules:
 - Operators edit the Excel master directly in Microsoft Excel.
 - Dashboard pages are read-only for all source-owned datasets.
 - Parquet and DuckDB are generated read layers only; never edit them directly.
+- Generated report workbooks (`excel/FuloFilo_Report_*.xlsx`) are **read-only artifacts** — they must never be used as operational sync targets.
+- All runtime stock mutations (inventory adjustments, daily sales sync) write back exclusively to `data/excel/FuloFilo_Master.xlsx` via `app/utils/inventory_ops.py` and `app/utils/sales_ops.py`.
+- Every stock write (decrement or manual adjustment) is appended to `data/logs/stock_audit.csv` as an immutable audit trail.
 
 Canonical sync command:
 ```bash
@@ -72,9 +75,8 @@ Sync status artifact:
 ## 3. Architecture and Data Flow
 
 ```text
-Microsoft Excel
-data/excel/FuloFilo_Master.xlsx
-  (Catalog, Inventory, DailySales, Cashflow, CategoryOverrides, Meta)
+data/excel/FuloFilo_Master.xlsx  ← SINGLE CANONICAL WRITE TARGET
+  (Catalog, Inventory, DailySales, Cashflow, CategoryOverrides, Meta, Daily Ops)
         |
         v
 scripts/sync_excel.py
@@ -93,18 +95,28 @@ data/parquet/*.parquet  (products, inventory, daily_sales, cashflow,
 data/fulofilo.duckdb    (views over parquet)
         |
         v
-Streamlit dashboard (read-only over source-owned data)
+Streamlit dashboard
   app/app.py          — Overview + KPIs
   pages/01_abc_analysis.py    — ABC Pareto
   pages/02_margin_matrix.py   — Margin scatter
-  pages/03_inventory.py       — Stock alerts
-  pages/04_daily_ops.py       — Sales history
+  pages/03_inventory.py       — Stock alerts + adjustments
+  pages/04_daily_ops.py       — Sales entry
   pages/05_categories.py      — Category manager
   pages/06_export_excel.py    — Excel report builder
         |
+        | stock adjustments & daily sales write-back (via inventory_ops / sales_ops)
         v
-excel/build_report.py  (downstream 9-sheet Excel report — read-only artifact)
+data/excel/FuloFilo_Master.xlsx  ← write-back to Inventory + Daily Ops sheets
+data/logs/stock_audit.csv        ← append-only audit trail (every stock mutation)
+        |
+        v
+excel/build_report.py → excel/FuloFilo_Report_*.xlsx  (READ-ONLY artifact — never mutated after generation)
 ```
+
+**Write-back contract:**
+- `app/utils/inventory_ops.py::sync_to_excel()` → writes only to `data/excel/FuloFilo_Master.xlsx` (Inventory sheet, cols D–F)
+- `app/utils/sales_ops.py::sync_csv_to_excel_daily_ops()` → writes only to `data/excel/FuloFilo_Master.xlsx` (Daily Ops sheet)
+- Generated report workbooks under `excel/` receive **zero runtime writes** after build
 
 ---
 
