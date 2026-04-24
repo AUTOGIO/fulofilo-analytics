@@ -1,8 +1,8 @@
 """
 FulôFiló — Product Classification Engine
 =========================================
-Assigns a strategic quadrant label to each product based on dynamic
-median thresholds for volume (qty_sold) and margin (margin_pct).
+Assigns a strategic quadrant label to each product based on fixed business
+thresholds for volume (qty_sold) and margin (margin_pct).
 
 Classification rules:
   - Star       → qty_sold >= vol_threshold  AND margin_pct >= margin_threshold
@@ -10,15 +10,20 @@ Classification rules:
   - Hidden Gem → qty_sold <  vol_threshold  AND margin_pct >= margin_threshold
   - Dog        → qty_sold <  vol_threshold  AND margin_pct <  margin_threshold
 
-Thresholds are always computed from the input dataset (median),
-so they adapt to the current data distribution without hardcoding.
+Fixed thresholds (default, use_fixed_thresholds=True):
+  FIXED_MARGIN_THRESHOLD = 35.0  — 35% margin floor (0–100 scale)
+  FIXED_QTY_THRESHOLD    = 50    — 50 units sold floor
+  These ensure consistent quadrant positions across category filters and time.
 
-Required columns: qty_sold (numeric), margin_pct (numeric, 0–1 scale)
+Dynamic thresholds (use_fixed_thresholds=False):
+  Thresholds computed from dataset median — useful for exploratory analysis.
+
+Required columns: qty_sold (numeric), margin_pct (numeric, 0–100 scale)
 Optional columns: any additional columns pass through unchanged.
 
 Public API
 ----------
-classify_dataframe(df) → pd.DataFrame
+classify_dataframe(df, use_fixed_thresholds=True) → pd.DataFrame
     Enriches the input DataFrame with a 'classification' column.
     Returns a copy; does not mutate input.
 
@@ -26,8 +31,9 @@ classify_product(qty_sold, margin_pct, vol_threshold, margin_threshold) → str
     Classifies a single product given explicit thresholds.
     Used internally and by tests.
 
-compute_thresholds(df) → (float, float)
-    Returns (vol_threshold, margin_threshold) from the dataset.
+compute_thresholds(df, use_fixed=True) → (float, float)
+    Returns (vol_threshold, margin_threshold).
+    If use_fixed=True, returns business constants; else returns medians.
 """
 
 from __future__ import annotations
@@ -48,18 +54,33 @@ UNKNOWN     = "Unknown"
 
 REQUIRED_COLUMNS = {"qty_sold", "margin_pct"}
 
+# ── Fixed business thresholds (0–100 scale for margin_pct) ────────────────────
+# These are stable across filters and periods — change only on business review.
+FIXED_MARGIN_THRESHOLD: float = 35.0   # 35% gross margin floor
+FIXED_QTY_THRESHOLD: float    = 50.0   # 50 units sold floor
+
 
 # ── Core helpers ───────────────────────────────────────────────────────────────
 
-def compute_thresholds(df: pd.DataFrame) -> Tuple[float, float]:
+def compute_thresholds(df: pd.DataFrame, use_fixed: bool = True) -> Tuple[float, float]:
     """
-    Compute dynamic median-based thresholds from the dataset.
+    Return (vol_threshold, margin_threshold) for quadrant classification.
+
+    Parameters
+    ----------
+    df        : product DataFrame with qty_sold and margin_pct columns.
+    use_fixed : if True (default), returns FIXED_QTY_THRESHOLD /
+                FIXED_MARGIN_THRESHOLD regardless of data distribution.
+                if False, computes medians from df (legacy dynamic mode).
 
     Returns
     -------
     (vol_threshold, margin_threshold) as floats.
-    Falls back to 0.0 for each axis if the column is empty or all-null.
+    Falls back to 0.0 per axis if column is empty or all-null (dynamic mode).
     """
+    if use_fixed:
+        return FIXED_QTY_THRESHOLD, FIXED_MARGIN_THRESHOLD
+
     vol_threshold    = float(df["qty_sold"].median())    if not df["qty_sold"].isna().all()    else 0.0
     margin_threshold = float(df["margin_pct"].median())  if not df["margin_pct"].isna().all()  else 0.0
     return vol_threshold, margin_threshold
@@ -105,15 +126,19 @@ def classify_product(
 
 # ── Public API ─────────────────────────────────────────────────────────────────
 
-def classify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def classify_dataframe(df: pd.DataFrame, use_fixed_thresholds: bool = True) -> pd.DataFrame:
     """
     Enrich a product DataFrame with a 'classification' column.
 
     Parameters
     ----------
-    df : pd.DataFrame
+    df                    : pd.DataFrame
         Must contain 'qty_sold' and 'margin_pct' columns.
         All other columns pass through unchanged.
+    use_fixed_thresholds  : bool, default True
+        If True, uses FIXED_QTY_THRESHOLD / FIXED_MARGIN_THRESHOLD for
+        deterministic, filter-stable quadrant assignment.
+        If False, uses dataset medians (legacy dynamic mode).
 
     Returns
     -------
@@ -125,7 +150,7 @@ def classify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     - Empty DataFrame   → returns empty DataFrame with 'classification' column
     - Missing columns   → raises ValueError with clear message
     - All-null columns  → all rows receive 'Unknown'
-    - Single row        → median equals that row's value; row classified as Star
+    - Single row        → classified against fixed thresholds (if use_fixed=True)
     """
     missing = REQUIRED_COLUMNS - set(df.columns)
     if missing:
@@ -152,10 +177,12 @@ def classify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         result["classification"] = UNKNOWN
         return result
 
-    vol_threshold, margin_threshold = compute_thresholds(valid_df)
+    vol_threshold, margin_threshold = compute_thresholds(valid_df, use_fixed=use_fixed_thresholds)
     logger.info(
-        "classify_dataframe: thresholds — vol=%.2f, margin=%.4f (%.1f%%)",
-        vol_threshold, margin_threshold, margin_threshold * 100,
+        "classify_dataframe: thresholds [%s] — vol=%.2f, margin=%.2f",
+        "fixed" if use_fixed_thresholds else "dynamic",
+        vol_threshold,
+        margin_threshold,
     )
 
     result["classification"] = result.apply(

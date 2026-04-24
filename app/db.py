@@ -53,63 +53,114 @@ def get_conn():
     # Register views if Parquet files exist
     if (DATA_DIR / "products.parquet").exists():
         conn.execute(f"CREATE OR REPLACE VIEW products AS SELECT * FROM read_parquet('{DATA_DIR}/products.parquet');")
-    
+
+    # Period-specific views
+    for period_label in ("2024", "2026"):
+        p = DATA_DIR / f"products_{period_label}.parquet"
+        if p.exists():
+            conn.execute(f"CREATE OR REPLACE VIEW products_{period_label} AS SELECT * FROM read_parquet('{p}');")
+
     if (DATA_DIR / "daily_sales.parquet").exists():
         conn.execute(f"CREATE OR REPLACE VIEW sales AS SELECT * FROM read_parquet('{DATA_DIR}/daily_sales.parquet');")
-        
+
     if (DATA_DIR / "inventory.parquet").exists():
         conn.execute(f"CREATE OR REPLACE VIEW inventory AS SELECT * FROM read_parquet('{DATA_DIR}/inventory.parquet');")
-        
+
     if (DATA_DIR / "cashflow.parquet").exists():
         conn.execute(f"CREATE OR REPLACE VIEW cashflow AS SELECT * FROM read_parquet('{DATA_DIR}/cashflow.parquet');")
-        
+
     return conn
+
+
+# ── Period helpers ─────────────────────────────────────────────────────────────
+
+PERIOD_OPTIONS: dict[str, str] = {
+    "Todos os períodos": "ALL",
+    "2024 (Histórico)":  "2024",
+    "2026 (Mar–Abr)":    "2026",
+}
+
+def period_where(period: str) -> str:
+    """Return a SQL WHERE clause fragment for the given period selection.
+
+    Parameters
+    ----------
+    period : one of "ALL", "2024", "2026"
+
+    Returns
+    -------
+    str — e.g. "WHERE period = '2026'" or "" for ALL
+    """
+    if period == "ALL":
+        return ""
+    return f"WHERE period = '{period}'"
+
+
+def period_and(period: str) -> str:
+    """Return an AND clause for use inside an existing WHERE block."""
+    if period == "ALL":
+        return ""
+    return f"AND period = '{period}'"
 
 # --- Analytical Queries ---
 
-def get_summary_kpis(conn):
+def get_summary_kpis(conn, period: str = "ALL"):
     """Get high-level KPIs for the dashboard."""
     try:
-        return conn.execute("""
+        where = period_where(period)
+        return conn.execute(f"""
             SELECT
                 SUM(revenue) AS receita,
                 SUM(qty_sold) AS quantidade,
                 SUM(profit) AS lucro,
                 ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2) AS ticket_medio
             FROM products
+            {where}
         """).fetchone()
     except duckdb.CatalogException:
         return (0, 0, 0, 0)
 
-def get_abc_analysis(conn):
-    """Return ABC classification data."""
+def get_abc_analysis(conn, period: str = "ALL"):
+    """Return ABC classification data ordered by abc_score (weighted rank)."""
     try:
-        return conn.execute("""
+        where = period_where(period)
+        return conn.execute(f"""
             SELECT
                 full_name,
                 category,
                 revenue,
                 qty_sold,
                 profit,
-                abc_class
+                abc_class,
+                abc_score,
+                period
             FROM products
-            ORDER BY revenue DESC
+            {where}
+            ORDER BY abc_score DESC
         """).pl()
     except duckdb.CatalogException:
         return pl.DataFrame()
 
-def get_margin_matrix(conn):
+def get_margin_matrix(conn, period: str = "ALL"):
     """Return data for the Margin Matrix scatter plot."""
     try:
-        return conn.execute("""
+        where = period_where(period)
+        and_clause = "AND qty_sold > 0" if period == "ALL" else "AND qty_sold > 0"
+        # Build the WHERE properly
+        if period == "ALL":
+            filter_clause = "WHERE qty_sold > 0"
+        else:
+            filter_clause = f"WHERE period = '{period}' AND qty_sold > 0"
+        return conn.execute(f"""
             SELECT
                 full_name,
                 category,
                 qty_sold,
                 revenue,
-                margin_pct
+                margin_pct,
+                period
             FROM products
-            WHERE qty_sold > 0
+            {filter_clause}
         """).pl()
     except duckdb.CatalogException:
         return pl.DataFrame()

@@ -1,0 +1,94 @@
+name: Validate & Redeploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/parquet/**"
+      - "data/raw/dashboard_data*.json"
+      - "etl/**"
+      - "app/**"
+      - "core/**"
+  workflow_dispatch:       # allow manual trigger from GitHub UI
+
+jobs:
+  validate:
+    name: Validate data pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install polars duckdb pandas
+
+      - name: Validate parquet integrity
+        run: |
+          python3 - << 'EOF'
+          import polars as pl
+          from pathlib import Path
+
+          OUT = Path("data/parquet")
+          checks = {
+              "products.parquet":      {"min_rows": 1, "required_cols": ["sku","full_name","period","abc_class","abc_score"]},
+              "products_2024.parquet": {"min_rows": 1, "required_cols": ["sku","full_name","period"]},
+              "products_2026.parquet": {"min_rows": 1, "required_cols": ["sku","full_name","period"]},
+              "inventory.parquet":     {"min_rows": 1, "required_cols": ["slug","product","current_stock"]},
+          }
+          errors = []
+          for fname, spec in checks.items():
+              path = OUT / fname
+              if not path.exists():
+                  errors.append(f"MISSING: {fname}")
+                  continue
+              df = pl.read_parquet(path)
+              if len(df) < spec["min_rows"]:
+                  errors.append(f"{fname}: expected >= {spec['min_rows']} rows, got {len(df)}")
+              for col in spec["required_cols"]:
+                  if col not in df.columns:
+                      errors.append(f"{fname}: missing column '{col}'")
+              print(f"  ✅ {fname}: {len(df)} rows, period={df['period'].unique().to_list() if 'period' in df.columns else 'n/a'}")
+
+          if errors:
+              print("\n❌ Validation errors:")
+              for e in errors: print(f"  {e}")
+              raise SystemExit(1)
+
+          print("\n✅ All parquets valid")
+          EOF
+
+      - name: Validate JSON sources
+        run: |
+          python3 - << 'EOF'
+          import json
+          from pathlib import Path
+
+          REQUIRED = ["revenue_report", "quantity_report", "profit_report"]
+          for fname in ["dashboard_data.json", "dashboard_data_2026.json"]:
+              path = Path("data/raw") / fname
+              if not path.exists():
+                  print(f"  ⚠️  {fname} not found — skipping")
+                  continue
+              data = json.loads(path.read_text())
+              for key in REQUIRED:
+                  assert key in data, f"{fname}: missing key '{key}'"
+              counts = {k: len(data[k]) for k in REQUIRED}
+              period = data.get("metadata", {}).get("period", "?")
+              print(f"  ✅ {fname}: {counts} | period: {period}")
+          EOF
+
+      - name: Summary
+        run: |
+          echo "### ✅ Data pipeline validated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Streamlit Cloud will redeploy within ~60s if app files changed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 https://autogio-fulofilo.streamlit.app/" >> $GITHUB_STEP_SUMMARY

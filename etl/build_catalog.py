@@ -1,11 +1,15 @@
 """
 FulôFiló — Master Product Catalog Builder
 ==========================================
-Reads raw dashboard_data.json, resolves all naming issues (truncated names,
-clothing sizes, duplicates), enriches with categories, SKUs, cost, and
-estimated inventory, then writes:
-  - data/parquet/products.parquet   (main analytical table)
-  - data/raw/product_catalog.csv    (human-readable master catalog)
+Reads raw dashboard_data.json (2024) and dashboard_data_2026.json (2026),
+enriches with categories, SKUs, cost, and writes:
+  - data/parquet/products.parquet        (combined all periods — default)
+  - data/parquet/products_2024.parquet   (2024-only)
+  - data/parquet/products_2026.parquet   (2026-only: Março+Abril)
+  - data/raw/product_catalog.csv         (human-readable master catalog)
+
+Each parquet has a `period` column: "2024" | "2026".
+DuckDB queries can filter with WHERE period = '2026'.
 
 Run:
     uv run python etl/build_catalog.py
@@ -92,6 +96,32 @@ CATALOG = [
     {"sku": "00024", "raw_key": "infantil",              "full_name": "Roupa Infantil",            "category": "Roupas Infantil","unit_cost": 16.00, "suggested_price": 40.00,  "min_stock": 15, "reorder_qty": 40},
     {"sku": "00136", "raw_key": "bata infantil",         "full_name": "Bata Infantil",             "category": "Roupas Infantil","unit_cost": 20.00, "suggested_price": 40.00,  "min_stock": 10, "reorder_qty": 30},
     {"sku": "00057", "raw_key": "camisa infantil oxe",   "full_name": "Camisa Infantil Oxe",       "category": "Roupas Infantil","unit_cost": 35.00, "suggested_price": 58.00,  "min_stock": 8,  "reorder_qty": 25},
+    # --- Novos produtos 2026 (ingeridos em Março-Abril) ---
+    {"sku": "10004", "raw_key": "Body conjunto", "full_name": "Body conjunto", "category": "Roupas Adulto", "unit_cost": 27.50, "suggested_price": 60.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10005", "raw_key": "Canga elastano", "full_name": "Canga elastano", "category": "Cangas", "unit_cost": 28.93, "suggested_price": 55.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10006", "raw_key": "Canga viscose", "full_name": "Canga viscose", "category": "Cangas", "unit_cost": 29.57, "suggested_price": 65.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10007", "raw_key": "Color 60", "full_name": "Color 60", "category": "Roupas Adulto", "unit_cost": 24.89, "suggested_price": 60.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10008", "raw_key": "Color XG 65", "full_name": "Color XG 65", "category": "Roupas Adulto", "unit_cost": 29.45, "suggested_price": 65.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10009", "raw_key": "Macaquinho", "full_name": "Macaquinho", "category": "Roupas Adulto", "unit_cost": 31.50, "suggested_price": 47.50, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10010", "raw_key": "Oxe adulto", "full_name": "Oxe adulto", "category": "Roupas Adulto", "unit_cost": 28.22, "suggested_price": 60.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10011", "raw_key": "Oxe infantil", "full_name": "Oxe infantil", "category": "Roupas Infantil", "unit_cost": 26.15, "suggested_price": 55.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10012", "raw_key": "Oxe conjunto", "full_name": "Oxe conjunto", "category": "Roupas Adulto", "unit_cost": 43.15, "suggested_price": 79.13, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10013", "raw_key": "Oxe XG", "full_name": "Oxe XG", "category": "Roupas Adulto", "unit_cost": 31.90, "suggested_price": 65.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10015", "raw_key": "Regional infantil", "full_name": "Regional infantil", "category": "Roupas Infantil", "unit_cost": 27.02, "suggested_price": 45.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10016", "raw_key": "Saída praia", "full_name": "Saída praia", "category": "Roupas Adulto", "unit_cost": 35.46, "suggested_price": 65.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10018", "raw_key": "Vestido algodão", "full_name": "Vestido algodão", "category": "Roupas Adulto", "unit_cost": 23.72, "suggested_price": 59.60, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10020", "raw_key": "Bolsa 55", "full_name": "Bolsa 55", "category": "Bolsas", "unit_cost": 22.00, "suggested_price": 55.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10021", "raw_key": "Bolsinha 15", "full_name": "Bolsinha 15", "category": "Bolsas", "unit_cost": 6.00, "suggested_price": 15.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10022", "raw_key": "Bolsinha 20", "full_name": "Bolsinha 20", "category": "Bolsas", "unit_cost": 10.40, "suggested_price": 20.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10023", "raw_key": "Carteira alça", "full_name": "Carteira alça", "category": "Bolsas", "unit_cost": 6.97, "suggested_price": 15.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10031", "raw_key": "Boné", "full_name": "Boné", "category": "Acessórios", "unit_cost": 28.00, "suggested_price": 60.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10032", "raw_key": "Boneca", "full_name": "Boneca", "category": "Decoração", "unit_cost": 15.43, "suggested_price": 30.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10033", "raw_key": "Chaveiro 5", "full_name": "Chaveiro 5", "category": "Acessórios", "unit_cost": 1.42, "suggested_price": 5.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10036", "raw_key": "Embalagem presente 5", "full_name": "Embalagem presente 5", "category": "Acessórios", "unit_cost": 5.00, "suggested_price": 5.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10037", "raw_key": "Embalagem presente 10", "full_name": "Embalagem presente 10", "category": "Acessórios", "unit_cost": 10.00, "suggested_price": 10.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10038", "raw_key": "Placa kit 100", "full_name": "Placa kit 100", "category": "Kits", "unit_cost": 39.61, "suggested_price": 100.00, "min_stock": 20, "reorder_qty": 60},
+    {"sku": "10039", "raw_key": "Bolsa kit 125", "full_name": "Bolsa kit 125", "category": "Kits", "unit_cost": 66.97, "suggested_price": 125.00, "min_stock": 20, "reorder_qty": 60},
+
 ]
 
 # ---------------------------------------------------------------------------
@@ -104,64 +134,122 @@ catalog_df = pl.DataFrame(CATALOG).with_columns([
 ])
 
 # ---------------------------------------------------------------------------
-# 3. LOAD RAW SALES DATA & MERGE
+# 3. LOAD SALES DATA & BUILD PER-PERIOD PRODUCT TABLES
 # ---------------------------------------------------------------------------
-with open(RAW / "dashboard_data.json") as f:
-    raw = json.load(f)
+ABC_REVENUE_WEIGHT = 0.70
+ABC_PROFIT_WEIGHT  = 0.30
 
-revenue_df = pl.DataFrame(raw["revenue_report"])
-quantity_df = pl.DataFrame(raw["quantity_report"])
+PERIOD_SOURCES = [
+    ("2024", RAW / "dashboard_data.json"),
+    ("2026", RAW / "dashboard_data_2026.json"),
+]
 
-# quantity_report contains both revenue and profit with full item names;
-# profit_report has truncated item names that won't join, so we use quantity_report.
-revenue_agg = revenue_df.group_by("item").agg([
-    pl.col("quantity").sum().alias("qty_sold"),
-    pl.col("revenue").sum().alias("revenue"),
-])
-profit_agg = quantity_df.group_by("item").agg([
-    pl.col("profit").sum().alias("profit"),
-])
 
-# Merge with catalog on raw_key
-products = (
-    catalog_df
-    .join(revenue_agg, left_on="raw_key", right_on="item", how="left")
-    .join(profit_agg,  left_on="raw_key", right_on="item", how="left")
-    .with_columns([
-        pl.col("qty_sold").fill_null(0),
-        pl.col("revenue").fill_null(0.0),
-        pl.col("profit").fill_null(0.0),
-        (pl.col("revenue") / pl.when(pl.col("qty_sold") == 0).then(1).otherwise(pl.col("qty_sold"))).round(2).alias("avg_price"),
+def build_period_products(catalog: pl.DataFrame, json_path: Path, period: str) -> pl.DataFrame:
+    """Merge catalog with sales data from a single period JSON."""
+    if not json_path.exists():
+        print(f"  ⚠️  {json_path.name} not found — skipping period {period}")
+        return pl.DataFrame()
+
+    with open(json_path) as f:
+        raw = json.load(f)
+
+    revenue_df  = pl.DataFrame(raw["revenue_report"])
+    quantity_df = pl.DataFrame(raw["quantity_report"])
+
+    revenue_agg = revenue_df.group_by("item").agg([
+        pl.col("quantity").sum().alias("qty_sold"),
+        pl.col("revenue").sum().alias("revenue"),
     ])
-    .sort("revenue", descending=True)
-)
+    profit_agg = quantity_df.group_by("item").agg([
+        pl.col("profit").sum().alias("profit"),
+    ])
+
+    df = (
+        catalog
+        .join(revenue_agg, left_on="raw_key", right_on="item", how="left")
+        .join(profit_agg,  left_on="raw_key", right_on="item", how="left")
+        .with_columns([
+            pl.col("qty_sold").fill_null(0),
+            pl.col("revenue").fill_null(0.0),
+            pl.col("profit").fill_null(0.0),
+            (pl.col("revenue") / pl.when(pl.col("qty_sold") == 0)
+                .then(1).otherwise(pl.col("qty_sold"))).round(2).alias("avg_price"),
+            pl.lit(period).alias("period"),
+        ])
+    )
+
+    # Keep only products with sales OR products whose SKU belongs to this period
+    # (new 10000-series SKUs belong to 2026; 00xxx SKUs belong to 2024)
+    if period == "2026":
+        df = df.filter(
+            (pl.col("qty_sold") > 0) | pl.col("sku").str.starts_with("10")
+        )
+    else:
+        df = df.filter(
+            (pl.col("qty_sold") > 0) | (~pl.col("sku").str.starts_with("10"))
+        )
+
+    # ABC score + classification
+    df = df.with_columns([
+        (pl.col("revenue") * ABC_REVENUE_WEIGHT +
+         pl.col("profit")  * ABC_PROFIT_WEIGHT).round(2).alias("abc_score"),
+    ])
+    df = df.sort("abc_score", descending=True)
+    total_score = df["abc_score"].sum()
+    if total_score > 0:
+        df = df.with_columns([pl.col("abc_score").cum_sum().alias("cum_score")])
+        df = df.with_columns([
+            (pl.col("cum_score") / total_score * 100).round(1).alias("cum_pct"),
+            pl.when(pl.col("cum_score") / total_score <= 0.80).then(pl.lit("A"))
+              .when(pl.col("cum_score") / total_score <= 0.95).then(pl.lit("B"))
+              .otherwise(pl.lit("C")).alias("abc_class"),
+        ])
+    else:
+        df = df.with_columns([
+            pl.lit(0.0).alias("cum_score"),
+            pl.lit(0.0).alias("cum_pct"),
+            pl.lit("C").alias("abc_class"),
+        ])
+    return df
+
 
 # ---------------------------------------------------------------------------
-# 4. ABC CLASSIFICATION
+# 4. BUILD ALL PERIOD PARQUETS
 # ---------------------------------------------------------------------------
-total_revenue = products["revenue"].sum()
-products = products.with_columns([
-    pl.col("revenue").cum_sum().alias("cum_revenue"),
-])
-products = products.with_columns([
-    (pl.col("cum_revenue") / total_revenue * 100).round(1).alias("cum_pct"),
-    pl.when(pl.col("cum_revenue") / total_revenue <= 0.80).then(pl.lit("A"))
-      .when(pl.col("cum_revenue") / total_revenue <= 0.95).then(pl.lit("B"))
-      .otherwise(pl.lit("C")).alias("abc_class"),
-])
+period_dfs: dict[str, pl.DataFrame] = {}
+
+for period_label, src_path in PERIOD_SOURCES:
+    print(f"\n🔄 Building period: {period_label} ← {src_path.name}")
+    df = build_period_products(catalog_df, src_path, period_label)
+    if df.is_empty():
+        continue
+    period_dfs[period_label] = df
+    out_path = OUT / f"products_{period_label}.parquet"
+    df.write_parquet(out_path)
+    rev = df["revenue"].sum()
+    print(f"  ✅ products_{period_label}.parquet: {len(df)} products | R$ {rev:,.2f}")
+
+# Combined parquet (all periods stacked)
+if period_dfs:
+    combined = pl.concat(list(period_dfs.values()), how="diagonal_relaxed")
+    combined.write_parquet(OUT / "products.parquet")
+    combined.write_csv(RAW / "product_catalog.csv")
+    print(f"\n✅ products.parquet (combined): {len(combined)} rows across {len(period_dfs)} periods")
 
 # ---------------------------------------------------------------------------
-# 5. WRITE OUTPUTS
+# 5. SUMMARY
 # ---------------------------------------------------------------------------
-products.write_parquet(OUT / "products.parquet")
-products.write_csv(RAW / "product_catalog.csv")
+print(f"\n📊 ABC Summary (weighted: {int(ABC_REVENUE_WEIGHT*100)}% receita + {int(ABC_PROFIT_WEIGHT*100)}% lucro):")
+for label, df in period_dfs.items():
+    abc_summary = df.group_by("abc_class").agg([
+        pl.len().alias("count"),
+        pl.col("revenue").sum().alias("total_revenue"),
+    ]).sort("abc_class")
+    print(f"\n  Period {label}:")
+    for row in abc_summary.iter_rows(named=True):
+        print(f"    Classe {row['abc_class']}: {row['count']} produtos | R$ {row['total_revenue']:,.2f}")
 
-print(f"✅ products.parquet: {len(products)} products")
-print(f"✅ product_catalog.csv: {len(products)} products")
-print(f"\n📊 ABC Summary:")
-abc_summary = products.group_by("abc_class").agg([
-    pl.len().alias("count"),
-    pl.col("revenue").sum().alias("total_revenue"),
-]).sort("abc_class")
-print(abc_summary)
-print(f"\n💰 Total Revenue: R$ {total_revenue:,.2f}")
+total_revenue = combined["revenue"].sum() if period_dfs else 0
+print(f"\n💰 Receita Total (all periods): R$ {total_revenue:,.2f}")
+print(f"📈 Scoring weights: revenue×{ABC_REVENUE_WEIGHT} + profit×{ABC_PROFIT_WEIGHT}")

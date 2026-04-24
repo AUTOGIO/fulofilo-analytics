@@ -4,6 +4,586 @@
     "period": "01/01/2024-02/12/2024",
     "source": "Eleve Vendas reports"
   },
+  "revenue_report": [
+    {
+      "item": "regional",
+      "quantity": 3202.0,
+      "revenue": 159810.22
+    },
+    {
+      "item": "Canga areia",
+      "quantity": 2800.0,
+      "revenue": 112354.47
+    },
+    {
+      "item": "nécessaire stylo",
+      "quantity": 6901.0,
+      "revenue": 104084.69
+    },
+    {
+      "item": "kit 65",
+      "quantity": 787.0,
+      "revenue": 50925.49
+    },
+    {
+      "item": "kit 110",
+      "quantity": 464.0,
+      "revenue": 49206.04
+    },
+    {
+      "item": "caneca louça",
+      "quantity": 1265.0,
+      "revenue": 43992.03
+    },
+    {
+      "item": "chaveiro 10",
+      "quantity": 4341.0,
+      "revenue": 43292.2
+    },
+    {
+      "item": "alça",
+      "quantity": 3420.0,
+      "revenue": 40820.14
+    },
+    {
+      "item": "placas",
+      "quantity": 2725.0,
+      "revenue": 39887.14
+    },
+    {
+      "item": "bolsa 48",
+      "quantity": 502.0,
+      "revenue": 22663.46
+    },
+    {
+      "item": "conjunto masc oxe",
+      "quantity": 315.0,
+      "revenue": 20874.35
+    },
+    {
+      "item": "caneca 20",
+      "quantity": 1006.0,
+      "revenue": 20094.45
+    },
+    {
+      "item": "eco bag",
+      "quantity": 668.0,
+      "revenue": 16684.42
+    },
+    {
+      "item": "infantil",
+      "quantity": 368.0,
+      "revenue": 14656.0
+    },
+    {
+      "item": "bata adulto",
+      "quantity": 224.0,
+      "revenue": 13432.28
+    },
+    {
+      "item": "sereia",
+      "quantity": 70.0,
+      "revenue": 13155.8
+    },
+    {
+      "item": "vestido algodão pp a g",
+      "quantity": 227.0,
+      "revenue": 11342.64
+    },
+    {
+      "item": "caneca 30",
+      "quantity": 279.0,
+      "revenue": 8368.24
+    },
+    {
+      "item": "camisa infantil oxe",
+      "quantity": 138.0,
+      "revenue": 7951.7
+    },
+    {
+      "item": "body oxe",
+      "quantity": 218.0,
+      "revenue": 7614.45
+    },
+    {
+      "item": "porta lingerie",
+      "quantity": 378.0,
+      "revenue": 7595.38
+    },
+    {
+      "item": "placa",
+      "quantity": 442.0,
+      "revenue": 7276.64
+    },
+    {
+      "item": "ima12",
+      "quantity": 569.0,
+      "revenue": 6808.41
+    },
+    {
+      "item": "macaquinho fem oxe",
+      "quantity": 102.0,
+      "revenue": 5596.07
+    },
+    {
+      "item": "vestido oxe 60",
+      "quantity": 111.0,
+      "revenue": 5562.26
+    },
+    {
+      "item": "macaquinho unissex 45",
+      "quantity": 109.0,
+      "revenue": 4902.35
+    },
+    {
+      "item": "bata infantil",
+      "quantity": 106.0,
+      "revenue": 4236.17
+    },
+    {
+      "item": "body",
+      "quantity": 149.0,
+      "revenue": 4168.15
+    },
+    {
+      "item": "macaquinho fem 40",
+      "quantity": 74.0,
+      "revenue": 2953.73
+    },
+    {
+      "item": "40",
+      "quantity": 72.0,
+      "revenue": 2780.31
+    },
+    {
+      "item": "65",
+      "quantity": 42.0,
+      "revenue": 2723.22
+    },
+    {
+      "item": "50",
+      "quantity": 41.0,
+      "revenue": 2030.0
+    },
+    {
+      "item": "55",
+      "quantity": 34.0,
+      "revenue": 1863.96
+    },
+    {
+      "item": "3 estágios",
+      "quantity": 22.0,
+      "revenue": 1537.12
+    },
+    {
+      "item": "mochila",
+      "quantity": 22.0,
+      "revenue": 1420.0
+    },
+    {
+      "item": "45",
+      "quantity": 27.0,
+      "revenue": 1213.78
+    },
+    {
+      "item": "ima 15",
+      "quantity": 78.0,
+      "revenue": 1056.9
+    },
+    {
+      "item": "vestido algodão gg",
+      "quantity": 17.0,
+      "revenue": 935.0
+    },
+    {
+      "item": "bata  xg",
+      "quantity": 8.0,
+      "revenue": 520.0
+    },
+    {
+      "item": "carteira pequena",
+      "quantity": 50.0,
+      "revenue": 499.7
+    },
+    {
+      "item": "bolsinha sereia",
+      "quantity": 17.0,
+      "revenue": 425.0
+    },
+    {
+      "item": "60",
+      "quantity": 4.0,
+      "revenue": 236.84
+    },
+    {
+      "item": "caneca 35",
+      "quantity": 5.0,
+      "revenue": 175.0
+    },
+    {
+      "item": "kit mochila",
+      "quantity": 1.0,
+      "revenue": 105.0
+    },
+    {
+      "item": "mochila",
+      "quantity": 1.0,
+      "revenue": 82.76
+    },
+    {
+      "item": "canga 35",
+      "quantity": 2.0,
+      "revenue": 70.0
+    },
+    {
+      "item": "chaveiro peq",
+      "quantity": 6.0,
+      "revenue": 37.89
+    },
+    {
+      "item": "imã 15",
+      "quantity": 1.0,
+      "revenue": 15.0
+    }
+  ],
+  "quantity_report": [
+    {
+      "cost": 7.0,
+      "item": "nécessaire stylo",
+      "profit": 55777.69,
+      "quantity": 6901.0,
+      "revenue": 104084.69
+    },
+    {
+      "cost": 6.0,
+      "item": "chaveiro 10",
+      "profit": 17246.2,
+      "quantity": 4341.0,
+      "revenue": 43292.2
+    },
+    {
+      "cost": 4.5,
+      "item": "alça",
+      "profit": 25430.14,
+      "quantity": 3420.0,
+      "revenue": 40820.14
+    },
+    {
+      "cost": 26.0,
+      "item": "regional",
+      "profit": 76558.22,
+      "quantity": 3202.0,
+      "revenue": 159810.22
+    },
+    {
+      "cost": 20.0,
+      "item": "Canga areia",
+      "profit": 56354.47,
+      "quantity": 2800.0,
+      "revenue": 112354.47
+    },
+    {
+      "cost": 6.0,
+      "item": "placas",
+      "profit": 23537.14,
+      "quantity": 2725.0,
+      "revenue": 39887.14
+    },
+    {
+      "cost": 15.0,
+      "item": "caneca louça",
+      "profit": 25017.03,
+      "quantity": 1265.0,
+      "revenue": 43992.03
+    },
+    {
+      "cost": 12.0,
+      "item": "caneca 20",
+      "profit": 8022.45,
+      "quantity": 1006.0,
+      "revenue": 20094.45
+    },
+    {
+      "cost": 31.5,
+      "item": "kit 65",
+      "profit": 26134.99,
+      "quantity": 787.0,
+      "revenue": 50925.49
+    },
+    {
+      "cost": 12.0,
+      "item": "eco bag",
+      "profit": 8668.42,
+      "quantity": 668.0,
+      "revenue": 16684.42
+    },
+    {
+      "cost": 6.0,
+      "item": "ima12",
+      "profit": 3394.41,
+      "quantity": 569.0,
+      "revenue": 6808.41
+    },
+    {
+      "cost": 20.0,
+      "item": "bolsa 48",
+      "profit": 12623.46,
+      "quantity": 502.0,
+      "revenue": 22663.46
+    },
+    {
+      "cost": 55.0,
+      "item": "kit 110",
+      "profit": 23686.04,
+      "quantity": 464.0,
+      "revenue": 49206.04
+    },
+    {
+      "cost": 6.0,
+      "item": "placa",
+      "profit": 4624.64,
+      "quantity": 442.0,
+      "revenue": 7276.64
+    },
+    {
+      "cost": 8.0,
+      "item": "porta lingerie",
+      "profit": 4571.38,
+      "quantity": 378.0,
+      "revenue": 7595.38
+    },
+    {
+      "cost": 16.0,
+      "item": "infantil",
+      "profit": 8768.0,
+      "quantity": 368.0,
+      "revenue": 14656.0
+    },
+    {
+      "cost": 35.0,
+      "item": "conjunto masc oxe",
+      "profit": 9849.35,
+      "quantity": 315.0,
+      "revenue": 20874.35
+    },
+    {
+      "cost": 15.0,
+      "item": "caneca 30",
+      "profit": 4183.24,
+      "quantity": 279.0,
+      "revenue": 8368.24
+    },
+    {
+      "cost": 25.0,
+      "item": "vestido algodão pp a g",
+      "profit": 5667.639999999999,
+      "quantity": 227.0,
+      "revenue": 11342.64
+    },
+    {
+      "cost": 22.0,
+      "item": "bata adulto",
+      "profit": 8504.28,
+      "quantity": 224.0,
+      "revenue": 13432.28
+    },
+    {
+      "cost": 15.0,
+      "item": "body oxe",
+      "profit": 4344.45,
+      "quantity": 218.0,
+      "revenue": 7614.45
+    },
+    {
+      "cost": 12.0,
+      "item": "body",
+      "profit": 2380.15,
+      "quantity": 149.0,
+      "revenue": 4168.15
+    },
+    {
+      "cost": 35.0,
+      "item": "camisa infantil oxe",
+      "profit": 3121.7,
+      "quantity": 138.0,
+      "revenue": 7951.7
+    },
+    {
+      "cost": 24.0,
+      "item": "vestido oxe 60",
+      "profit": 2898.26,
+      "quantity": 111.0,
+      "revenue": 5562.26
+    },
+    {
+      "cost": 20.0,
+      "item": "macaquinho unissex 45",
+      "profit": 2722.3500000000004,
+      "quantity": 109.0,
+      "revenue": 4902.35
+    },
+    {
+      "cost": 20.0,
+      "item": "bata infantil",
+      "profit": 2116.17,
+      "quantity": 106.0,
+      "revenue": 4236.17
+    },
+    {
+      "cost": 35.0,
+      "item": "macaquinho fem oxe",
+      "profit": 2026.0699999999997,
+      "quantity": 102.0,
+      "revenue": 5596.07
+    },
+    {
+      "cost": 10.0,
+      "item": "ima 15",
+      "profit": 276.9,
+      "quantity": 78.0,
+      "revenue": 1056.9
+    },
+    {
+      "cost": 25.0,
+      "item": "macaquinho fem 40",
+      "profit": 1103.73,
+      "quantity": 74.0,
+      "revenue": 2953.73
+    },
+    {
+      "cost": 20.0,
+      "item": "40",
+      "profit": 1340.31,
+      "quantity": 72.0,
+      "revenue": 2780.31
+    },
+    {
+      "cost": 100.0,
+      "item": "sereia",
+      "profit": 6155.8,
+      "quantity": 70.0,
+      "revenue": 13155.8
+    },
+    {
+      "cost": 3.5,
+      "item": "carteira pequena",
+      "profit": 324.7,
+      "quantity": 50.0,
+      "revenue": 499.7
+    },
+    {
+      "cost": 35.0,
+      "item": "65",
+      "profit": 1253.2199999999998,
+      "quantity": 42.0,
+      "revenue": 2723.22
+    },
+    {
+      "cost": 28.0,
+      "item": "50",
+      "profit": 882.0,
+      "quantity": 41.0,
+      "revenue": 2030.0
+    },
+    {
+      "cost": 30.0,
+      "item": "55",
+      "profit": 843.96,
+      "quantity": 34.0,
+      "revenue": 1863.96
+    },
+    {
+      "cost": 25.0,
+      "item": "45",
+      "profit": 538.78,
+      "quantity": 27.0,
+      "revenue": 1213.78
+    },
+    {
+      "cost": 30.0,
+      "item": "3 estágios",
+      "profit": 877.1199999999999,
+      "quantity": 22.0,
+      "revenue": 1537.12
+    },
+    {
+      "cost": 26.0,
+      "item": "mochila",
+      "profit": 848.0,
+      "quantity": 22.0,
+      "revenue": 1420.0
+    },
+    {
+      "cost": 30.0,
+      "item": "vestido algodão gg",
+      "profit": 425.0,
+      "quantity": 17.0,
+      "revenue": 935.0
+    },
+    {
+      "cost": 15.0,
+      "item": "bolsinha sereia",
+      "profit": 170.0,
+      "quantity": 17.0,
+      "revenue": 425.0
+    },
+    {
+      "cost": 30.0,
+      "item": "bata  xg",
+      "profit": 280.0,
+      "quantity": 8.0,
+      "revenue": 520.0
+    },
+    {
+      "cost": 2.5,
+      "item": "chaveiro peq",
+      "profit": 22.89,
+      "quantity": 6.0,
+      "revenue": 37.89
+    },
+    {
+      "cost": 16.0,
+      "item": "caneca 35",
+      "profit": 95.0,
+      "quantity": 5.0,
+      "revenue": 175.0
+    },
+    {
+      "cost": 30.0,
+      "item": "60",
+      "profit": 116.84,
+      "quantity": 4.0,
+      "revenue": 236.84
+    },
+    {
+      "cost": 15.0,
+      "item": "canga 35",
+      "profit": 40.0,
+      "quantity": 2.0,
+      "revenue": 70.0
+    },
+    {
+      "cost": 55.0,
+      "item": "kit mochila",
+      "profit": 50.0,
+      "quantity": 1.0,
+      "revenue": 105.0
+    },
+    {
+      "cost": 50.0,
+      "item": "mochila",
+      "profit": 32.760000000000005,
+      "quantity": 1.0,
+      "revenue": 82.76
+    },
+    {
+      "cost": 7.0,
+      "item": "imã 15",
+      "profit": 8.0,
+      "quantity": 1.0,
+      "revenue": 15.0
+    }
+  ],
   "profit_report": [
     {
       "code": "00153",
@@ -292,586 +872,72 @@
       "item": "o",
       "quantity": 111.0,
       "total": 6245.0
-    }
-  ],
-  "quantity_report": [
-    {
-      "cost": 7.0,
-      "item": "nécessaire stylo",
-      "profit": 55777.69,
-      "quantity": 6901.0,
-      "revenue": 104084.69
     },
     {
-      "cost": 6.0,
-      "item": "chaveiro 10",
-      "profit": 17246.199999999997,
-      "quantity": 4341.0,
-      "revenue": 43292.2
-    },
-    {
-      "cost": 4.5,
-      "item": "alça",
-      "profit": 25430.14,
-      "quantity": 3420.0,
-      "revenue": 40820.14
-    },
-    {
-      "cost": 26.0,
-      "item": "regional",
-      "profit": 76558.22,
-      "quantity": 3202.0,
-      "revenue": 159810.22
-    },
-    {
-      "cost": 20.0,
-      "item": "Canga areia",
-      "profit": 56354.47,
-      "quantity": 2800.0,
-      "revenue": 112354.47
-    },
-    {
-      "cost": 6.0,
-      "item": "placas",
-      "profit": 23537.14,
-      "quantity": 2725.0,
-      "revenue": 39887.14
-    },
-    {
-      "cost": 15.0,
-      "item": "caneca louça",
-      "profit": 25017.03,
-      "quantity": 1265.0,
-      "revenue": 43992.03
-    },
-    {
-      "cost": 12.0,
-      "item": "caneca 20",
-      "profit": 8022.450000000001,
-      "quantity": 1006.0,
-      "revenue": 20094.45
-    },
-    {
-      "cost": 31.5,
-      "item": "kit 65",
-      "profit": 26134.99,
-      "quantity": 787.0,
-      "revenue": 50925.49
-    },
-    {
-      "cost": 12.0,
-      "item": "eco bag",
-      "profit": 8668.419999999998,
-      "quantity": 668.0,
-      "revenue": 16684.42
-    },
-    {
-      "cost": 6.0,
-      "item": "ima12",
-      "profit": 3394.41,
-      "quantity": 569.0,
-      "revenue": 6808.41
-    },
-    {
-      "cost": 20.0,
-      "item": "bolsa 48",
-      "profit": 12623.46,
-      "quantity": 502.0,
-      "revenue": 22663.46
-    },
-    {
-      "cost": 55.0,
-      "item": "kit 110",
-      "profit": 23686.04,
-      "quantity": 464.0,
-      "revenue": 49206.04
-    },
-    {
-      "cost": 6.0,
-      "item": "placa",
-      "profit": 4624.64,
-      "quantity": 442.0,
-      "revenue": 7276.64
-    },
-    {
-      "cost": 8.0,
-      "item": "porta lingerie",
-      "profit": 4571.38,
-      "quantity": 378.0,
-      "revenue": 7595.38
-    },
-    {
-      "cost": 16.0,
-      "item": "infantil",
-      "profit": 8768.0,
-      "quantity": 368.0,
-      "revenue": 14656.0
-    },
-    {
-      "cost": 35.0,
-      "item": "conjunto masc oxe",
-      "profit": 9849.35,
-      "quantity": 315.0,
-      "revenue": 20874.35
-    },
-    {
-      "cost": 15.0,
-      "item": "caneca 30",
-      "profit": 4183.24,
-      "quantity": 279.0,
-      "revenue": 8368.24
-    },
-    {
-      "cost": 25.0,
-      "item": "vestido algodão pp a g",
-      "profit": 5667.639999999999,
-      "quantity": 227.0,
-      "revenue": 11342.64
-    },
-    {
-      "cost": 22.0,
+      "code": "10000",
       "item": "bata adulto",
-      "profit": 8504.28,
-      "quantity": 224.0,
-      "revenue": 13432.28
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "cost": 15.0,
-      "item": "body oxe",
-      "profit": 4344.45,
-      "quantity": 218.0,
-      "revenue": 7614.45
-    },
-    {
-      "cost": 12.0,
-      "item": "body",
-      "profit": 2380.1499999999996,
-      "quantity": 149.0,
-      "revenue": 4168.15
-    },
-    {
-      "cost": 35.0,
-      "item": "camisa infantil oxe",
-      "profit": 3121.7,
-      "quantity": 138.0,
-      "revenue": 7951.7
-    },
-    {
-      "cost": 24.0,
-      "item": "vestido oxe 60",
-      "profit": 2898.26,
-      "quantity": 111.0,
-      "revenue": 5562.26
-    },
-    {
-      "cost": 20.0,
-      "item": "macaquinho unissex 45",
-      "profit": 2722.3500000000004,
-      "quantity": 109.0,
-      "revenue": 4902.35
-    },
-    {
-      "cost": 20.0,
+      "code": "10001",
       "item": "bata infantil",
-      "profit": 2116.17,
-      "quantity": 106.0,
-      "revenue": 4236.17
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "cost": 35.0,
-      "item": "macaquinho fem oxe",
-      "profit": 2026.0699999999997,
-      "quantity": 102.0,
-      "revenue": 5596.07
-    },
-    {
-      "cost": 10.0,
-      "item": "ima 15",
-      "profit": 276.9000000000001,
-      "quantity": 78.0,
-      "revenue": 1056.9
-    },
-    {
-      "cost": 25.0,
-      "item": "macaquinho fem 40",
-      "profit": 1103.73,
-      "quantity": 74.0,
-      "revenue": 2953.73
-    },
-    {
-      "cost": 20.0,
-      "item": "40",
-      "profit": 1340.31,
-      "quantity": 72.0,
-      "revenue": 2780.31
-    },
-    {
-      "cost": 100.0,
-      "item": "sereia",
-      "profit": 6155.799999999999,
-      "quantity": 70.0,
-      "revenue": 13155.8
-    },
-    {
-      "cost": 3.5,
-      "item": "carteira pequena",
-      "profit": 324.7,
-      "quantity": 50.0,
-      "revenue": 499.7
-    },
-    {
-      "cost": 35.0,
-      "item": "65",
-      "profit": 1253.2199999999998,
-      "quantity": 42.0,
-      "revenue": 2723.22
-    },
-    {
-      "cost": 28.0,
-      "item": "50",
-      "profit": 882.0,
-      "quantity": 41.0,
-      "revenue": 2030.0
-    },
-    {
-      "cost": 30.0,
-      "item": "55",
-      "profit": 843.96,
-      "quantity": 34.0,
-      "revenue": 1863.96
-    },
-    {
-      "cost": 25.0,
-      "item": "45",
-      "profit": 538.78,
-      "quantity": 27.0,
-      "revenue": 1213.78
-    },
-    {
-      "cost": 30.0,
-      "item": "3 estágios",
-      "profit": 877.1199999999999,
-      "quantity": 22.0,
-      "revenue": 1537.12
-    },
-    {
-      "cost": 26.0,
-      "item": "mochila",
-      "profit": 848.0,
-      "quantity": 22.0,
-      "revenue": 1420.0
-    },
-    {
-      "cost": 30.0,
-      "item": "vestido algodão gg",
-      "profit": 425.0,
-      "quantity": 17.0,
-      "revenue": 935.0
-    },
-    {
-      "cost": 15.0,
-      "item": "bolsinha sereia",
-      "profit": 170.0,
-      "quantity": 17.0,
-      "revenue": 425.0
-    },
-    {
-      "cost": 30.0,
-      "item": "bata  xg",
-      "profit": 280.0,
-      "quantity": 8.0,
-      "revenue": 520.0
-    },
-    {
-      "cost": 2.5,
-      "item": "chaveiro peq",
-      "profit": 22.89,
-      "quantity": 6.0,
-      "revenue": 37.89
-    },
-    {
-      "cost": 16.0,
-      "item": "caneca 35",
-      "profit": 95.0,
-      "quantity": 5.0,
-      "revenue": 175.0
-    },
-    {
-      "cost": 30.0,
-      "item": "60",
-      "profit": 116.84,
-      "quantity": 4.0,
-      "revenue": 236.84
-    },
-    {
-      "cost": 15.0,
-      "item": "canga 35",
-      "profit": 40.0,
-      "quantity": 2.0,
-      "revenue": 70.0
-    },
-    {
-      "cost": 55.0,
-      "item": "kit mochila",
-      "profit": 50.0,
-      "quantity": 1.0,
-      "revenue": 105.0
-    },
-    {
-      "cost": 50.0,
-      "item": "mochila",
-      "profit": 32.760000000000005,
-      "quantity": 1.0,
-      "revenue": 82.76
-    },
-    {
-      "cost": 7.0,
-      "item": "imã 15",
-      "profit": 8.0,
-      "quantity": 1.0,
-      "revenue": 15.0
-    }
-  ],
-  "revenue_report": [
-    {
-      "item": "regional",
-      "quantity": 3202.0,
-      "revenue": 159810.22
-    },
-    {
-      "item": "Canga areia",
-      "quantity": 2800.0,
-      "revenue": 112354.47
-    },
-    {
-      "item": "nécessaire stylo",
-      "quantity": 6901.0,
-      "revenue": 104084.69
-    },
-    {
-      "item": "kit 65",
-      "quantity": 787.0,
-      "revenue": 50925.49
-    },
-    {
-      "item": "kit 110",
-      "quantity": 464.0,
-      "revenue": 49206.04
-    },
-    {
+      "code": "10030",
       "item": "caneca louça",
-      "quantity": 1265.0,
-      "revenue": 43992.03
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "chaveiro 10",
-      "quantity": 4341.0,
-      "revenue": 43292.2
-    },
-    {
-      "item": "alça",
-      "quantity": 3420.0,
-      "revenue": 40820.14
-    },
-    {
-      "item": "placas",
-      "quantity": 2725.0,
-      "revenue": 39887.14
-    },
-    {
-      "item": "bolsa 48",
-      "quantity": 502.0,
-      "revenue": 22663.46
-    },
-    {
-      "item": "conjunto masc oxe",
-      "quantity": 315.0,
-      "revenue": 20874.35
-    },
-    {
+      "code": "10028",
       "item": "caneca 20",
-      "quantity": 1006.0,
-      "revenue": 20094.45
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "eco bag",
-      "quantity": 668.0,
-      "revenue": 16684.42
-    },
-    {
-      "item": "infantil",
-      "quantity": 368.0,
-      "revenue": 14656.0
-    },
-    {
-      "item": "bata adulto",
-      "quantity": 224.0,
-      "revenue": 13432.28
-    },
-    {
-      "item": "sereia",
-      "quantity": 70.0,
-      "revenue": 13155.8
-    },
-    {
-      "item": "vestido algodão pp a g",
-      "quantity": 227.0,
-      "revenue": 11342.64
-    },
-    {
+      "code": "10029",
       "item": "caneca 30",
-      "quantity": 279.0,
-      "revenue": 8368.24
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "camisa infantil oxe",
-      "quantity": 138.0,
-      "revenue": 7951.7
+      "code": "10034",
+      "item": "chaveiro 10",
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "body oxe",
-      "quantity": 218.0,
-      "revenue": 7614.45
+      "code": "10025",
+      "item": "eco bag",
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "porta lingerie",
-      "quantity": 378.0,
-      "revenue": 7595.38
-    },
-    {
-      "item": "placa",
-      "quantity": 442.0,
-      "revenue": 7276.64
-    },
-    {
-      "item": "ima12",
-      "quantity": 569.0,
-      "revenue": 6808.41
-    },
-    {
-      "item": "macaquinho fem oxe",
-      "quantity": 102.0,
-      "revenue": 5596.07
-    },
-    {
-      "item": "vestido oxe 60",
-      "quantity": 111.0,
-      "revenue": 5562.26
-    },
-    {
-      "item": "macaquinho unissex 45",
-      "quantity": 109.0,
-      "revenue": 4902.35
-    },
-    {
-      "item": "bata infantil",
-      "quantity": 106.0,
-      "revenue": 4236.17
-    },
-    {
-      "item": "body",
-      "quantity": 149.0,
-      "revenue": 4168.15
-    },
-    {
-      "item": "macaquinho fem 40",
-      "quantity": 74.0,
-      "revenue": 2953.73
-    },
-    {
-      "item": "40",
-      "quantity": 72.0,
-      "revenue": 2780.31
-    },
-    {
-      "item": "65",
-      "quantity": 42.0,
-      "revenue": 2723.22
-    },
-    {
-      "item": "50",
-      "quantity": 41.0,
-      "revenue": 2030.0
-    },
-    {
-      "item": "55",
-      "quantity": 34.0,
-      "revenue": 1863.96
-    },
-    {
-      "item": "3 estágios",
-      "quantity": 22.0,
-      "revenue": 1537.12
-    },
-    {
-      "item": "mochila",
-      "quantity": 22.0,
-      "revenue": 1420.0
-    },
-    {
-      "item": "45",
-      "quantity": 27.0,
-      "revenue": 1213.78
-    },
-    {
+      "code": "10035",
       "item": "ima 15",
-      "quantity": 78.0,
-      "revenue": 1056.9
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
-      "item": "vestido algodão gg",
-      "quantity": 17.0,
-      "revenue": 935.0
+      "code": "10026",
+      "item": "nécessaire stylo",
+      "quantity": 0.0,
+      "total": 0.0
     },
     {
+      "code": "10027",
+      "item": "porta lingerie",
+      "quantity": 0.0,
+      "total": 0.0
+    },
+    {
+      "code": "10002",
       "item": "bata  xg",
-      "quantity": 8.0,
-      "revenue": 520.0
-    },
-    {
-      "item": "carteira pequena",
-      "quantity": 50.0,
-      "revenue": 499.7
-    },
-    {
-      "item": "bolsinha sereia",
-      "quantity": 17.0,
-      "revenue": 425.0
-    },
-    {
-      "item": "60",
-      "quantity": 4.0,
-      "revenue": 236.84
-    },
-    {
-      "item": "caneca 35",
-      "quantity": 5.0,
-      "revenue": 175.0
-    },
-    {
-      "item": "kit mochila",
-      "quantity": 1.0,
-      "revenue": 105.0
-    },
-    {
-      "item": "mochila",
-      "quantity": 1.0,
-      "revenue": 82.76
-    },
-    {
-      "item": "canga 35",
-      "quantity": 2.0,
-      "revenue": 70.0
-    },
-    {
-      "item": "chaveiro peq",
-      "quantity": 6.0,
-      "revenue": 37.89
-    },
-    {
-      "item": "imã 15",
-      "quantity": 1.0,
-      "revenue": 15.0
+      "quantity": 0.0,
+      "total": 0.0
     }
   ],
   "summary": {

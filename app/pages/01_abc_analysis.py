@@ -16,7 +16,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header
+from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import (
     inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout,
     action_tag_badge, priority_badge,
@@ -32,11 +32,11 @@ render_hud_topbar("Análise ABC", "📊")
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
 
 @st.cache_data
-def load(data_version: str):  # noqa: ARG001
+def load(data_version: str, period: str):  # noqa: ARG001
     conn = get_conn()
-    return get_abc_analysis(conn)
+    return get_abc_analysis(conn, period=period)
 
-df = load(get_data_mtime())
+df = load(get_data_mtime(), get_selected_period())
 if df.is_empty():
     st.warning("Execute `etl/build_catalog.py` para gerar os dados."); st.stop()
 
@@ -53,15 +53,28 @@ with st.sidebar:
     abc_filter = st.multiselect("Classe ABC", ["A","B","C"], default=["A","B","C"])
     min_sales  = st.toggle("Apenas produtos com ≥ 5 vendas")
 
-# ── Apply filters & recalculate ABC live ──────────────────────────────────────
+# ── Apply filters & recalculate ABC live (weighted score: 70% revenue + 30% profit) ──
+ABC_REVENUE_WEIGHT = 0.70  # must match etl/build_catalog.py
+ABC_PROFIT_WEIGHT  = 0.30  # must match etl/build_catalog.py
+
 filtered = pdf.copy()
 if cat_filter != "Todas": filtered = filtered[filtered["category"] == cat_filter]
 filtered = filtered[filtered["abc_class"].isin(abc_filter)]
 if min_sales: filtered = filtered[filtered["qty_sold"] >= 5]
 
-total_rev = filtered["revenue"].sum()
-filtered = filtered.sort_values("revenue", ascending=False).reset_index(drop=True)
-filtered["cum_pct_live"] = filtered["revenue"].cumsum() / total_rev * 100 if total_rev else 0
+# Use abc_score if available (from ETL); else compute live from revenue + profit
+if "abc_score" in filtered.columns:
+    score_col = "abc_score"
+else:
+    filtered["abc_score"] = (
+        filtered["revenue"] * ABC_REVENUE_WEIGHT +
+        filtered["profit"]  * ABC_PROFIT_WEIGHT
+    )
+    score_col = "abc_score"
+
+total_score = filtered[score_col].sum()
+filtered = filtered.sort_values(score_col, ascending=False).reset_index(drop=True)
+filtered["cum_pct_live"] = filtered[score_col].cumsum() / total_score * 100 if total_score else 0
 
 def live_abc(cum):
     if cum <= 80:  return "A"

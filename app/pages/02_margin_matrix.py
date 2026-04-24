@@ -15,9 +15,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header
+from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
-from core.classification import classify_dataframe
+from core.classification import classify_dataframe, FIXED_MARGIN_THRESHOLD, FIXED_QTY_THRESHOLD
 from core.recommendations import enrich_with_recommendations
 from core.reporting import generate_weekly_report
 from core.alerts import generate_alerts
@@ -38,11 +38,11 @@ Identifica o posicionamento estratégico de cada produto:
 """)
 
 @st.cache_data
-def load(data_version: str):  # noqa: ARG001
+def load(data_version: str, period: str):  # noqa: ARG001
     conn = get_conn()
-    return get_margin_matrix(conn)
+    return get_margin_matrix(conn, period=period)
 
-df = load(get_data_mtime())
+df = load(get_data_mtime(), get_selected_period())
 
 if df.is_empty():
     st.warning("Execute `etl/build_catalog.py` primeiro.")
@@ -52,16 +52,16 @@ pdf = df.to_pandas()
 
 # ── Intelligence layer — classify + enrich (once, before any filtering) ───────
 @st.cache_data
-def enrich_data(data_version: str):  # noqa: ARG001
-    """Classify + add recommended actions. Cached per data version."""
+def enrich_data(data_version: str, period: str):  # noqa: ARG001
+    """Classify + add recommended actions. Cached per data version + period."""
     import polars as pl
     conn = get_conn()
-    raw  = get_margin_matrix(conn).to_pandas()
+    raw  = get_margin_matrix(conn, period=period).to_pandas()
     classified = classify_dataframe(raw)
     enriched   = enrich_with_recommendations(classified, display=True)
     return enriched
 
-enriched_pdf = enrich_data(get_data_mtime())
+enriched_pdf = enrich_data(get_data_mtime(), get_selected_period())
 
 # ── Filters ──────────────────────────────────────────────────────────────────
 categories = ["Todas"] + sorted(pdf["category"].unique().tolist())
@@ -93,12 +93,22 @@ fig = px.scatter(
     title="Matriz de Margem — Tamanho da bolha = Receita",
 )
 
-# Quadrant lines
-med_qty    = pdf["qty_sold"].median()
-med_margin = pdf["margin_pct"].median()
-
-fig.add_vline(x=med_qty,    line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1)
-fig.add_hline(y=med_margin, line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1)
+# Quadrant lines — fixed business thresholds (deterministic, filter-stable)
+# Change FIXED_MARGIN_THRESHOLD / FIXED_QTY_THRESHOLD in core/classification.py
+fig.add_vline(
+    x=FIXED_QTY_THRESHOLD,
+    line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1,
+    annotation_text=f"Vol={int(FIXED_QTY_THRESHOLD)} un",
+    annotation_font_color="rgba(0,212,255,0.6)",
+    annotation_position="top right",
+)
+fig.add_hline(
+    y=FIXED_MARGIN_THRESHOLD,
+    line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1,
+    annotation_text=f"Margem={FIXED_MARGIN_THRESHOLD:.0f}%",
+    annotation_font_color="rgba(0,212,255,0.6)",
+    annotation_position="bottom right",
+)
 
 # Quadrant annotations
 font_base = dict(family="Inter, sans-serif", size=13)

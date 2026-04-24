@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  FulôFiló — LaunchAgent (macOS)
+  Runs the auto-sync pipeline daily at 07:00 AM.
+
+  Install:
+    bash scripts/launchagent/install.sh
+
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.fulofilo.autosync.plist
+    rm ~/Library/LaunchAgents/com.fulofilo.autosync.plist
+
+  Logs:
+    tail -f /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/autosync_stdout.log
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fulofilo.autosync</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/etl/sync_and_push.py</string>
+        <string>--message</string>
+        <string>scheduled daily sync</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo</string>
+
+    <!-- Run daily at 07:00 AM -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>7</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Also run immediately if the last scheduled run was missed (e.g. Mac was sleeping) -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/autosync_stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/autosync_stderr.log</string>
+
+    <!-- Retry if it fails -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>ThrottleInterval</key>
+    <integer>3600</integer>
+</dict>
+</plist>

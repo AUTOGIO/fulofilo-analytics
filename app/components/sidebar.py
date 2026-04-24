@@ -3,10 +3,17 @@ FulôFiló — Shared Sidebar with Logo (HUD Edition)
 ===================================================
 Import and call render_sidebar() from every page to get a
 consistent logo + navigation across the entire app.
+
+Period selection is stored in st.session_state["selected_period"]
+as one of: "ALL", "2024", "2026".
+Use get_selected_period() to read it in any page.
 """
 
 from pathlib import Path
 import streamlit as st
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from app.db import PERIOD_OPTIONS
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
@@ -54,6 +61,11 @@ def render_page_header(logo_path=None):
     with col_center:
         st.image(str(target), use_container_width=True)
     st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
+
+
+def get_selected_period() -> str:
+    """Return the currently selected period code: 'ALL', '2024', or '2026'."""
+    return st.session_state.get("selected_period", "ALL")
 
 
 def render_sidebar(active_page: str = ""):
@@ -114,6 +126,24 @@ def render_sidebar(active_page: str = ""):
         for page, icon, label in _NAV:
             st.page_link(page, label=f"{icon}  {label}")
 
+        # ── Period selector ────────────────────────────────────────────────────
+        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
+
+        period_labels = list(PERIOD_OPTIONS.keys())
+        current_code  = st.session_state.get("selected_period", "ALL")
+        # Find label for current code
+        current_label = next((lbl for lbl, code in PERIOD_OPTIONS.items() if code == current_code), period_labels[0])
+
+        selected_label = st.selectbox(
+            label="Período de análise",
+            options=period_labels,
+            index=period_labels.index(current_label),
+            key="period_selectbox",
+            label_visibility="collapsed",
+        )
+        st.session_state["selected_period"] = PERIOD_OPTIONS[selected_label]
+
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
             '<div class="sidebar-footer">'
@@ -123,6 +153,26 @@ def render_sidebar(active_page: str = ""):
             '</div>',
             unsafe_allow_html=True,
         )
+
+        # ── Sync & Deploy button (local only — no-op on Streamlit Cloud) ─────────
+        import os, subprocess
+        is_cloud = bool(os.environ.get("STREAMLIT_SHARING_MODE") or
+                        os.environ.get("IS_STREAMLIT_CLOUD"))
+        if not is_cloud:
+            st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
+            st.markdown('<div class="sidebar-section-label">◈ Deploy</div>', unsafe_allow_html=True)
+            if st.button("🚀 Sync & Push", use_container_width=True, help="Rebuilds parquets e faz git push → Streamlit redeploys"):
+                sync_script = Path(__file__).resolve().parent.parent.parent / "etl" / "sync_and_push.py"
+                with st.spinner("Sincronizando..."):
+                    result = subprocess.run(
+                        ["python3", str(sync_script), "--message", "manual sync via dashboard"],
+                        capture_output=True, text=True,
+                        cwd=str(sync_script.parent.parent),
+                    )
+                if result.returncode == 0:
+                    st.success("✅ Push realizado! App atualiza em ~60s")
+                else:
+                    st.error(f"❌ Erro:\n{result.stderr[-300:]}")
 
         # ── GMT branding ───────────────────────────────────────────────────────
         if GMT_LOGO.exists():
