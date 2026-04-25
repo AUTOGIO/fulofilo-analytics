@@ -91,7 +91,7 @@ c1.metric("Total produtos",    len(filtered))
 c2.metric("🟢 Classe A",  f"{len(a_df)} produtos",  f"R$ {a_df['revenue'].sum():,.0f}")
 c3.metric("🟡 Classe B",  f"{len(b_df)} produtos",  f"R$ {b_df['revenue'].sum():,.0f}")
 c4.metric("🔴 Classe C",  f"{len(c_df)} produtos",  f"R$ {c_df['revenue'].sum():,.0f}")
-c5.metric("Receita filtrada",  f"R$ {total_rev:,.2f}")
+c5.metric("Receita filtrada",  f"R$ {filtered['revenue'].sum():,.0f}")
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
