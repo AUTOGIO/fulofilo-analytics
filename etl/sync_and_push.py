@@ -137,7 +137,10 @@ def step_git_push(message: str, dry_run: bool = False) -> bool:
         return False
 
     log("  🚀 Pushing to GitHub (origin main)...")
+    # Use HTTPS remote temporarily — SSH key (id_ed25519_autogio) is not registered on GitHub
+    run(["git", "remote", "set-url", "origin", "https://github.com/AUTOGIO/fulofilo-analytics.git"], check=False)
     r = run(["git", "push", "origin", "main"], check=False)
+    run(["git", "remote", "set-url", "origin", "git@github.com:AUTOGIO/fulofilo-analytics.git"], check=False)
     if r.returncode != 0:
         log(f"  ⚠️  Push failed: {r.stderr[:300]}")
         return False
