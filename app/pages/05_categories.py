@@ -171,7 +171,8 @@ try:
     cat_rev = conn.execute("""
         SELECT category, SUM(revenue) AS total_rev,
                COUNT(*) AS n_skus, AVG(margin_pct) AS avg_margin
-        FROM products GROUP BY category ORDER BY total_rev DESC
+        FROM products WHERE period = '2026'
+        GROUP BY category ORDER BY total_rev DESC
     """).pl()
     if not cat_rev.is_empty():
         import plotly.express as px

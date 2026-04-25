@@ -19,26 +19,43 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 
-# Files tracked for staging — add more as needed
+# Files tracked for staging
 TRACKED = [
+    # ── App core ──────────────────────────────────────────────────────────────
+    "app/app.py",
     "app/db.py",
     "app/components/sidebar.py",
+    "app/components/hud.py",
+    "app/pages/01_abc_analysis.py",
+    "app/pages/02_margin_matrix.py",
+    "app/pages/03_inventory.py",
+    "app/pages/04_daily_ops.py",
+    "app/pages/05_categories.py",
+    "app/pages/06_export_excel.py",
+    "app/utils/inventory_ops.py",
+    # ── ETL ───────────────────────────────────────────────────────────────────
+    "etl/sync_and_push.py",
+    "etl/ingest_march_april_2026.py",
+    "etl/build_catalog.py",
+    # ── Parquet data ──────────────────────────────────────────────────────────
     "data/parquet/products.parquet",
-    "data/parquet/products_2024.parquet",
     "data/parquet/products_2026.parquet",
+    "data/parquet/products_2026_03.parquet",
+    "data/parquet/products_2026_04.parquet",
+    "data/parquet/products_2024.parquet",
     "data/parquet/inventory.parquet",
     "data/parquet/daily_sales.parquet",
     "data/parquet/cashflow.parquet",
     "data/parquet/profit_report.parquet",
     "data/parquet/quantity_report.parquet",
     "data/parquet/revenue_report.parquet",
+    # ── Raw data ──────────────────────────────────────────────────────────────
     "data/raw/dashboard_data.json",
     "data/raw/dashboard_data_2026.json",
     "data/raw/product_catalog.csv",
     "data/raw/product_catalog_categorized.csv",
     "data/raw/vendas_marco_26.csv",
     "data/raw/vendas_abril_26.csv",
-    "etl/sync_and_push.py",
 ]
 
 

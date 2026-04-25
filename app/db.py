@@ -139,11 +139,9 @@ def get_abc_analysis(conn, period: str = "ALL"):
 def get_margin_matrix(conn, period: str = "ALL"):
     """Return data for the Margin Matrix scatter plot."""
     try:
-        where = period_where(period)
-        and_clause = "AND qty_sold > 0" if period == "ALL" else "AND qty_sold > 0"
-        # Build the WHERE properly
-        if period == "ALL":
-            filter_clause = "WHERE qty_sold > 0"
+        # Build the WHERE: always filter by period and non-zero sales
+        if not period or period == "ALL":
+            filter_clause = "WHERE period = '2026' AND qty_sold > 0"
         else:
             filter_clause = f"WHERE period = '{period}' AND qty_sold > 0"
         return conn.execute(f"""
@@ -184,9 +182,10 @@ def get_stock_turnover(conn):
                 END                                                  AS giro_class
             FROM inventory i
             LEFT JOIN products p ON lower(i.slug) = lower(p.raw_key)
+                                AND p.period = '2026'
             ORDER BY giro DESC NULLS LAST
         """).pl()
-    except (duckdb.CatalogException, duckdb.BinderException):
+    except Exception:
         return pl.DataFrame()
 
 
