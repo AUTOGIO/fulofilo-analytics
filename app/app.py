@@ -16,7 +16,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header
+from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 
 # ── Page Config ──────────────────────────────────────────────────────────────
@@ -39,17 +39,31 @@ render_page_header()
 render_hud_topbar("Visão Geral", "🌺")
 
 # ── Load Data ─────────────────────────────────────────────────────────────────
+period = get_selected_period()
+
 @st.cache_data
-def load_all(data_version: str):  # noqa: ARG001 — data_version busts cache on file change
+def load_all(data_version: str, period: str):  # noqa: ARG001
     conn = get_conn()
-    kpis = get_summary_kpis(conn)
-    abc  = get_abc_analysis(conn)
-    mm   = get_margin_matrix(conn)
+    kpis = get_summary_kpis(conn, period)
+    abc  = get_abc_analysis(conn, period)
+    mm   = get_margin_matrix(conn, period)
     return kpis, abc, mm
 
-kpis, abc_df, mm_df = load_all(get_data_mtime())
+kpis, abc_df, mm_df = load_all(get_data_mtime(), period)
+
+def _f(v) -> float:
+    """Safely convert any DB value (None, Decimal, int) to float."""
+    try:
+        return float(v) if v is not None else 0.0
+    except (TypeError, ValueError):
+        return 0.0
+
 receita, quantidade, lucro, ticket = kpis if kpis else (0, 0, 0, 0)
-margem_pct = (lucro / receita * 100) if receita else 0
+receita    = _f(receita)
+quantidade = _f(quantidade)
+lucro      = _f(lucro)
+ticket     = _f(ticket)
+margem_pct = (lucro / receita * 100) if receita else 0.0
 
 # ── KPI Cards ─────────────────────────────────────────────────────────────────
 c1, c2, c3, c4, c5 = st.columns(5)
