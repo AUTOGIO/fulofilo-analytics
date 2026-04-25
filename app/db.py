@@ -84,15 +84,16 @@ def period_where(period: str) -> str:
     """Return a SQL WHERE clause for the given period code.
 
     Codes: "2026" (total), "2026-03" (March), "2026-04" (April)
+    "ALL" or empty → defaults to total (period = '2026')
     """
-    if not period:
+    if not period or period == "ALL":
         return "WHERE period = '2026'"
     return f"WHERE period = '{period}'"
 
 
 def period_and(period: str) -> str:
     """Return an AND clause for use inside an existing WHERE block."""
-    if not period:
+    if not period or period == "ALL":
         return "AND period = '2026'"
     return f"AND period = '{period}'"
 
