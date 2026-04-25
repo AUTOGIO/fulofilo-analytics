@@ -64,8 +64,8 @@ def render_page_header(logo_path=None):
 
 
 def get_selected_period() -> str:
-    """Return the currently selected period code: 'ALL', '2024', or '2026'."""
-    return st.session_state.get("selected_period", "ALL")
+    """Return the currently selected period code: '2026'."""
+    return st.session_state.get("selected_period", "2026")
 
 
 def render_sidebar(active_page: str = ""):

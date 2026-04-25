@@ -75,9 +75,7 @@ def get_conn():
 # ── Period helpers ─────────────────────────────────────────────────────────────
 
 PERIOD_OPTIONS: dict[str, str] = {
-    "Todos os períodos": "ALL",
-    "2024 (Histórico)":  "2024",
-    "2026 (Mar–Abr)":    "2026",
+    "Mar–Abr 2026": "2026",
 }
 
 def period_where(period: str) -> str:
@@ -85,20 +83,20 @@ def period_where(period: str) -> str:
 
     Parameters
     ----------
-    period : one of "ALL", "2024", "2026"
+    period : "2026" or "ALL" (treated as 2026 — only real data)
 
     Returns
     -------
-    str — e.g. "WHERE period = '2026'" or "" for ALL
+    str — e.g. "WHERE period = '2026'" or ""
     """
-    if period == "ALL":
+    if period == "ALL" or not period:
         return ""
     return f"WHERE period = '{period}'"
 
 
 def period_and(period: str) -> str:
     """Return an AND clause for use inside an existing WHERE block."""
-    if period == "ALL":
+    if period == "ALL" or not period:
         return ""
     return f"AND period = '{period}'"
 
@@ -188,10 +186,10 @@ def get_stock_turnover(conn):
                     ELSE                                                  '🐢 Baixo'
                 END                                                  AS giro_class
             FROM inventory i
-            LEFT JOIN products p ON i.slug = p.slug
+            LEFT JOIN products p ON lower(i.slug) = lower(p.raw_key)
             ORDER BY giro DESC NULLS LAST
         """).pl()
-    except duckdb.CatalogException:
+    except (duckdb.CatalogException, duckdb.BinderException):
         return pl.DataFrame()
 
 
