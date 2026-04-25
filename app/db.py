@@ -55,7 +55,7 @@ def get_conn():
         conn.execute(f"CREATE OR REPLACE VIEW products AS SELECT * FROM read_parquet('{DATA_DIR}/products.parquet');")
 
     # Period-specific views
-    for period_label in ("2024", "2026"):
+    for period_label in ("2026", "2026_03", "2026_04"):
         p = DATA_DIR / f"products_{period_label}.parquet"
         if p.exists():
             conn.execute(f"CREATE OR REPLACE VIEW products_{period_label} AS SELECT * FROM read_parquet('{p}');")
@@ -75,29 +75,25 @@ def get_conn():
 # ── Period helpers ─────────────────────────────────────────────────────────────
 
 PERIOD_OPTIONS: dict[str, str] = {
-    "Mar–Abr 2026": "2026",
+    "Total (Mar–Abr 2026)": "2026",
+    "Março 2026":           "2026-03",
+    "Abril 2026":           "2026-04",
 }
 
 def period_where(period: str) -> str:
-    """Return a SQL WHERE clause fragment for the given period selection.
+    """Return a SQL WHERE clause for the given period code.
 
-    Parameters
-    ----------
-    period : "2026" or "ALL" (treated as 2026 — only real data)
-
-    Returns
-    -------
-    str — e.g. "WHERE period = '2026'" or ""
+    Codes: "2026" (total), "2026-03" (March), "2026-04" (April)
     """
-    if period == "ALL" or not period:
-        return ""
+    if not period:
+        return "WHERE period = '2026'"
     return f"WHERE period = '{period}'"
 
 
 def period_and(period: str) -> str:
     """Return an AND clause for use inside an existing WHERE block."""
-    if period == "ALL" or not period:
-        return ""
+    if not period:
+        return "AND period = '2026'"
     return f"AND period = '{period}'"
 
 # --- Analytical Queries ---

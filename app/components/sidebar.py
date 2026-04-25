@@ -64,7 +64,7 @@ def render_page_header(logo_path=None):
 
 
 def get_selected_period() -> str:
-    """Return the currently selected period code: '2026'."""
+    """Return the currently selected period code: '2026', '2026-03', or '2026-04'."""
     return st.session_state.get("selected_period", "2026")
 
 
@@ -130,19 +130,60 @@ def render_sidebar(active_page: str = ""):
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
 
-        period_labels = list(PERIOD_OPTIONS.keys())
-        current_code  = st.session_state.get("selected_period", "ALL")
-        # Find label for current code
-        current_label = next((lbl for lbl, code in PERIOD_OPTIONS.items() if code == current_code), period_labels[0])
+        st.markdown("""
+<style>
+div[data-testid="stSidebar"] .period-btn button {
+    border-radius: 8px !important;
+    font-size: 0.78rem !important;
+    padding: 4px 6px !important;
+    letter-spacing: 0.04em;
+}
+div[data-testid="stSidebar"] .period-btn-active button {
+    background: rgba(0,212,255,0.18) !important;
+    border: 1px solid rgba(0,212,255,0.55) !important;
+    color: #00D4FF !important;
+    box-shadow: 0 0 8px rgba(0,212,255,0.25) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-        selected_label = st.selectbox(
-            label="Período de análise",
-            options=period_labels,
-            index=period_labels.index(current_label),
-            key="period_selectbox",
-            label_visibility="collapsed",
+        current_code = st.session_state.get("selected_period", "2026")
+
+        # Row 1: TOTAL button (full width)
+        css_total = "period-btn-active period-btn" if current_code == "2026" else "period-btn"
+        st.markdown(f'<div class="{css_total}">', unsafe_allow_html=True)
+        if st.button("📅  Total  (Mar – Abr 2026)", use_container_width=True, key="btn_total"):
+            st.session_state["selected_period"] = "2026"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Row 2: two month buttons side by side
+        col_mar, col_abr = st.columns(2)
+        with col_mar:
+            css = "period-btn-active period-btn" if current_code == "2026-03" else "period-btn"
+            st.markdown(f'<div class="{css}">', unsafe_allow_html=True)
+            if st.button("🗓 Março\n2026", use_container_width=True, key="btn_mar"):
+                st.session_state["selected_period"] = "2026-03"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_abr:
+            css = "period-btn-active period-btn" if current_code == "2026-04" else "period-btn"
+            st.markdown(f'<div class="{css}">', unsafe_allow_html=True)
+            if st.button("🗓 Abril\n2026", use_container_width=True, key="btn_abr"):
+                st.session_state["selected_period"] = "2026-04"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # Display active period label
+        label_map = {"2026": "Total  ·  Mar–Abr 2026", "2026-03": "Março 2026", "2026-04": "Abril 2026"}
+        active_label = label_map.get(current_code, "Total  ·  Mar–Abr 2026")
+        st.markdown(
+            f'<div style="text-align:center;font-size:0.72rem;color:#00D4FF;'
+            f'letter-spacing:0.08em;margin-top:4px;opacity:0.85;">'
+            f'▸ {active_label}</div>',
+            unsafe_allow_html=True,
         )
-        st.session_state["selected_period"] = PERIOD_OPTIONS[selected_label]
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
