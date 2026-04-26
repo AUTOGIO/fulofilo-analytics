@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
+from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
@@ -74,6 +75,62 @@ c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
 c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
 
 st.divider()
+
+# ── Reorder Alert System ──────────────────────────────────────────────────────
+@st.cache_data
+def load_reorder_alerts(data_version: str):  # noqa: ARG001
+    conn = get_conn()
+    alerts = get_alerts(conn)
+    xlsx_path = export_excel(conn)
+    return alerts, str(xlsx_path) if xlsx_path else None
+
+_alerts_df, _xlsx_path = load_reorder_alerts(get_data_mtime())
+
+if not _alerts_df.empty:
+    n_total   = len(_alerts_df)
+    n_urgent  = len(_alerts_df[_alerts_df["days_remaining"] <= LEAD_TIME_DAYS])
+    n_atencao = n_total - n_urgent
+
+    # macOS popup — once per session
+    if not st.session_state.get("reorder_notified", False):
+        notify_macos(_alerts_df)
+        st.session_state["reorder_notified"] = True
+
+    # Banner
+    border_color = "#FF4455" if n_urgent > 0 else "#FFA500"
+    bg_color     = "rgba(255,68,85,0.10)"  if n_urgent > 0 else "rgba(255,165,0,0.08)"
+    icon         = "🔴" if n_urgent > 0 else "⚠️"
+    top3         = ", ".join(_alerts_df.head(3)["product"].tolist())
+    extra        = f" + {n_total - 3} mais" if n_total > 3 else ""
+
+    st.markdown(f"""
+<div style="
+    background:{bg_color};
+    border:1px solid {border_color};
+    border-radius:10px;
+    padding:14px 20px;
+    margin-bottom:16px;
+    box-shadow: 0 0 18px {border_color}44;
+    font-size:0.88rem;
+    color:{border_color};
+">
+{icon} <strong>ALERTA REPOSIÇÃO — {n_total} produto(s):</strong>
+{"🔴 <b>" + str(n_urgent) + " URGENTE(S)</b> &nbsp;·&nbsp;" if n_urgent > 0 else ""}
+{"⚠️ " + str(n_atencao) + " em atenção" if n_atencao > 0 else ""}
+<br><span style="font-size:0.80rem;opacity:0.85;">{top3}{extra}</span>
+{"<br><span style='font-size:0.75rem;opacity:0.65;'>📄 Planilha gerada: data/outputs/alertas_reposicao.xlsx</span>" if _xlsx_path else ""}
+</div>
+""", unsafe_allow_html=True)
+
+    # Expandable detail table
+    with st.expander(f"📋 Ver {n_total} produto(s) para reposição", expanded=(n_urgent > 0)):
+        show = _alerts_df[["product", "category", "current_stock",
+                            "days_remaining", "daily_rate", "suggested_qty"]].copy()
+        show.columns = ["Produto", "Categoria", "Estoque", "Dias Restantes", "Venda/Dia", "Pedir (45d)"]
+        show["Venda/Dia"]      = show["Venda/Dia"].apply(lambda x: f"{x:.2f}")
+        show["Dias Restantes"] = show["Dias Restantes"].astype(int)
+        show["Pedir (45d)"]    = show["Pedir (45d)"].astype(int)
+        st.dataframe(show, use_container_width=True, hide_index=True)
 
 # ── ABC Color Map (HUD neon palette) ─────────────────────────────────────────
 COLORS = {

@@ -33,6 +33,7 @@ TRACKED = [
     "app/pages/05_categories.py",
     "app/pages/06_export_excel.py",
     "app/utils/inventory_ops.py",
+    "app/utils/reorder_engine.py",
     # ── ETL ───────────────────────────────────────────────────────────────────
     "etl/sync_and_push.py",
     "etl/ingest_march_april_2026.py",
