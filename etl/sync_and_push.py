@@ -38,6 +38,12 @@ TRACKED = [
     "etl/sync_and_push.py",
     "etl/ingest_march_april_2026.py",
     "etl/build_catalog.py",
+    # ── Docs ──────────────────────────────────────────────────────────────────
+    "docs/README.md",
+    "docs/DATA_DICTIONARY.md",
+    "docs/USER_GUIDE.md",
+    "docs/AUDIT_REPORT.md",
+    "docs/SHORTCUTS.md",
     # ── Parquet data ──────────────────────────────────────────────────────────
     "data/parquet/products.parquet",
     "data/parquet/products_2026.parquet",

@@ -91,6 +91,52 @@ Added missing patterns:
 
 ---
 
+---
+
+## Audit #2 — April 2026 Bug Fix & Feature Sprint
+
+**Date:** 2026-04-26
+**Scope:** Bug fixes, data cleanup, reorder alert engine, docs update
+
+### Data Changes
+
+| Action | Detail |
+|--------|--------|
+| Deleted 733 fictional rows | `daily_sales.parquet` cleared — all pre-2026 transactions removed |
+| Reset all inventory to 300 units | `inventory.parquet` — 532 SKUs set to `current_stock = 300` as baseline |
+| Added monthly parquets | `products_2026_03.parquet` (37 products) and `products_2026_04.parquet` (39 products) created |
+| Verified real data only | Source of truth: `dashboard_data_2026.json`, `vendas_marco_26.csv`, `vendas_abril_26.csv` |
+
+### Bugs Fixed
+
+| Bug | Root cause | Fix |
+|-----|-----------|-----|
+| `BinderException` on Estoque page | `get_stock_turnover` JOINed on `p.slug` — column does not exist | Changed to `lower(i.slug) = lower(p.raw_key) AND p.period = '2026'`; broadened `except` to catch all exceptions |
+| `TypeError: receita:,.2f` on Visão Geral | `period_where("ALL")` returned `WHERE period = 'ALL'` → zero rows → `SUM = NULL` | Fixed `period_where()` to return `WHERE period = '2026'` for "ALL"; added `_f()` safe float cast helper |
+| `ColumnNotFoundError` on Estoque page | `03_inventory.py` tab3 used old column names `slug` and `cost` | Corrected to `raw_key` and `unit_cost`; added `.filter(pl.col("period") == "2026")` |
+| Sync & Push button broken | Script ran `build_catalog.py` first (failed), then used SSH remote (no key registered) | Rewrote `etl/sync_and_push.py` as lean git push; switched remote to HTTPS permanently |
+| Triple-counted KPIs | `products.parquet` has 3 rows/product; queries without period filter returned 3× values | Added `WHERE period = '2026'` to `05_categories.py`, `04_daily_ops.py`, `get_margin_matrix` |
+| Reorder engine matched only 2 products | Original JOIN was `FROM inventory LEFT JOIN products` — inventory slugs (T-shirt designs) don't match product raw_keys (item types) | Reversed JOIN to `FROM products LEFT JOIN inventory`; fallback `COALESCE(i.current_stock, 300)` |
+
+### New Features
+
+| Feature | File | Description |
+|---------|------|-------------|
+| Smart reorder alert engine | `app/utils/reorder_engine.py` | Calculates days of runway per product; fires at ≤ 24-day threshold |
+| macOS native notification | `reorder_engine.notify_macos()` | AppleScript popup on dashboard open (local only, no-op on cloud) |
+| Dashboard reorder banner | `app/app.py` | Red/amber alert with expandable product table |
+| Reorder Excel export | `reorder_engine.export_excel()` | `data/outputs/alertas_reposicao.xlsx` with HUD dark styling, auto-generated |
+| Period selector (3 buttons) | `app/components/sidebar.py` | Replaced selectbox with Total / Março / Abril buttons |
+| Monthly Parquet views | `app/db.py` | Registers `products_2026_03` and `products_2026_04` DuckDB views |
+
+### Architecture Notes
+
+- `products.parquet` intentionally stores 3 rows/product to support per-month queries without separate ETL runs.
+- All queries must use `period_where()` or `period_and()` helpers from `db.py` to prevent triple-counting.
+- The inventory-product JOIN gap is a known limitation: 532 inventory SKUs track T-shirt designs; 39 sold products are item categories (cangas, chaveiros, etc.). No natural join key exists. Reorder engine defaults to 300-unit stock when no inventory row matches.
+
+---
+
 ## 4. Execution summary
 
 ```
