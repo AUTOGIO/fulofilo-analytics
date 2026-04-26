@@ -46,7 +46,7 @@ def get_reorder_df(conn) -> pd.DataFrame:
     try:
         df = conn.execute(f"""
             SELECT
-                p.raw_key                                                            AS slug,
+                p.sku                                                                AS slug,
                 p.full_name                                                          AS product,
                 p.category,
                 COALESCE(i.current_stock, {DEFAULT_STOCK})                          AS current_stock,
@@ -61,9 +61,8 @@ def get_reorder_df(conn) -> pd.DataFrame:
                 {BUFFER_DAYS}                                                        AS buffer,
                 {ALERT_THRESHOLD}                                                    AS alert_threshold
             FROM products p
-            LEFT JOIN inventory i ON lower(p.raw_key) = lower(i.slug)
-            WHERE p.period = '2026'
-              AND p.qty_sold > 0
+            LEFT JOIN inventory i ON lower(p.full_name) = lower(i.product)
+            WHERE p.qty_sold > 0
             ORDER BY days_remaining ASC
         """).df()
         return df

@@ -171,7 +171,7 @@ try:
     cat_rev = conn.execute("""
         SELECT category, SUM(revenue) AS total_rev,
                COUNT(*) AS n_skus, AVG(margin_pct) AS avg_margin
-        FROM products WHERE period = '2026'
+        FROM products
         GROUP BY category ORDER BY total_rev DESC
     """).pl()
     if not cat_rev.is_empty():

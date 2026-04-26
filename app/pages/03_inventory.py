@@ -193,14 +193,11 @@ with tab3:
     if inv_path.exists() and prod_path.exists():
         import polars as pl
         inv  = pl.read_parquet(inv_path)
-        # products.parquet uses raw_key (not slug) and unit_cost (not cost)
-        # filter to period='2026' to avoid triple-counting march+april+total rows
         prod = (
             pl.read_parquet(prod_path)
-            .filter(pl.col("period") == "2026")
-            .select([pl.col("raw_key"), pl.col("unit_cost")])
+            .select([pl.col("full_name"), pl.col("unit_cost")])
         )
-        merged_pl = inv.join(prod, left_on="slug", right_on="raw_key", how="left").with_columns(
+        merged_pl = inv.join(prod, left_on="product", right_on="full_name", how="left").with_columns(
             (pl.col("current_stock").cast(pl.Float64) * pl.col("unit_cost").fill_null(0.0)).alias("value")
         )
         cat_val = (merged_pl.group_by("category")

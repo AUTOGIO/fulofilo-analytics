@@ -94,17 +94,17 @@ conn = get_conn()
 
 try:
     products_df = conn.execute("""
-        SELECT raw_key AS slug, full_name, category,
+        SELECT sku, full_name, category,
                unit_cost,
                suggested_price AS price, margin_pct
-        FROM products WHERE period = '2026' ORDER BY full_name
+        FROM products ORDER BY full_name
     """).pl().to_pandas()
 
     search = st.text_input("Buscar produto por nome", placeholder="Ex: necessaire, chaveiro, carteira...")
     if search:
         mask = (
             products_df["full_name"].str.lower().str.contains(search.lower()) |
-            products_df["slug"].str.lower().str.contains(search.lower(), na=False)
+            products_df["sku"].str.lower().str.contains(search.lower(), na=False)
         )
         result = products_df[mask].copy()
         if not result.empty:
@@ -129,7 +129,7 @@ st.markdown("Cada venda registrada aqui é **salva imediatamente** no CSV e no P
 def load_product_options():
     try:
         prod = pl.read_parquet(PROJECT_ROOT / "data" / "parquet" / "products.parquet")
-        df = prod.select(["slug","full_name","category","price"]).sort(["category","full_name"]).to_pandas()
+        df = prod.select(["sku","full_name","category","price"]).sort(["category","full_name"]).to_pandas()
         # Build options: "Categoria — Nome" → (full_name, price)
         options = {}
         for _, r in df.iterrows():

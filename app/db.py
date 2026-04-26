@@ -1,125 +1,91 @@
 """
 FulôFiló — DuckDB Engine
 =========================
-Handles the connection to the local DuckDB database and provides
-analytical queries optimized for the M3 processor.
+Parquet schema (from etl/ingest.py):
+
+  products:    sku, full_name, category, unit_cost, suggested_price,
+               min_stock, reorder_qty, unit_profit, margin_pct,
+               qty_sold, revenue, profit, cum_pct, abc_class
+
+  inventory:   sku, product, category, current_stock, min_stock, reorder_qty
+
+  daily_sales: Date, Product, Quantity, Unit_Price, Total,
+               Payment_Method, Source
+
+  cashflow:    Date, Type, Category, Description, Amount, Payment_Method
 """
 
 import duckdb
 from pathlib import Path
 import polars as pl
 
-BASE = Path(__file__).resolve().parent.parent
+BASE     = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE / "data" / "parquet"
-DB_PATH = BASE / "data" / "fulofilo.duckdb"
+DB_PATH  = BASE / "data" / "fulofilo.duckdb"
 
 
 def get_data_mtime() -> str:
-    """Return a string fingerprint of the parquet directory's latest mtime.
-
-    Pass this as a parameter to any @st.cache_data function to make it
-    auto-invalidate whenever a parquet file is added, updated, or removed.
-    Example:
-        @st.cache_data
-        def load(data_version: str):
-            ...
-        df = load(get_data_mtime())
-    """
-    mtimes = [
-        p.stat().st_mtime
-        for p in DATA_DIR.glob("*.parquet")
-        if p.exists()
-    ]
+    """Return a string fingerprint of the parquet directory's latest mtime."""
+    mtimes = [p.stat().st_mtime for p in DATA_DIR.glob("*.parquet") if p.exists()]
     return str(round(max(mtimes), 3)) if mtimes else "0"
 
 
 def get_conn():
     """Initialize DuckDB connection and register Parquet files as views."""
     import os
-    is_cloud = bool(os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("IS_STREAMLIT_CLOUD"))
+    is_cloud = bool(
+        os.environ.get("STREAMLIT_SHARING_MODE") or
+        os.environ.get("IS_STREAMLIT_CLOUD")
+    )
 
     conn = duckdb.connect(str(DB_PATH))
 
-    # ── Performance Configuration (auto-tuned: M3 local vs Streamlit Cloud) ──
     if is_cloud:
         conn.execute("SET threads = 2")
         conn.execute("SET memory_limit = '512MB'")
     else:
-        conn.execute("SET threads = 8")               # all M3 performance cores
-        conn.execute("SET memory_limit = '8GB'")      # safe limit < 16GB unified
+        conn.execute("SET threads = 8")
+        conn.execute("SET memory_limit = '8GB'")
     conn.execute("SET enable_progress_bar = false")
     conn.execute("SET temp_directory = '/tmp/duckdb_fulofilo'")
-    
-    # Register views if Parquet files exist
-    if (DATA_DIR / "products.parquet").exists():
-        conn.execute(f"CREATE OR REPLACE VIEW products AS SELECT * FROM read_parquet('{DATA_DIR}/products.parquet');")
 
-    # Period-specific views
-    for period_label in ("2026", "2026_03", "2026_04"):
-        p = DATA_DIR / f"products_{period_label}.parquet"
+    for name, fname in [
+        ("products",   "products.parquet"),
+        ("inventory",  "inventory.parquet"),
+        ("sales",      "daily_sales.parquet"),
+        ("cashflow",   "cashflow.parquet"),
+    ]:
+        p = DATA_DIR / fname
         if p.exists():
-            conn.execute(f"CREATE OR REPLACE VIEW products_{period_label} AS SELECT * FROM read_parquet('{p}');")
-
-    if (DATA_DIR / "daily_sales.parquet").exists():
-        conn.execute(f"CREATE OR REPLACE VIEW sales AS SELECT * FROM read_parquet('{DATA_DIR}/daily_sales.parquet');")
-
-    if (DATA_DIR / "inventory.parquet").exists():
-        conn.execute(f"CREATE OR REPLACE VIEW inventory AS SELECT * FROM read_parquet('{DATA_DIR}/inventory.parquet');")
-
-    if (DATA_DIR / "cashflow.parquet").exists():
-        conn.execute(f"CREATE OR REPLACE VIEW cashflow AS SELECT * FROM read_parquet('{DATA_DIR}/cashflow.parquet');")
+            conn.execute(
+                f"CREATE OR REPLACE VIEW {name} AS "
+                f"SELECT * FROM read_parquet('{p}');"
+            )
 
     return conn
 
 
-# ── Period helpers ─────────────────────────────────────────────────────────────
-
-PERIOD_OPTIONS: dict[str, str] = {
-    "Total (Mar–Abr 2026)": "2026",
-    "Março 2026":           "2026-03",
-    "Abril 2026":           "2026-04",
-}
-
-def period_where(period: str) -> str:
-    """Return a SQL WHERE clause for the given period code.
-
-    Codes: "2026" (total), "2026-03" (March), "2026-04" (April)
-    "ALL" or empty → defaults to total (period = '2026')
-    """
-    if not period or period == "ALL":
-        return "WHERE period = '2026'"
-    return f"WHERE period = '{period}'"
-
-
-def period_and(period: str) -> str:
-    """Return an AND clause for use inside an existing WHERE block."""
-    if not period or period == "ALL":
-        return "AND period = '2026'"
-    return f"AND period = '{period}'"
-
-# --- Analytical Queries ---
+# ── Queries ────────────────────────────────────────────────────────────────────
 
 def get_summary_kpis(conn, period: str = "ALL"):
-    """Get high-level KPIs for the dashboard."""
+    """High-level KPIs: receita, unidades, lucro, ticket médio."""
     try:
-        where = period_where(period)
-        return conn.execute(f"""
+        return conn.execute("""
             SELECT
-                SUM(revenue) AS receita,
-                SUM(qty_sold) AS quantidade,
-                SUM(profit) AS lucro,
-                ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2) AS ticket_medio
+                SUM(revenue)                                          AS receita,
+                SUM(qty_sold)                                         AS quantidade,
+                SUM(profit)                                           AS lucro,
+                ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2)    AS ticket_medio
             FROM products
-            {where}
         """).fetchone()
-    except duckdb.CatalogException:
+    except Exception:
         return (0, 0, 0, 0)
 
+
 def get_abc_analysis(conn, period: str = "ALL"):
-    """Return ABC classification data ordered by abc_score (weighted rank)."""
+    """ABC data ordered by revenue descending."""
     try:
-        where = period_where(period)
-        return conn.execute(f"""
+        return conn.execute("""
             SELECT
                 full_name,
                 category,
@@ -127,39 +93,36 @@ def get_abc_analysis(conn, period: str = "ALL"):
                 qty_sold,
                 profit,
                 abc_class,
-                abc_score,
-                period
+                cum_pct,
+                margin_pct
             FROM products
-            {where}
-            ORDER BY abc_score DESC
+            ORDER BY revenue DESC
         """).pl()
-    except duckdb.CatalogException:
+    except Exception:
         return pl.DataFrame()
 
+
 def get_margin_matrix(conn, period: str = "ALL"):
-    """Return data for the Margin Matrix scatter plot."""
+    """Margin matrix: qty_sold vs margin_pct for products with sales."""
     try:
-        # Build the WHERE: always filter by period and non-zero sales
-        if not period or period == "ALL":
-            filter_clause = "WHERE period = '2026' AND qty_sold > 0"
-        else:
-            filter_clause = f"WHERE period = '{period}' AND qty_sold > 0"
-        return conn.execute(f"""
+        return conn.execute("""
             SELECT
                 full_name,
                 category,
                 qty_sold,
                 revenue,
                 margin_pct,
-                period
+                abc_class
             FROM products
-            {filter_clause}
+            WHERE qty_sold > 0
+            ORDER BY revenue DESC
         """).pl()
-    except duckdb.CatalogException:
+    except Exception:
         return pl.DataFrame()
 
+
 def get_stock_turnover(conn):
-    """Return stock turnover (giro) per product: qty_sold / current_stock."""
+    """Stock turnover (giro) per product."""
     try:
         return conn.execute("""
             SELECT
@@ -167,22 +130,21 @@ def get_stock_turnover(conn):
                 i.category,
                 i.current_stock,
                 i.min_stock,
-                COALESCE(p.qty_sold, 0)                              AS qty_sold,
+                COALESCE(p.qty_sold, 0)                                  AS qty_sold,
                 ROUND(
                     COALESCE(p.qty_sold, 0)::FLOAT /
                     NULLIF(i.current_stock, 0)
-                , 2)                                                 AS giro,
+                , 2)                                                     AS giro,
                 CASE
-                    WHEN i.current_stock = 0                         THEN '⚠️ Sem estoque'
+                    WHEN i.current_stock = 0                             THEN '⚠️ Sem estoque'
                     WHEN COALESCE(p.qty_sold,0)::FLOAT /
-                         NULLIF(i.current_stock,0) >= 3              THEN '🔥 Alto'
+                         NULLIF(i.current_stock,0) >= 3                  THEN '🔥 Alto'
                     WHEN COALESCE(p.qty_sold,0)::FLOAT /
-                         NULLIF(i.current_stock,0) >= 1              THEN '✅ Normal'
-                    ELSE                                                  '🐢 Baixo'
-                END                                                  AS giro_class
+                         NULLIF(i.current_stock,0) >= 1                  THEN '✅ Normal'
+                    ELSE                                                       '🐢 Baixo'
+                END                                                      AS giro_class
             FROM inventory i
-            LEFT JOIN products p ON lower(i.slug) = lower(p.raw_key)
-                                AND p.period = '2026'
+            LEFT JOIN products p ON lower(i.product) = lower(p.full_name)
             ORDER BY giro DESC NULLS LAST
         """).pl()
     except Exception:
@@ -190,7 +152,7 @@ def get_stock_turnover(conn):
 
 
 def get_inventory_alerts(conn):
-    """Return products below minimum stock."""
+    """Products at or below minimum stock."""
     try:
         return conn.execute("""
             SELECT
@@ -200,11 +162,56 @@ def get_inventory_alerts(conn):
                 min_stock,
                 CASE
                     WHEN current_stock <= min_stock * 0.5 THEN '🔴 Crítico'
-                    WHEN current_stock <= min_stock THEN '🟡 Baixo'
-                    ELSE '🟢 OK'
+                    WHEN current_stock <= min_stock       THEN '🟡 Baixo'
+                    ELSE                                       '🟢 OK'
                 END AS alert
             FROM inventory
             ORDER BY current_stock::FLOAT / NULLIF(min_stock::FLOAT, 0) ASC
         """).pl()
-    except duckdb.CatalogException:
+    except Exception:
         return pl.DataFrame()
+
+
+def get_cashflow_summary(conn):
+    """Cashflow totals by type."""
+    try:
+        return conn.execute("""
+            SELECT
+                Type,
+                Category,
+                SUM(Amount) AS total
+            FROM cashflow
+            GROUP BY Type, Category
+            ORDER BY Type, total DESC
+        """).pl()
+    except Exception:
+        return pl.DataFrame()
+
+
+def get_daily_sales_trend(conn, top_n: int = 10):
+    """Daily revenue trend for top N products."""
+    try:
+        return conn.execute(f"""
+            SELECT Date, Product, SUM(Total) AS revenue
+            FROM sales
+            WHERE Product IN (
+                SELECT Product FROM sales
+                GROUP BY Product
+                ORDER BY SUM(Total) DESC
+                LIMIT {top_n}
+            )
+            GROUP BY Date, Product
+            ORDER BY Date
+        """).pl()
+    except Exception:
+        return pl.DataFrame()
+
+
+# ── Kept for sidebar compatibility (no-op period filter) ──────────────────────
+PERIOD_OPTIONS: dict[str, str] = {
+    "2026 (Mar–Abr+)": "ALL",
+}
+
+
+def get_selected_period() -> str:
+    return "ALL"
