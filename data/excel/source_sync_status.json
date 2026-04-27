@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "timestamp": "2026-04-27T13:11:30.982033+00:00",
+  "timestamp": "2026-04-27T16:41:23.675065+00:00",
   "warnings": [
     "Cashflow has zero rows; cash reporting and expense analysis are not representative yet.",
     "CategoryOverrides is empty; this is allowed, but no manual category corrections have been recorded."

@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
+from app.components.monthly_block import render_monthly_block
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
 from app.utils.fixed_costs import load_fixed_costs
 from app.utils.source_health import render_source_health_warning
@@ -76,6 +77,11 @@ c2.metric("📦 Unidades",       f"{int(quantidade):,}")
 c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}")
 c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
 c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
+
+st.divider()
+
+# ── Monthly Sales Block ────────────────────────────────────────────────────────
+render_monthly_block(conn)
 
 st.divider()
 

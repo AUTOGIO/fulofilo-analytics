@@ -38,7 +38,14 @@ def get_conn():
         os.environ.get("IS_STREAMLIT_CLOUD")
     )
 
-    conn = duckdb.connect(str(DB_PATH))
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not DB_PATH.exists():
+        bootstrap = duckdb.connect(str(DB_PATH))
+        bootstrap.close()
+
+    # The dashboard only reads Parquet-backed views. Keep app sessions
+    # in-memory so Streamlit reruns/pages never contend on the on-disk file.
+    conn = duckdb.connect()
 
     if is_cloud:
         conn.execute("SET threads = 2")
@@ -219,6 +226,22 @@ def get_daily_sales_trend(conn, top_n: int = 10):
             )
             GROUP BY Date, Product
             ORDER BY Date
+        """).pl()
+    except Exception:
+        return pl.DataFrame()
+
+
+def get_monthly_breakdown(conn):
+    """Revenue, units and profit grouped by year-month from daily_sales parquet."""
+    try:
+        return conn.execute("""
+            SELECT
+                strftime(CAST(Date AS DATE), '%Y-%m')          AS mes,
+                SUM(CAST(REPLACE(CAST(Total    AS VARCHAR), ',', '.') AS DOUBLE)) AS receita,
+                SUM(CAST(REPLACE(CAST(Quantity AS VARCHAR), ',', '.') AS DOUBLE)) AS unidades
+            FROM sales
+            GROUP BY mes
+            ORDER BY mes
         """).pl()
     except Exception:
         return pl.DataFrame()

@@ -11,6 +11,46 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
 
+# ── Month filter session-state key ────────────────────────────────────────────
+MONTH_FILTER_KEY = "ff_month_filter"
+
+_MONTH_LABELS = {
+    "2026-01": "Jan 2026", "2026-02": "Fev 2026", "2026-03": "Mar 2026",
+    "2026-04": "Abr 2026", "2026-05": "Mai 2026", "2026-06": "Jun 2026",
+    "2026-07": "Jul 2026", "2026-08": "Ago 2026", "2026-09": "Set 2026",
+    "2026-10": "Out 2026", "2026-11": "Nov 2026", "2026-12": "Dez 2026",
+}
+
+
+def get_month_filter() -> list[str]:
+    """Return the currently selected months (list of 'YYYY-MM').
+    Empty list means 'all months'.
+    """
+    return st.session_state.get(MONTH_FILTER_KEY, [])
+
+
+def render_month_filter(available_months: list[str]) -> list[str]:
+    """Render the month multi-select in the sidebar and return selected months."""
+    if not available_months:
+        return []
+
+    options_display = [_MONTH_LABELS.get(m, m) for m in available_months]
+    raw_map = {_MONTH_LABELS.get(m, m): m for m in available_months}
+
+    selected_display = st.multiselect(
+        "🗓 Filtrar por mês",
+        options=options_display,
+        default=st.session_state.get(MONTH_FILTER_KEY + "_display", []),
+        placeholder="Todos os meses",
+        key=MONTH_FILTER_KEY + "_widget",
+        help="Selecione 1 ou mais meses. Vazio = todos.",
+    )
+
+    selected_raw = [raw_map[d] for d in selected_display]
+    st.session_state[MONTH_FILTER_KEY] = selected_raw
+    st.session_state[MONTH_FILTER_KEY + "_display"] = selected_display
+    return selected_raw
+
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
 LOGO_SMALL  = str(ASSETS / "favicon.png")
@@ -117,6 +157,26 @@ def render_sidebar(active_page: str = ""):
 
     with st.sidebar:
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:4px 0 10px;">', unsafe_allow_html=True)
+
+        # ── Month filter ──────────────────────────────────────────────────────
+        st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
+        try:
+            from app.db import get_conn, get_available_months
+            _conn = get_conn()
+            _avail = get_available_months(_conn)
+            if _avail:
+                render_month_filter(_avail)
+                _sel = get_month_filter()
+                if _sel:
+                    st.caption(f"✅ {len(_sel)} mês(es) selecionado(s)")
+                else:
+                    st.caption("📅 Exibindo todos os meses")
+            else:
+                st.caption("Sem dados de vendas ainda.")
+        except Exception:
+            pass
+
+        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:8px 0 10px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">◈ Navegação</div>', unsafe_allow_html=True)
 
         for page, icon, label in _NAV:
