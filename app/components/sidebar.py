@@ -9,6 +9,7 @@ from pathlib import Path
 import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from app.utils.source_health import get_source_health
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGO_FULL   = str(ASSETS / "logo.png")
@@ -59,7 +60,7 @@ def render_page_header(logo_path=None):
 
 
 def get_selected_period() -> str:
-    """Always returns 'ALL' — period filtering not active in current data model."""
+    """Canonical Excel sync exposes a single current-state dataset."""
     return "ALL"
 
 
@@ -121,17 +122,28 @@ def render_sidebar(active_page: str = ""):
         for page, icon, label in _NAV:
             st.page_link(page, label=f"{icon}  {label}")
 
-        # ── Period label ───────────────────────────────────────────────────────
+        # ── Data contract label ────────────────────────────────────────────────
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-section-label">◈ Fonte ativa</div>', unsafe_allow_html=True)
         st.markdown(
             '<div style="text-align:center;font-size:0.75rem;color:#00D4FF;'
             'letter-spacing:0.06em;padding:6px 0;opacity:0.9;">'
-            '📅 Mar – Abr 2026<br>'
-            '<span style="font-size:0.68rem;color:#4A5568;">acumulado</span>'
+            '📘 Excel master sincronizado<br>'
+            '<span style="font-size:0.68rem;color:#4A5568;">sem cortes por período</span>'
             '</div>',
             unsafe_allow_html=True,
         )
+        status = get_source_health()
+        health = status.get("health", {})
+        if status.get("errors"):
+            st.error("Status: sync com erro")
+        elif status.get("ok") and health.get("healthy_production_data", False):
+            st.success("Status: pronto para produção")
+        elif status.get("ok") and not health.get("healthy_production_data", True):
+            st.warning(
+                "Status: não pronto para produção. "
+                "Carregue dados reais no Excel master antes de confiar nos indicadores."
+            )
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
@@ -172,4 +184,3 @@ def render_sidebar(active_page: str = ""):
                 unsafe_allow_html=True,
             )
             st.image(str(GMT_LOGO), use_container_width=True)
-

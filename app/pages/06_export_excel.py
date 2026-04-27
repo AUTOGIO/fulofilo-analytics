@@ -22,6 +22,7 @@ render_sidebar()
 render_page_header()
 st.markdown("## 📤 Exportar Relatório Excel")
 st.caption("Gera o workbook completo com 9 abas a partir dos dados atuais em Parquet.")
+st.warning("Os arquivos `excel/FuloFilo_Report_*.xlsx` são artefatos somente leitura e não podem ser usados como fonte operacional.")
 
 # ── Sheet selector ─────────────────────────────────────────────────────────────
 st.subheader("📋 Selecionar abas")
@@ -85,4 +86,3 @@ if reports:
                            key=rpt.name)
 else:
     st.info("Nenhum relatório gerado ainda. Clique em 'Gerar Relatório' acima.")
-

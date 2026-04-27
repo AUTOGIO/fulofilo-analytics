@@ -20,6 +20,7 @@ from app.components.sidebar import render_sidebar, render_page_header, get_selec
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
 from app.utils.fixed_costs import load_fixed_costs
+from app.utils.source_health import render_source_health_warning
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
@@ -39,6 +40,7 @@ render_page_header()
 
 # ── Top Bar ───────────────────────────────────────────────────────────────────
 render_hud_topbar("Visão Geral", "🌺")
+render_source_health_warning()
 
 # ── Load Data ─────────────────────────────────────────────────────────────────
 period = get_selected_period()
@@ -367,4 +369,3 @@ else:
 
     except Exception:
         st.info("Execute `bash scripts/sync_excel.sh` para carregar o catálogo.")
-

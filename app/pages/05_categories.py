@@ -22,34 +22,33 @@ sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, LOGO_44
 from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
-
-RAW_DIR   = ROOT / "data" / "raw"
-CAT_FILE  = RAW_DIR / "product_catalog_categorized.csv"
-BASE_FILE = RAW_DIR / "product_catalog.csv"
+from app.utils.category_ops import upsert_category_override
+from app.utils.source_health import render_source_health_warning
 
 st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
 render_sidebar()
 render_page_header(logo_path=LOGO_44)
 render_hud_topbar("Gerenciador de Categorias", "🏷️")
+render_source_health_warning()
 
-st.caption("Visualize, filtre e reassigne categorias de produtos. Mudanças são salvas no CSV e no DuckDB.")
+st.caption("Visualize categorias derivadas do sync canônico e grave overrides manuais no Excel master.")
+st.warning(
+    "Mudanças manuais de categoria devem ser feitas na aba `CategoryOverrides` de "
+    "`data/excel/FuloFilo_Master.xlsx`."
+)
 
 # ── Load data ──────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_categorized(data_version: str = "") -> pl.DataFrame:  # noqa: ARG001
-    if CAT_FILE.exists():
-        return pl.read_csv(CAT_FILE)
-    elif BASE_FILE.exists():
-        return pl.read_csv(BASE_FILE)
-    # Fallback: load directly from products parquet
     pq_path = ROOT / "data" / "parquet" / "products.parquet"
     if pq_path.exists():
         return pl.read_parquet(pq_path).select(
-            ["slug", "full_name", "category", "margin_pct"]
+            ["sku", "full_name", "category", "margin_pct"]
         ).rename({"category": "Category"}).with_columns([
+            pl.col("sku").alias("slug"),
             pl.col("Category").alias("Subcategory"),
-            pl.lit("auto").alias("CategoryConfidence"),
+            pl.lit("derived").alias("CategoryConfidence"),
         ])
     return pl.DataFrame()
 
@@ -93,15 +92,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### ⚡ Ações")
-    if st.button("🔄 Re-executar Auto-Categorização"):
-        import subprocess
-        result = subprocess.run(
-            [str(ROOT / ".venv/bin/python3"), str(ROOT / "etl/categorize_products.py")],
-            capture_output=True, text=True
-        )
-        st.code(result.stdout + result.stderr)
-        st.cache_data.clear()
-        st.rerun()
+    st.button("🔄 Re-executar Auto-Categorização", disabled=True)
 
 # ── Apply filters ─────────────────────────────────────────────────────────────
 view = df.clone()
@@ -128,29 +119,48 @@ st.divider()
 
 # ── Unmatched alert ────────────────────────────────────────────────────────────
 unmatched_df = df.filter(pl.col("CategoryConfidence") == "unmatched")
-if not unmatched_df.is_empty():
-    with st.expander(f"⚠️ {unmatched_df.shape[0]} produtos SEM categorização — clique para atribuir", expanded=True):
-        st.caption("Selecione Categoria e Subcategoria para cada produto e clique em Salvar.")
-        edits = {}
-        for row in unmatched_df.iter_rows(named=True):
-            slug = row["slug"]
-            col_a, col_b, col_c = st.columns([3, 2, 2])
-            col_a.markdown(f"**{row['full_name']}** `{slug}`")
-            new_cat = col_b.selectbox("Categoria", ALL_CATEGORIES,
-                                       key=f"cat_{slug}", index=ALL_CATEGORIES.index("Outros"))
-            new_sub = col_c.selectbox("Subcategoria", ALL_SUBCATEGORIES,
-                                       key=f"sub_{slug}", index=ALL_SUBCATEGORIES.index("Não Classificado"))
-            edits[slug] = (new_cat, new_sub)
+with st.expander("✍️ Gravar override manual", expanded=not unmatched_df.is_empty()):
+    if not unmatched_df.is_empty():
+        st.caption(f"{unmatched_df.shape[0]} produto(s) sem categorização detectados no read model atual.")
+    edit_source = unmatched_df if not unmatched_df.is_empty() else df
+    options_df = edit_source.select(["slug", "full_name", "Category", "Subcategory"]).to_pandas()
+    options = {
+        f"{row['full_name']} ({row['slug']})": row
+        for _, row in options_df.iterrows()
+    }
+    selected_label = st.selectbox("Produto", list(options.keys()))
+    selected_row = options[selected_label]
 
-        if st.button("💾 Salvar atribuições manuais"):
-            updated = df.clone().to_pandas()
-            for slug, (cat, sub) in edits.items():
-                mask = updated["slug"] == slug
-                updated.loc[mask, "Category"]           = cat
-                updated.loc[mask, "Subcategory"]        = sub
-                updated.loc[mask, "CategoryConfidence"] = "manual"
-            pl.from_pandas(updated).write_csv(CAT_FILE)
-            st.success("✅ Categorias salvas em product_catalog_categorized.csv")
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        new_cat = st.selectbox(
+            "Categoria",
+            ALL_CATEGORIES,
+            index=ALL_CATEGORIES.index(selected_row["Category"]) if selected_row["Category"] in ALL_CATEGORIES else ALL_CATEGORIES.index("Outros"),
+        )
+    with col_b:
+        new_sub = st.selectbox(
+            "Subcategoria",
+            ALL_SUBCATEGORIES,
+            index=ALL_SUBCATEGORIES.index(selected_row["Subcategory"]) if selected_row["Subcategory"] in ALL_SUBCATEGORIES else ALL_SUBCATEGORIES.index("Não Classificado"),
+        )
+    with col_c:
+        confidence = st.selectbox("Confiança", ["manual", "high", "medium"], index=0)
+
+    if st.button("💾 Salvar override manual"):
+        try:
+            result = upsert_category_override(
+                sku=str(selected_row["slug"]),
+                category=new_cat,
+                subcategory=new_sub,
+                confidence=confidence,
+            )
+        except Exception as exc:  # noqa: BLE001
+            st.error(f"❌ Falha ao gravar override no Excel master: {exc}")
+        else:
+            st.success(
+                f"✅ Override salvo para SKU **{result.sku}** em `CategoryOverrides` e sincronizado."
+            )
             st.cache_data.clear()
             st.rerun()
 
@@ -191,9 +201,10 @@ except Exception as e:
 
 # ── Export ─────────────────────────────────────────────────────────────────────
 st.divider()
-if CAT_FILE.exists():
-    csv_bytes = CAT_FILE.read_bytes()
-    st.download_button("📥 Exportar CSV categorizado", csv_bytes,
-                       file_name="product_catalog_categorized.csv",
-                       mime="text/csv")
-
+csv_bytes = view.select(cols_show).to_pandas().to_csv(index=False).encode("utf-8")
+st.download_button(
+    "📥 Exportar visão atual",
+    csv_bytes,
+    file_name="categorias_visualizacao.csv",
+    mime="text/csv",
+)

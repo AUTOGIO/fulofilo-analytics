@@ -57,10 +57,16 @@ def get_conn():
     ]:
         p = DATA_DIR / fname
         if p.exists():
-            conn.execute(
-                f"CREATE OR REPLACE VIEW {name} AS "
-                f"SELECT * FROM read_parquet('{p}');"
-            )
+            if name == "products":
+                conn.execute(
+                    f"CREATE OR REPLACE VIEW {name} AS "
+                    f"SELECT *, suggested_price AS price FROM read_parquet('{p}');"
+                )
+            else:
+                conn.execute(
+                    f"CREATE OR REPLACE VIEW {name} AS "
+                    f"SELECT * FROM read_parquet('{p}');"
+                )
 
     return conn
 
@@ -68,16 +74,8 @@ def get_conn():
 # ── Queries ────────────────────────────────────────────────────────────────────
 
 def _period_filter(period: str) -> str:
-    """Return SQL WHERE clause fragment for the given period.
-
-    '2026'  or 'ALL' or '' → combined Mar+Apr view
-    '2026-03'              → March only
-    '2026-04'              → April only
-    """
-    p = period.strip() if period else ""
-    if not p or p == "ALL":
-        return "period = '2026'"
-    return f"period = '{p}'"
+    """Canonical Excel sync does not emit period slices; keep filters as a no-op."""
+    return "1=1"
 
 
 def get_summary_kpis(conn, period: str = "ALL"):
@@ -164,7 +162,6 @@ def get_stock_turnover(conn):
                 END                                                      AS giro_class
             FROM inventory i
             LEFT JOIN products p ON lower(i.product) = lower(p.full_name)
-                                AND p.period = '2026'
             ORDER BY giro DESC NULLS LAST
         """).pl()
     except Exception:

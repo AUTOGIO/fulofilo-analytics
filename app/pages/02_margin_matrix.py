@@ -45,7 +45,7 @@ def load(data_version: str, period: str):  # noqa: ARG001
 df = load(get_data_mtime(), get_selected_period())
 
 if df.is_empty():
-    st.warning("Execute `etl/build_catalog.py` primeiro.")
+    st.warning("Execute `bash scripts/sync_excel.sh` primeiro.")
     st.stop()
 
 pdf = df.to_pandas()
@@ -255,4 +255,3 @@ with col_r2:
                 f"representam 80% da receita total "
                 f"({conc.get('pct_of_catalog', 0)*100:.1f}% do catálogo)"
             )
-

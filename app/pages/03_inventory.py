@@ -17,13 +17,15 @@ sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_stock_turnover, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
-from app.utils.inventory_ops import load_inventory, adjust_stock, sync_to_excel
+from app.utils.inventory_ops import load_inventory, adjust_stock
+from app.utils.source_health import render_source_health_warning
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
 render_sidebar()
 render_page_header()
 render_hud_topbar("Gestão de Estoque", "📦")
+render_source_health_warning()
 
 st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
 
@@ -35,7 +37,7 @@ def load(data_version: str):  # noqa: ARG001
 df = load(get_data_mtime())
 
 if df.is_empty():
-    st.info("⚙️ Estoque não configurado. Preencha `data/raw/inventory_TEMPLATE.csv` e execute `etl/ingest_eleve.py`.")
+    st.info("⚙️ Estoque não carregado. Execute `bash scripts/sync_excel.sh` para sincronizar o Excel master.")
     st.stop()
 
 pdf = df.to_pandas()
@@ -217,11 +219,15 @@ with tab3:
         total_val = cat_val["total_value"].sum()
         st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")
     else:
-        st.info("Dados de custo não disponíveis. Execute etl/build_catalog.py primeiro.")
+        st.info("Dados de custo não disponíveis. Execute `bash scripts/sync_excel.sh` primeiro.")
 
 # ── Stock Adjustment + Excel Sync ──────────────────────────────────────────────
 st.divider()
 st.subheader("🔧 Ajustar Estoque")
+st.caption(
+    "Este ajuste grava primeiro na aba `Inventory` do Excel master, registra auditoria em "
+    "`data/logs/stock_audit.csv` e executa a sincronização canônica."
+)
 
 inv_full = load_inventory()
 if not inv_full.is_empty():
@@ -250,23 +256,18 @@ if not inv_full.is_empty():
             submitted_adj = st.form_submit_button("💾 Salvar Ajuste", use_container_width=True)
 
         if submitted_adj and len(slug_vals):
-            ok = adjust_stock(str(slug_vals[0]), int(new_qty))
-            if ok:
+            try:
+                result = adjust_stock(str(slug_vals[0]), int(new_qty))
+            except Exception as exc:  # noqa: BLE001
+                st.error(f"❌ Falha ao gravar ajuste no Excel master: {exc}")
+            else:
                 st.success(
-                    f"✅ **{selected_product}**: {cur_stock} → **{int(new_qty)}** un. "
-                    f"· Parquet e Excel sincronizados ✔"
+                    f"✅ **{result.product}**: {result.old_stock} → **{result.new_stock}** un. "
+                    f"Excel, auditoria e read model atualizados."
                 )
                 st.cache_data.clear()
                 st.rerun()
-            else:
-                st.error("❌ Falha ao ajustar estoque.")
 
     with adj_col2:
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        if st.button("🔄 Sync tudo → Excel", use_container_width=True, type="primary"):
-            path = sync_to_excel()
-            if path:
-                st.success(f"✅ `{Path(path).name}` atualizado!")
-            else:
-                st.error("❌ Excel não encontrado.")
-
+        st.button("🔄 Sync automático", use_container_width=True, type="primary", disabled=True)

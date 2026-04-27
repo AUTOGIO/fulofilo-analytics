@@ -1,181 +1,121 @@
-"""
-sales_ops.py — Daily Sales ↔ Excel "Daily Ops" Sheet Sync
-==========================================================
-Keeps FuloFilo_Master.xlsx "Daily Ops" sheet in sync with
-data/raw/daily_sales_TEMPLATE.csv (the manual sales log).
-
-Canonical write target: data/excel/FuloFilo_Master.xlsx  (Daily Ops sheet)
-Generated report workbooks under excel/ are READ-ONLY outputs — never mutated here.
-
-If the "Daily Ops" sheet does not exist in the master workbook it is created
-automatically so this function is safe to call on a fresh master.
-
-Public API
-----------
-sync_csv_to_excel_daily_ops()
-    Read the full CSV, aggregate by day, and rewrite the
-    "Daily Ops" sheet in FuloFilo_Master.xlsx.
-    Called automatically after every sale registration.
-"""
-
 from __future__ import annotations
 
+from dataclasses import dataclass
+from datetime import date, datetime
 from pathlib import Path
 
-import pandas as pd
 import openpyxl
-from openpyxl.cell.cell import MergedCell
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.worksheet.worksheet import Worksheet
 
-ROOT        = Path(__file__).resolve().parent.parent.parent
-CSV_PATH    = ROOT / "data" / "raw" / "daily_sales_TEMPLATE.csv"
-MASTER_PATH = ROOT / "data" / "excel" / "FuloFilo_Master.xlsx"
+from app.utils.excel_sync import MASTER_PATH, backup_workbook, run_canonical_sync
 
-# ── Style constants (match build_report.py HUD palette) ───────────────────────
-_C_HEADER   = "FF080C18"   # near-black
-_C_CYAN     = "FF00D4FF"   # neon cyan accent
-_C_DARK_ROW = "FF0B0F1E"   # dark row
-_C_MID_ROW  = "FF10162A"   # slightly lighter
-_THIN_SIDE  = Side(style="thin", color="FF1A2340")
-_THIN_BORDER = Border(left=_THIN_SIDE, right=_THIN_SIDE,
-                      top=_THIN_SIDE,  bottom=_THIN_SIDE)
-
-HEADERS = [
-    "Data", "Receita (R$)", "Transações", "Ticket Médio (R$)",
-    "Produto Top", "Método Pagto", "Qtd Vendida", "Fonte",
-]
+SHEET_CATALOG = "Catalog"
+SHEET_SALES = "DailySales"
 
 
-def _safe_set(cell, value) -> None:
-    if not isinstance(cell, MergedCell):
-        cell.value = value
+@dataclass
+class SaleWriteResult:
+    sku: str
+    product: str
+    quantity: int
+    unit_price: float
+    total: float
+    workbook_path: str
+    backup_path: str | None = None
+    sync_output: str = ""
 
 
-def _style_header(ws, n_cols: int) -> None:
-    for c in range(1, n_cols + 1):
-        cell = ws.cell(1, c)
-        if isinstance(cell, MergedCell):
-            continue
-        cell.font      = Font(bold=True, color=_C_CYAN, name="Calibri", size=10)
-        cell.fill      = PatternFill("solid", fgColor=_C_HEADER)
-        cell.alignment = Alignment(horizontal="center", vertical="center")
-        cell.border    = _THIN_BORDER
-
-
-def _style_data(cell, row_idx: int, is_currency: bool = False) -> None:
-    bg = _C_DARK_ROW if row_idx % 2 == 0 else _C_MID_ROW
-    cell.fill      = PatternFill("solid", fgColor=bg)
-    cell.font      = Font(name="Calibri", size=9, color="FFE2E8F0")
-    cell.alignment = Alignment(horizontal="right" if is_currency else "center",
-                               vertical="center")
-    cell.border    = _THIN_BORDER
-    if is_currency:
-        cell.number_format = 'R$ #,##0.00'
-
-
-def sync_csv_to_excel_daily_ops() -> str | None:
-    """
-    Aggregate daily_sales_TEMPLATE.csv by date and write all rows
-    into FuloFilo_Master.xlsx 'Daily Ops' sheet. Replaces existing data rows.
-    Creates the sheet if it does not yet exist in the master workbook.
-    Returns path to saved master workbook, or None on failure.
-    """
-    if not MASTER_PATH.exists():
-        print(f"[sales_ops] Master workbook not found: {MASTER_PATH}")
-        return None
-    if not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0:
-        return None
-
+def _norm_sku(value: object) -> str:
+    if value is None:
+        return ""
+    raw = str(value).strip()
+    if not raw:
+        return ""
     try:
-        # ── Read & aggregate CSV ───────────────────────────────────────────────
-        df = pd.read_csv(CSV_PATH, parse_dates=["Date"])
-        df = df.dropna(subset=["Date", "Total"])
+        return str(int(float(raw))).zfill(5)
+    except ValueError:
+        return raw
 
-        if df.empty:
-            return None
 
-        # Daily aggregation
-        daily = (
-            df.groupby(df["Date"].dt.strftime("%Y-%m-%d"))
-            .agg(
-                receita      = ("Total",          "sum"),
-                transacoes   = ("Total",          "count"),
-                ticket_medio = ("Total",          "mean"),
-                produto_top  = ("Product",        lambda x: x.value_counts().idxmax()),
-                metodo_pagto = ("Payment_Method", lambda x: x.value_counts().idxmax()),
-                qtd_vendida  = ("Quantity",       "sum"),
-                fonte        = ("Source",         lambda x: x.value_counts().idxmax()),
-            )
-            .reset_index()
-            .rename(columns={"Date": "data"})
-            .sort_values("data", ascending=False)   # most recent first
-        )
+def _require_sheet(wb: openpyxl.Workbook, name: str) -> Worksheet:
+    if name not in wb.sheetnames:
+        raise ValueError(f"Required sheet missing from workbook: {name}")
+    return wb[name]
 
-        # ── Open master workbook — create sheet if missing ────────────────────
-        wb = openpyxl.load_workbook(MASTER_PATH)
-        if "Daily Ops" not in wb.sheetnames:
-            wb.create_sheet("Daily Ops")
-        ws = wb["Daily Ops"]
 
-        # Clear all existing data (keep row 1 for header)
-        for row in ws.iter_rows(min_row=1, max_row=ws.max_row):
-            for cell in row:
-                if not isinstance(cell, MergedCell):
-                    cell.value = None
+def _catalog_lookup(ws: Worksheet) -> dict[str, str]:
+    lookup: dict[str, str] = {}
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        sku = _norm_sku(row[0] if row else None)
+        if sku:
+            lookup[sku] = str(row[1] or "").strip()
+    return lookup
 
-        # ── Write header ──────────────────────────────────────────────────────
-        ws.freeze_panes = "A2"
-        for ci, h in enumerate(HEADERS, 1):
-            _safe_set(ws.cell(1, ci), h)
-        _style_header(ws, len(HEADERS))
 
-        # Column widths
-        for ci, w in zip(range(1, len(HEADERS) + 1),
-                         [14, 14, 12, 16, 28, 16, 12, 12]):
-            ws.column_dimensions[
-                openpyxl.utils.get_column_letter(ci)
-            ].width = w
+def append_sale_to_excel(
+    sale_date: date | datetime,
+    sku: str,
+    product: str,
+    quantity: int,
+    unit_price: float,
+    payment_method: str,
+    source: str = "manual",
+    workbook_path: Path = MASTER_PATH,
+    run_sync: bool = True,
+    create_backup: bool = True,
+    sync_runner=run_canonical_sync,
+) -> SaleWriteResult:
+    """Append a sale directly to the canonical DailySales worksheet, then sync."""
+    sku_norm = _norm_sku(sku)
+    if not sku_norm:
+        raise ValueError("SKU is required.")
+    if quantity <= 0:
+        raise ValueError("Quantity must be greater than zero.")
+    if unit_price < 0:
+        raise ValueError("Unit_Price must be greater than or equal to zero.")
 
-        # ── Write data rows ───────────────────────────────────────────────────
-        CURRENCY_COLS = {2, 4}   # Receita, Ticket Médio
+    workbook_path = Path(workbook_path)
+    if not workbook_path.exists():
+        raise FileNotFoundError(f"Workbook not found: {workbook_path}")
 
-        for ri, row in enumerate(daily.itertuples(index=False), 2):
-            vals = [
-                row.data,
-                round(row.receita, 2),
-                int(row.transacoes),
-                round(row.ticket_medio, 2),
-                str(row.produto_top),
-                str(row.metodo_pagto),
-                int(row.qtd_vendida),
-                str(row.fonte),
-            ]
-            for ci, val in enumerate(vals, 1):
-                cell = ws.cell(ri, ci, val)
-                _style_data(cell, ri, is_currency=(ci in CURRENCY_COLS))
+    backup_path = backup_workbook(workbook_path) if create_backup else None
+    wb = openpyxl.load_workbook(workbook_path)
+    catalog_ws = _require_sheet(wb, SHEET_CATALOG)
+    sales_ws = _require_sheet(wb, SHEET_SALES)
 
-        # ── KPI summary row at top (row 1 reserved, so append after data) ─────
-        total_receita   = daily["receita"].sum()
-        total_transacoes = daily["transacoes"].sum()
-        ticker_geral    = total_receita / total_transacoes if total_transacoes else 0
+    catalog = _catalog_lookup(catalog_ws)
+    if sku_norm not in catalog:
+        raise ValueError(f"SKU not found in Catalog: {sku_norm}")
 
-        # Write KPI block into a named range or just a dedicated area
-        # (add summary below all data rows)
-        summary_row = len(daily) + 3
-        ws.cell(summary_row, 1, "TOTAL PERÍODO").font = Font(
-            bold=True, color=_C_CYAN, name="Calibri", size=10)
-        ws.cell(summary_row, 2, round(total_receita, 2)).number_format = 'R$ #,##0.00'
-        ws.cell(summary_row, 3, int(total_transacoes))
-        ws.cell(summary_row, 4, round(ticker_geral, 2)).number_format = 'R$ #,##0.00'
-        for ci in range(1, 5):
-            cell = ws.cell(summary_row, ci)
-            cell.fill   = PatternFill("solid", fgColor="FF0B1A30")
-            cell.font   = Font(bold=True, color=_C_CYAN, name="Calibri", size=10)
-            cell.border = _THIN_BORDER
+    expected_product = catalog[sku_norm]
+    product_name = (product or expected_product).strip() or expected_product
+    total = round(quantity * float(unit_price), 2)
+    row = [
+        sale_date.strftime("%Y-%m-%d"),
+        sku_norm,
+        product_name,
+        int(quantity),
+        round(float(unit_price), 2),
+        total,
+        str(payment_method).strip(),
+        str(source).strip() or "manual",
+    ]
+    sales_ws.append(row)
+    wb.save(workbook_path)
 
-        wb.save(MASTER_PATH)
-        return str(MASTER_PATH)
+    sync_output = ""
+    if run_sync:
+        ok, sync_output = sync_runner()
+        if not ok:
+            raise RuntimeError(sync_output or "Canonical sync failed after DailySales write-back.")
 
-    except Exception as exc:  # noqa: BLE001
-        print(f"[sales_ops] sync_csv_to_excel_daily_ops failed: {exc}")
-        return None
+    return SaleWriteResult(
+        sku=sku_norm,
+        product=product_name,
+        quantity=int(quantity),
+        unit_price=round(float(unit_price), 2),
+        total=total,
+        workbook_path=str(workbook_path),
+        backup_path=str(backup_path) if backup_path else None,
+        sync_output=sync_output,
+    )

@@ -1,82 +1,42 @@
 """
 FulôFiló — Operações Diárias (HUD Edition)
 ==========================================
-Daily sales tracker with persistent CSV + Parquet write.
-Each form submission is immediately written to disk and the parquet is regenerated.
+Read-only daily sales view over the canonical Excel-first sync outputs.
 """
 
-import csv
 import streamlit as st
 import plotly.express as px
 import pandas as pd
 import polars as pl
 import sys
 from pathlib import Path
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
-from app.utils.inventory_ops import decrement_stock
-from app.utils.sales_ops import sync_csv_to_excel_daily_ops
+from app.utils.sales_ops import append_sale_to_excel
+from app.utils.source_health import render_source_health_warning
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-CSV_PATH     = PROJECT_ROOT / "data" / "raw" / "daily_sales_TEMPLATE.csv"
 PARQUET_PATH = PROJECT_ROOT / "data" / "parquet" / "daily_sales.parquet"
-CSV_COLUMNS  = ["Date", "Product", "Quantity", "Unit_Price", "Total", "Payment_Method", "Source"]
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-def _ensure_csv_header():
-    if not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0:
-        with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-            writer.writeheader()
-
-
-def append_sale(sale_date, product, quantity, unit_price, payment, notes=""):
-    _ensure_csv_header()
-    total = round(quantity * unit_price, 2)
-    row = {
-        "Date":           sale_date.strftime("%Y-%m-%d"),
-        "Product":        product.strip(),
-        "Quantity":       quantity,
-        "Unit_Price":     round(unit_price, 2),
-        "Total":          total,
-        "Payment_Method": payment,
-        "Source":         "manual",
-    }
-    with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-        writer.writerow(row)
-    _rebuild_parquet()
-
-    # ── Auto-decrement inventory → parquet + Excel Inventory sheet ─────────────
-    inv_result = decrement_stock(product.strip(), quantity)
-
-    # ── Sync daily sales CSV → Excel "Daily Ops" sheet ─────────────────────────
-    sync_csv_to_excel_daily_ops()
-
-    return total, inv_result
-
-
-def _rebuild_parquet():
-    try:
-        df = pl.read_csv(
-            CSV_PATH,
-            schema_overrides={"Quantity": pl.Int64, "Unit_Price": pl.Float64, "Total": pl.Float64},
-            try_parse_dates=True,
-        )
-        PARQUET_PATH.parent.mkdir(parents=True, exist_ok=True)
-        df.write_parquet(PARQUET_PATH)
-    except Exception as e:
-        st.warning(f"⚠️ Parquet não atualizado: {e}")
+DISABLED_WRITEBACK_MSG = (
+    "Canonical write-back must target `data/excel/FuloFilo_Master.xlsx`. "
+    "This action is disabled until Excel write-back is implemented."
+)
 
 
 def load_sales_history() -> pd.DataFrame:
-    _ensure_csv_header()
-    return pd.read_csv(CSV_PATH, parse_dates=["Date"])
+    if not PARQUET_PATH.exists():
+        return pd.DataFrame(
+            columns=["Date", "Product", "Quantity", "Unit_Price", "Total", "Payment_Method", "Source"]
+        )
+    df = pl.read_parquet(PARQUET_PATH).to_pandas()
+    if "Date" in df.columns:
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    return df
 
 
 # ── Page config ───────────────────────────────────────────────────────────────
@@ -85,12 +45,14 @@ inject_hud_css()
 render_sidebar()
 render_page_header()
 render_hud_topbar("Operações Diárias", "⚡")
+render_source_health_warning()
 
 st.markdown(f"**Hoje:** {date.today().strftime('%d/%m/%Y')}")
 
 # ── Quick Product Lookup ───────────────────────────────────────────────────────
 st.subheader("🔍 Consulta Rápida de Produto")
 conn = get_conn()
+products_df = pd.DataFrame(columns=["sku", "full_name", "category", "unit_cost", "price", "margin_pct"])
 
 try:
     products_df = conn.execute("""
@@ -116,80 +78,78 @@ try:
         else:
             st.warning("Nenhum produto encontrado.")
 except Exception:
-    st.info("Execute `etl/build_catalog.py` para habilitar a consulta de produtos.")
+    st.info("Execute `bash scripts/sync_excel.sh` para habilitar a consulta de produtos.")
 
 st.divider()
 
 # ── Daily Sales Entry Form ─────────────────────────────────────────────────────
 st.subheader("📝 Registro de Vendas do Dia")
-st.markdown("Cada venda registrada aqui é **salva imediatamente** no CSV e no Parquet.")
+st.caption("Cada venda registrada aqui é gravada na aba `DailySales` do Excel master e depois sincronizada.")
 
-# Load product list for dropdown
-@st.cache_data
-def load_product_options():
-    try:
-        prod = pl.read_parquet(PROJECT_ROOT / "data" / "parquet" / "products.parquet")
-        df = prod.select(["sku","full_name","category","price"]).sort(["category","full_name"]).to_pandas()
-        # Build options: "Categoria — Nome" → (full_name, price)
-        options = {}
-        for _, r in df.iterrows():
-            label = f"{r['category']} — {r['full_name'].replace(r['category'] + ' — ', '').replace(r['category'] + ' — ', '')}"
-            options[label] = {"name": r["full_name"], "price": float(r["price"])}
-        return options
-    except Exception:
-        return {}
+product_options = {}
+for _, row in products_df.sort_values(["category", "full_name"]).iterrows():
+    label = f"{row['category']} — {row['full_name']}"
+    product_options[label] = {
+        "sku": str(row["sku"]).zfill(5),
+        "name": str(row["full_name"]),
+        "price": float(row["price"]),
+    }
 
-product_options = load_product_options()
-product_labels  = list(product_options.keys())
+if not product_options:
+    st.info("Nenhum SKU disponível no catálogo sincronizado.")
+else:
+    selected_label = st.selectbox(
+        "🛍️ Produto",
+        options=list(product_options.keys()),
+        placeholder="Selecione um produto...",
+    )
+    selected_product = product_options.get(selected_label, {})
+    default_price = selected_product.get("price", 0.01)
 
-# Product selector (outside form for price auto-fill)
-selected_label = st.selectbox(
-    "🛍️ Produto",
-    options=product_labels,
-    index=0 if product_labels else None,
-    placeholder="Selecione um produto...",
-)
-selected_product = product_options.get(selected_label, {})
-default_price    = selected_product.get("price", 15.0)
-product_name     = selected_product.get("name", "")
-
-with st.form("daily_sale_form", clear_on_submit=True):
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        sale_date  = st.date_input("Data", value=date.today())
-        quantity   = st.number_input("Quantidade", min_value=1, value=1, step=1)
-    with col2:
-        unit_price = st.number_input("Preço Unitário (R$)", min_value=0.01,
-                                     value=default_price, step=0.50)
-        payment    = st.selectbox(
-            "Forma de Pagamento",
-            ["Dinheiro", "Pix", "Débito", "Crédito", "Crédito Parcelado"],
-        )
-    with col3:
-        notes = st.text_input("Observações", placeholder="Opcional")
-        st.markdown(f"<br><span style='color:#00D4FF;font-size:0.85rem;'>💰 Preço tabela: <b>R$ {default_price:.2f}</b></span>", unsafe_allow_html=True)
-
-    submitted = st.form_submit_button("✅ Registrar Venda", use_container_width=True)
-
-if submitted:
-    if not product_name:
-        st.error("❌ Selecione um produto.")
-    else:
-        total, inv_result = append_sale(sale_date, product_name, quantity, unit_price, payment, notes)
-        st.success(
-            f"✅ **{product_name}** × {quantity} = **R$ {total:.2f}** ({payment}) — "
-            f"salvo em CSV e Parquet."
-        )
-        if inv_result:
-            delta = inv_result["old_stock"] - inv_result["new_stock"]
-            st.info(
-                f"📦 Estoque atualizado: **{inv_result['product']}** "
-                f"{inv_result['old_stock']} → **{inv_result['new_stock']}** "
-                f"(-{delta} un.) · Excel sincronizado ✔"
+    with st.form("daily_sale_form", clear_on_submit=True):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            sale_date = st.date_input("Data", value=date.today())
+            quantity = st.number_input("Quantidade", min_value=1, value=1, step=1)
+        with col2:
+            unit_price = st.number_input("Preço Unitário (R$)", min_value=0.00, value=default_price, step=0.50)
+            payment = st.selectbox(
+                "Forma de Pagamento",
+                ["Dinheiro", "Pix", "Débito", "Crédito", "Crédito Parcelado"],
             )
+        with col3:
+            source = st.selectbox("Origem", ["manual", "app"], index=0)
+            st.markdown(
+                f"<br><span style='color:#00D4FF;font-size:0.85rem;'>SKU: <b>{selected_product.get('sku', '—')}</b></span>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                f"<span style='color:#00D4FF;font-size:0.85rem;'>💰 Preço tabela: <b>R$ {default_price:.2f}</b></span>",
+                unsafe_allow_html=True,
+            )
+
+        submitted = st.form_submit_button("✅ Registrar Venda", use_container_width=True)
+
+    if submitted:
+        try:
+            result = append_sale_to_excel(
+                sale_date=sale_date,
+                sku=selected_product["sku"],
+                product=selected_product["name"],
+                quantity=int(quantity),
+                unit_price=float(unit_price),
+                payment_method=payment,
+                source=source,
+            )
+        except Exception as exc:  # noqa: BLE001
+            st.error(f"❌ Falha ao gravar venda no Excel master: {exc}")
         else:
-            st.warning("⚠️ Produto não encontrado no estoque — ajuste manual se necessário.")
-        st.rerun()
+            st.success(
+                f"✅ **{result.product}** × {result.quantity} = **R$ {result.total:.2f}** "
+                f"gravado em `DailySales` e sincronizado."
+            )
+            st.cache_data.clear()
+            st.rerun()
 
 st.divider()
 
@@ -199,13 +159,7 @@ with hdr_col1:
     st.subheader("📊 Histórico de Vendas")
 with hdr_col2:
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🔄 Sync → Excel", use_container_width=True, type="primary"):
-        path = sync_csv_to_excel_daily_ops()
-        if path:
-            from pathlib import Path as _P
-            st.success(f"✅ `{_P(path).name}` atualizado!")
-        else:
-            st.error("❌ Excel não encontrado.")
+    st.button("🔄 Sync já aplicado", use_container_width=True, type="primary", disabled=True)
 history = load_sales_history()
 
 if history.empty:
@@ -323,76 +277,6 @@ else:
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
         st.dataframe(show, use_container_width=True, hide_index=True)
 
-# ── Delete a Sale ──────────────────────────────────────────────────────────────
 st.divider()
 with st.expander("🗑️ Excluir Venda", expanded=False):
-    st.warning("⚠️ Esta ação é irreversível. A venda será removida do CSV, Parquet e Excel.")
-
-    del_history = load_sales_history()
-    if del_history.empty:
-        st.info("Nenhuma venda registrada ainda.")
-    else:
-        del_df = del_history.reset_index(drop=True).copy()
-
-        # ── Optional date filter to narrow down the list ───────────────────
-        min_d = del_df["Date"].min().date()
-        max_d = del_df["Date"].max().date()
-        dc1, dc2 = st.columns(2)
-        with dc1:
-            del_from = st.date_input("📅 A partir de", value=max_d - timedelta(days=6),
-                                     min_value=min_d, max_value=max_d, key="del_from")
-        with dc2:
-            del_to   = st.date_input("📅 Até", value=max_d,
-                                     min_value=min_d, max_value=max_d, key="del_to")
-
-        mask_del = (del_df["Date"].dt.date >= del_from) & (del_df["Date"].dt.date <= del_to)
-        subset   = del_df[mask_del].copy()
-
-        if subset.empty:
-            st.info("Nenhuma venda no período selecionado.")
-        else:
-            subset["_label"] = subset.apply(
-                lambda r: (
-                    f"{r['Date'].strftime('%d/%m/%Y')}  |  "
-                    f"{r['Product']}  |  "
-                    f"Qtd {int(r['Quantity'])}  |  "
-                    f"R$ {float(r['Total']):.2f}  |  "
-                    f"{r['Payment_Method']}"
-                ),
-                axis=1,
-            )
-
-            selected_label = st.selectbox(
-                "Selecionar venda para excluir:",
-                subset["_label"].tolist(),
-                key="delete_sale_select",
-            )
-
-            # Map label → original DataFrame index
-            orig_idx = subset[subset["_label"] == selected_label].index[0]
-            row      = del_df.loc[orig_idx]
-
-            st.markdown(
-                f"**Venda selecionada:** `{row['Product']}` — "
-                f"**{int(row['Quantity'])} un × R$ {float(row['Unit_Price']):.2f}** "
-                f"= **R$ {float(row['Total']):.2f}** ({row['Payment_Method']}) "
-                f"em {row['Date'].strftime('%d/%m/%Y')}"
-            )
-
-            confirm_cb = st.checkbox("✅ Confirmar exclusão desta venda", key="confirm_delete_cb")
-            if st.button("🗑️ Excluir venda", type="primary",
-                         disabled=not confirm_cb, use_container_width=False):
-                new_df = del_df.drop(index=orig_idx).reset_index(drop=True)
-                # Re-format Date as string for CSV consistency
-                new_df["Date"] = new_df["Date"].dt.strftime("%Y-%m-%d")
-                new_df.to_csv(CSV_PATH, index=False)
-                _rebuild_parquet()
-                sync_csv_to_excel_daily_ops()
-                st.success(
-                    f"✅ Venda excluída: **{row['Product']}** "
-                    f"em {row['Date'].strftime('%d/%m/%Y')} — "
-                    f"CSV, Parquet e Excel atualizados."
-                )
-                st.cache_data.clear()
-                st.rerun()
-
+    st.warning(DISABLED_WRITEBACK_MSG)

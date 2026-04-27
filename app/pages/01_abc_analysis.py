@@ -38,7 +38,7 @@ def load(data_version: str, period: str):  # noqa: ARG001
 
 df = load(get_data_mtime(), get_selected_period())
 if df.is_empty():
-    st.warning("Execute `etl/build_catalog.py` para gerar os dados."); st.stop()
+    st.warning("Execute `bash scripts/sync_excel.sh` para sincronizar o Excel master."); st.stop()
 
 pdf = df.to_pandas()
 
@@ -54,8 +54,8 @@ with st.sidebar:
     min_sales  = st.toggle("Apenas produtos com ≥ 5 vendas")
 
 # ── Apply filters & recalculate ABC live (weighted score: 70% revenue + 30% profit) ──
-ABC_REVENUE_WEIGHT = 0.70  # must match etl/build_catalog.py
-ABC_PROFIT_WEIGHT  = 0.30  # must match etl/build_catalog.py
+ABC_REVENUE_WEIGHT = 0.70
+ABC_PROFIT_WEIGHT  = 0.30
 
 filtered = pdf.copy()
 if cat_filter != "Todas": filtered = filtered[filtered["category"] == cat_filter]
@@ -177,4 +177,3 @@ with tab3:
         "Tag", "Recomendação", "Prioridade",
     ]
     st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
-

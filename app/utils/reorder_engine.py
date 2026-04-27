@@ -36,7 +36,7 @@ COVERAGE_DAYS     = 45   # Target reorder coverage (days)
 
 def get_reorder_df(conn) -> pd.DataFrame:
     """
-    Full reorder analysis — all products with sales data (period='2026').
+    Full reorder analysis — all products with sales data from the canonical sync.
     Uses products table directly; current_stock from inventory JOIN where
     available, otherwise falls back to DEFAULT_STOCK (300 units).
     Products with zero sales are excluded (no giro to calculate).
@@ -62,8 +62,7 @@ def get_reorder_df(conn) -> pd.DataFrame:
                 {ALERT_THRESHOLD}                                                    AS alert_threshold
             FROM products p
             LEFT JOIN inventory i ON lower(p.full_name) = lower(i.product)
-            WHERE p.period = '2026'
-              AND p.qty_sold > 0
+            WHERE p.qty_sold > 0
             ORDER BY days_remaining ASC
         """).df()
         return df
