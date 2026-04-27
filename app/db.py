@@ -67,16 +67,31 @@ def get_conn():
 
 # ── Queries ────────────────────────────────────────────────────────────────────
 
+def _period_filter(period: str) -> str:
+    """Return SQL WHERE clause fragment for the given period.
+
+    '2026'  or 'ALL' or '' → combined Mar+Apr view
+    '2026-03'              → March only
+    '2026-04'              → April only
+    """
+    p = period.strip() if period else ""
+    if not p or p == "ALL":
+        return "period = '2026'"
+    return f"period = '{p}'"
+
+
 def get_summary_kpis(conn, period: str = "ALL"):
     """High-level KPIs: receita, unidades, lucro, ticket médio."""
+    pf = _period_filter(period)
     try:
-        return conn.execute("""
+        return conn.execute(f"""
             SELECT
                 SUM(revenue)                                          AS receita,
                 SUM(qty_sold)                                         AS quantidade,
                 SUM(profit)                                           AS lucro,
                 ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2)    AS ticket_medio
             FROM products
+            WHERE {pf}
         """).fetchone()
     except Exception:
         return (0, 0, 0, 0)
@@ -84,8 +99,9 @@ def get_summary_kpis(conn, period: str = "ALL"):
 
 def get_abc_analysis(conn, period: str = "ALL"):
     """ABC data ordered by revenue descending."""
+    pf = _period_filter(period)
     try:
-        return conn.execute("""
+        return conn.execute(f"""
             SELECT
                 full_name,
                 category,
@@ -96,6 +112,7 @@ def get_abc_analysis(conn, period: str = "ALL"):
                 cum_pct,
                 margin_pct
             FROM products
+            WHERE {pf}
             ORDER BY revenue DESC
         """).pl()
     except Exception:
@@ -104,8 +121,9 @@ def get_abc_analysis(conn, period: str = "ALL"):
 
 def get_margin_matrix(conn, period: str = "ALL"):
     """Margin matrix: qty_sold vs margin_pct for products with sales."""
+    pf = _period_filter(period)
     try:
-        return conn.execute("""
+        return conn.execute(f"""
             SELECT
                 full_name,
                 category,
@@ -114,7 +132,8 @@ def get_margin_matrix(conn, period: str = "ALL"):
                 margin_pct,
                 abc_class
             FROM products
-            WHERE qty_sold > 0
+            WHERE {pf}
+              AND qty_sold > 0
             ORDER BY revenue DESC
         """).pl()
     except Exception:
