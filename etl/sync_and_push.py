@@ -34,6 +34,8 @@ TRACKED = [
     "app/pages/06_export_excel.py",
     "app/utils/inventory_ops.py",
     "app/utils/reorder_engine.py",
+    "app/utils/fixed_costs.py",
+    "app/utils/sales_ops.py",
     # ── ETL ───────────────────────────────────────────────────────────────────
     "etl/sync_and_push.py",
     "etl/ingest_march_april_2026.py",
@@ -63,6 +65,7 @@ TRACKED = [
     "data/raw/product_catalog_categorized.csv",
     "data/raw/vendas_marco_26.csv",
     "data/raw/vendas_abril_26.csv",
+    "data/raw/custos_fixos/custos_fixos.txt",
 ]
 
 

@@ -1,0 +1,65 @@
+{
+  "custos_fixos": [
+    {
+      "categoria": "Custo Fixo",
+      "item": "Aluguel",
+      "valor_mensal_brl": 3100
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Energia",
+      "valor_mensal_brl": 550
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Vigia noturno",
+      "valor_mensal_brl": 150
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Manutenção e limpeza ar condicionado",
+      "valor_mensal_brl": 100
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Produtos limpeza",
+      "valor_mensal_brl": 50
+    },
+    {
+      "categoria": "Funcionário",
+      "item": "Alan",
+      "valor_mensal_brl": 3000
+    },
+    {
+      "categoria": "Funcionário",
+      "item": "Nalva",
+      "valor_mensal_brl": 1500
+    },
+    {
+      "categoria": "Funcionário",
+      "item": "Talita",
+      "valor_mensal_brl": 1100
+    },
+    {
+      "categoria": "Funcionário",
+      "item": "Erick",
+      "valor_mensal_brl": 1200
+    },
+    {
+      "categoria": "Funcionário",
+      "item": "Demais esporádicos",
+      "valor_mensal_brl": 1000
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Reformas de manutenção e dedetização",
+      "valor_mensal_brl": 200
+    },
+    {
+      "categoria": "Custo Fixo",
+      "item": "Músicos",
+      "valor_mensal_brl": 1000
+    }
+  ],
+  "total_mensal_brl": 12950
+}
