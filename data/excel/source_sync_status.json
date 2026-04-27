@@ -1,6 +1,43 @@
 {
   "ok": true,
-  "timestamp": "2026-04-21T07:59:49.133666+00:00",
-  "warnings": [],
-  "errors": []
+  "timestamp": "2026-04-27T13:11:30.982033+00:00",
+  "warnings": [
+    "Cashflow has zero rows; cash reporting and expense analysis are not representative yet.",
+    "CategoryOverrides is empty; this is allowed, but no manual category corrections have been recorded."
+  ],
+  "errors": [],
+  "health": {
+    "healthy_production_data": false,
+    "readiness_state": "incomplete",
+    "placeholder_only": false,
+    "catalog_rows": 39,
+    "catalog_real_rows": 39,
+    "inventory_rows": 39,
+    "inventory_placeholder_only": false,
+    "daily_sales_rows": 123,
+    "cashflow_rows": 0,
+    "category_override_rows": 0,
+    "category_overrides_empty": true,
+    "meta_present_keys": [
+      "schema_version",
+      "workbook"
+    ],
+    "meta_missing_keys": []
+  },
+  "healthy_production_data": false,
+  "readiness_state": "incomplete",
+  "placeholder_only": false,
+  "catalog_rows": 39,
+  "catalog_real_rows": 39,
+  "inventory_rows": 39,
+  "inventory_placeholder_only": false,
+  "daily_sales_rows": 123,
+  "cashflow_rows": 0,
+  "category_override_rows": 0,
+  "category_overrides_empty": true,
+  "meta_present_keys": [
+    "schema_version",
+    "workbook"
+  ],
+  "meta_missing_keys": []
 }
