@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
-from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
+from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
 from app.utils.fixed_costs import load_fixed_costs
 
