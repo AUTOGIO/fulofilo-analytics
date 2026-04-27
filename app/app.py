@@ -19,6 +19,7 @@ from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matr
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
+from app.utils.fixed_costs import load_fixed_costs
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
@@ -73,6 +74,107 @@ c2.metric("📦 Unidades",       f"{int(quantidade):,}")
 c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}")
 c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
 c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
+
+st.divider()
+
+# ── Custos Fixos ──────────────────────────────────────────────────────────────
+@st.cache_data
+def _load_custos():
+    return load_fixed_costs()
+
+_cf_df, _cf_total = _load_custos()
+
+folha     = float(_cf_df.filter(pl.col("categoria") == "Funcionário")["valor_mensal_brl"].sum())
+pct_recv  = (_cf_total / receita * 100) if receita else 0.0
+
+render_hud_topbar("Custos Fixos Mensais", "💸")
+
+k1, k2, k3 = st.columns(3)
+k1.metric("💸 Total Mensal",        f"R$ {_cf_total:,.0f}")
+k2.metric("📊 % da Receita MTD",    f"{pct_recv:.1f}%")
+k3.metric("👥 Folha de Pessoal",    f"R$ {folha:,.0f}")
+
+with st.expander("📋 Ver detalhamento completo", expanded=False):
+    col_table, col_chart = st.columns([1, 1.4])
+
+    with col_table:
+        # ── Styled table ──────────────────────────────────────────────────────
+        _cat_colors = {"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]}
+        rows_html = ""
+        for cat, grp in _cf_df.group_by("categoria", maintain_order=True):
+            cat_str = cat[0] if isinstance(cat, tuple) else cat
+            color = _cat_colors.get(cat_str, HUD["text_dim"])
+            for row in grp.iter_rows(named=True):
+                rows_html += f"""
+<tr>
+  <td style="color:{color};font-size:0.75rem;padding:5px 10px;white-space:nowrap;">{row['categoria']}</td>
+  <td style="color:{HUD['text']};font-size:0.82rem;padding:5px 10px;">{row['item']}</td>
+  <td style="color:{HUD['gold']};font-size:0.82rem;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
+      R$ {row['valor_mensal_brl']:,.0f}
+  </td>
+</tr>"""
+            subtotal = float(grp["valor_mensal_brl"].sum())
+            rows_html += f"""
+<tr style="border-top:1px solid {HUD['border']};">
+  <td colspan="2" style="color:{color};font-size:0.78rem;font-weight:700;padding:5px 10px;text-align:right;">
+      Subtotal {cat_str}
+  </td>
+  <td style="color:{color};font-size:0.82rem;font-weight:700;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
+      R$ {subtotal:,.0f}
+  </td>
+</tr>
+<tr><td colspan="3" style="height:6px;"></td></tr>"""
+
+        rows_html += f"""
+<tr style="border-top:2px solid {HUD['cyan']};">
+  <td colspan="2" style="color:{HUD['cyan']};font-size:0.85rem;font-weight:700;padding:7px 10px;text-align:right;text-shadow:{HUD['glow']};">
+      🏦 TOTAL MENSAL
+  </td>
+  <td style="color:{HUD['cyan']};font-size:0.88rem;font-weight:700;padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;text-shadow:{HUD['glow']};">
+      R$ {_cf_total:,.0f}
+  </td>
+</tr>"""
+
+        st.markdown(f"""
+<table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.02);
+              border:1px solid {HUD['border']};border-radius:10px;overflow:hidden;">
+  <thead>
+    <tr style="background:rgba(0,212,255,0.08);">
+      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Categoria</th>
+      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Item</th>
+      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:right;">R$/mês</th>
+    </tr>
+  </thead>
+  <tbody>{rows_html}</tbody>
+</table>
+""", unsafe_allow_html=True)
+
+    with col_chart:
+        # ── Horizontal bar chart ──────────────────────────────────────────────
+        _chart_df = _cf_df.sort("valor_mensal_brl", descending=True).to_pandas()
+
+        fig_cf = px.bar(
+            _chart_df,
+            x="valor_mensal_brl",
+            y="item",
+            orientation="h",
+            color="categoria",
+            color_discrete_map={"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]},
+            labels={"valor_mensal_brl": "R$/mês", "item": "", "categoria": "Categoria"},
+            text="valor_mensal_brl",
+        )
+        fig_cf.update_traces(
+            texttemplate="R$ %{x:,.0f}",
+            textposition="outside",
+            textfont_color=HUD["text"],
+        )
+        hud_plotly_layout(fig_cf, height=400)
+        fig_cf.update_layout(
+            xaxis_title="R$/mês",
+            margin=dict(l=10, r=80, t=20, b=20),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        )
+        st.plotly_chart(fig_cf, use_container_width=True)
 
 st.divider()
 

@@ -49,11 +49,11 @@ def get_reorder_df(conn) -> pd.DataFrame:
                 p.sku                                                                AS slug,
                 p.full_name                                                          AS product,
                 p.category,
-                COALESCE(i.current_stock, {DEFAULT_STOCK})                          AS current_stock,
+                COALESCE(NULLIF(i.current_stock, 0), {DEFAULT_STOCK})               AS current_stock,
                 p.qty_sold,
                 ROUND(p.qty_sold::FLOAT / {SALES_PERIOD_DAYS}, 3)                  AS daily_rate,
                 ROUND(
-                    COALESCE(i.current_stock, {DEFAULT_STOCK})::FLOAT /
+                    COALESCE(NULLIF(i.current_stock, 0), {DEFAULT_STOCK})::FLOAT /
                     (p.qty_sold::FLOAT / {SALES_PERIOD_DAYS})
                 , 0)                                                                 AS days_remaining,
                 CEIL(p.qty_sold::FLOAT / {SALES_PERIOD_DAYS} * {COVERAGE_DAYS})     AS suggested_qty,
@@ -62,7 +62,8 @@ def get_reorder_df(conn) -> pd.DataFrame:
                 {ALERT_THRESHOLD}                                                    AS alert_threshold
             FROM products p
             LEFT JOIN inventory i ON lower(p.full_name) = lower(i.product)
-            WHERE p.qty_sold > 0
+            WHERE p.period = '2026'
+              AND p.qty_sold > 0
             ORDER BY days_remaining ASC
         """).df()
         return df

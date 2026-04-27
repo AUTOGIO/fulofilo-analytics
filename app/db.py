@@ -145,6 +145,7 @@ def get_stock_turnover(conn):
                 END                                                      AS giro_class
             FROM inventory i
             LEFT JOIN products p ON lower(i.product) = lower(p.full_name)
+                                AND p.period = '2026'
             ORDER BY giro DESC NULLS LAST
         """).pl()
     except Exception:
