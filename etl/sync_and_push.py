@@ -112,7 +112,11 @@ def push(message: str = "manual sync via dashboard", dry_run: bool = False) -> b
         return False
     log(f"✅ Committed: {commit_msg}")
 
-    # 4. Push (HTTPS — uses macOS Keychain credentials)
+    # 4. Ensure HTTPS remote (self-healing — SSH has no key registered)
+    run(["git", "remote", "set-url", "origin",
+         "https://github.com/AUTOGIO/fulofilo-analytics.git"], check=False)
+
+    # 5. Push (HTTPS — uses macOS Keychain credentials)
     log("🚀 Pushing to GitHub...")
     r = run(["git", "push", "origin", "main"], check=False)
     if r.returncode != 0:
