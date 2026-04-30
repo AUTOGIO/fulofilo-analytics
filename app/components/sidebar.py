@@ -66,6 +66,7 @@ _NAV = [
     ("pages/04_daily_ops.py",     "⚡", "Operações Diárias"),
     ("pages/05_categories.py",    "🏷️", "Categorias"),
     ("pages/06_export_excel.py",  "📤", "Exportar Excel"),
+    ("pages/07_suppliers.py",     "🏭", "Fornecedores"),
 ]
 
 
@@ -209,7 +210,7 @@ def render_sidebar(active_page: str = ""):
         st.markdown(
             '<div class="sidebar-footer">'
             '<span class="sidebar-status-dot"></span>'
-            'FulôFiló Analytics Pro<br>'
+            'FulôFiló AI<br>'
             'iMac M3 · macOS · local-first'
             '</div>',
             unsafe_allow_html=True,

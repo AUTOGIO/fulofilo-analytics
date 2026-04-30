@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import polars as pl
 
-_SOURCE = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "custos_fixos" / "custos_fixos.txt"
+_SOURCE = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "costs" / "custos_fixos.txt"
 
 
 def load_fixed_costs() -> tuple[pl.DataFrame, float]:

@@ -261,7 +261,7 @@ def render_hud_topbar(page_title: str, page_icon: str = "◈") -> None:
         text-transform: uppercase;
       ">SYSTEM HUD · {page_title.upper()}</div>
       <div style="font-size: 0.72rem; color: {HUD['text_dim']}; letter-spacing: 0.1em;">
-        FulôFiló Analytics Pro · LOCAL-FIRST · iMac M3
+        FulôFiló AI · LOCAL-FIRST · iMac M3
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-# FulôFiló Analytics Pro — User Guide
+# FulôFiló AI — User Guide
 
 _Last updated: 2026-04-27_
 

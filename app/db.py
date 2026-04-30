@@ -1,6 +1,7 @@
 """
 FulôFiló — DuckDB Engine
 =========================
+Last updated: 26/04/2026 — added get_monthly_breakdown, forced cache invalidation
 Parquet schema (from etl/ingest.py):
 
   products:    sku, full_name, category, unit_cost, suggested_price,
@@ -231,20 +232,70 @@ def get_daily_sales_trend(conn, top_n: int = 10):
         return pl.DataFrame()
 
 
-def get_monthly_breakdown(conn):
-    """Revenue, units and profit grouped by year-month from daily_sales parquet."""
+def get_available_months(conn) -> list[str]:
+    """Return sorted list of YYYY-MM strings present in the sales table."""
     try:
-        return conn.execute("""
-            SELECT
-                strftime(CAST(Date AS DATE), '%Y-%m')          AS mes,
-                SUM(CAST(REPLACE(CAST(Total    AS VARCHAR), ',', '.') AS DOUBLE)) AS receita,
-                SUM(CAST(REPLACE(CAST(Quantity AS VARCHAR), ',', '.') AS DOUBLE)) AS unidades
+        rows = conn.execute("""
+            SELECT DISTINCT strftime(CAST(Date AS DATE), '%Y-%m') AS mes
             FROM sales
+            ORDER BY mes
+        """).fetchall()
+        return [r[0] for r in rows if r[0]]
+    except Exception:
+        return []
+
+
+def get_monthly_breakdown(conn, months: list[str] | None = None):
+    """Revenue and units grouped by year-month.
+
+    Args:
+        months: optional list of 'YYYY-MM' strings to filter.
+                Pass None or [] to return all months.
+    """
+    try:
+        where = ""
+        if months:
+            quoted = ", ".join(f"'{m}'" for m in months)
+            where = f"WHERE strftime(CAST(Date AS DATE), '%Y-%m') IN ({quoted})"
+        return conn.execute(f"""
+            SELECT
+                strftime(CAST(Date AS DATE), '%Y-%m')                                    AS mes,
+                SUM(CAST(REPLACE(CAST(Total    AS VARCHAR), ',', '.') AS DOUBLE))         AS receita,
+                SUM(CAST(REPLACE(CAST(Quantity AS VARCHAR), ',', '.') AS DOUBLE))         AS unidades
+            FROM sales
+            {where}
             GROUP BY mes
             ORDER BY mes
         """).pl()
     except Exception:
         return pl.DataFrame()
+
+
+def get_kpis_by_months(conn, months: list[str] | None = None):
+    """KPIs (receita, unidades, ticket) directly from sales table, optionally filtered.
+
+    Used when the user selects specific months — provides live figures
+    instead of the pre-aggregated products parquet totals.
+    Returns (receita, unidades, ticket_medio) or (0, 0, 0) on error.
+    """
+    try:
+        where = ""
+        if months:
+            quoted = ", ".join(f"'{m}'" for m in months)
+            where = f"AND strftime(CAST(Date AS DATE), '%Y-%m') IN ({quoted})"
+        row = conn.execute(f"""
+            SELECT
+                SUM(CAST(REPLACE(CAST(Total    AS VARCHAR), ',', '.') AS DOUBLE))  AS receita,
+                SUM(CAST(REPLACE(CAST(Quantity AS VARCHAR), ',', '.') AS DOUBLE))  AS unidades
+            FROM sales
+            WHERE 1=1 {where}
+        """).fetchone()
+        receita  = float(row[0]) if row and row[0] else 0.0
+        unidades = float(row[1]) if row and row[1] else 0.0
+        ticket   = round(receita / unidades, 2) if unidades else 0.0
+        return receita, unidades, ticket
+    except Exception:
+        return 0.0, 0.0, 0.0
 
 
 # ── Kept for sidebar compatibility (no-op period filter) ──────────────────────

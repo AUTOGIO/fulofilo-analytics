@@ -75,7 +75,13 @@ CATEGORY_RULES: list[tuple[list[str], str, str]] = [
       "mostarda", "maionese", "catchup"],
      "Mercearia", "Padaria e Condimentos"),
 
-    # Cangas (FulôFiló specific)
+    # Cangas em Elastano (FulôFiló specific)
+    (["canga elastano", "canga el ", "canga_el_", "elastano"], "Cangas em Elastano", "Cangas em Elastano"),
+
+    # Cangas em Algodão (FulôFiló specific)
+    (["canga algodão", "canga algodao", "canga alg ", "canga_alg_", "algodão praia"], "Cangas em Algodão", "Cangas em Algodão"),
+
+    # Cangas (genérico — fallback)
     (["canga", "canga areia", "canga praia"], "Cangas", "Cangas"),
 
     # Nécessaires

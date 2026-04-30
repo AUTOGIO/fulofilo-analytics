@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy Cloudflare Worker for dashboard.giovannini.us (redirect to Streamlit Cloud).
+# Deploy Cloudflare Worker for dashboard.fulofilo.com (redirect to Streamlit Cloud).
 # Run from repo root after fixing Cloudflare: remove Tunnel public hostname + fix DNS (see below).
 set -euo pipefail
 
@@ -40,9 +40,9 @@ echo "════════════════════════�
 echo " Cloudflare dashboard (do this once if you had Error 1033 / Tunnel)"
 echo "═══════════════════════════════════════════════════════════════════"
 echo " 1. Zero Trust → Networks → Tunnels → remove public hostname"
-echo "    dashboard.giovannini.us from any tunnel (or delete unused tunnel)."
-echo " 2. DNS → giovannini.us: record for dashboard must NOT be *.cfargotunnel.com."
-echo "    Use CNAME dashboard → giovannini.us or A/AAAA per your zone plan;"
+echo "    dashboard.fulofilo.com from any tunnel (or delete unused tunnel)."
+echo " 2. DNS → fulofilo.com: record for dashboard must NOT be *.cfargotunnel.com."
+echo "    Use CNAME dashboard → fulofilo.com or A/AAAA per your zone plan;"
 echo "    proxy status ON (orange cloud) so the Worker route applies."
 echo " 3. This script runs: wrangler deploy (routes from cf-worker/wrangler.toml)."
 echo "═══════════════════════════════════════════════════════════════════"
@@ -61,4 +61,4 @@ echo "▶ wrangler deploy (${WR_BIN[*]})"
 "${WR_BIN[@]}" deploy
 
 echo ""
-echo "  Done — https://dashboard.giovannini.us should redirect to Streamlit."
+echo "  Done — https://dashboard.fulofilo.com should redirect to Streamlit."

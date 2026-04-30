@@ -17,7 +17,7 @@ fi
 
 cd "$PROJECT"
 
-echo "🌺 Starting FulôFiló Analytics Pro..."
+echo "🌺 Starting FulôFiló AI..."
 echo "   URL: http://127.0.0.1:8501"
 echo "   Press Ctrl+C to stop"
 echo ""

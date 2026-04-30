@@ -1,0 +1,72 @@
+sku,full_name,category,unit_cost,suggested_price,min_stock,reorder_qty,qty_sold,revenue,profit,margin_pct
+10014,Regional adulto,Roupas,24.5,55.0,5,15,515.0,28325.0,15707.5,55.5
+10039,Bolsa kit 125,Bolsas,55.0,125.0,5,15,84.0,10500.0,5880.0,56.0
+10034,Chaveiro ímã 10,Outros,5.0,10.0,5,15,995.0,9950.0,4975.0,50.0
+10019,Placa,Outros,6.0,20.0,5,15,440.0,8800.0,6160.0,70.0
+10038,Placa kit 100,Outros,36.0,100.0,5,15,84.0,8400.0,5376.0,64.0
+10026,Necessaire,Bolsas,8.0,19.95,5,15,380.0,7600.0,4560.0,59.9
+10005,Canga elastano,Roupas,20.0,55.0,5,15,113.0,6215.0,3955.0,63.6
+10030,Caneca louça,Outros,14.5,35.0,5,15,155.0,5425.0,3177.5,58.6
+10025,Ecobag,Bolsas,10.0,25.0,5,15,154.0,3850.0,2310.0,60.0
+10007,Color 60,Roupas,22.5,60.0,5,15,50.0,3000.0,1875.0,62.5
+10015,Regional infantil,Roupas,22.0,45.0,5,15,61.0,2745.0,1403.0,51.1
+10006,Canga viscose,Roupas,30.33,65.0,5,15,36.0,2340.0,1248.12,53.3
+10023,Carteira alça,Bolsas,5.0,15.0,5,15,152.0,2280.0,1520.0,66.7
+10003,Body,Roupas,14.5,35.0,5,15,63.0,2205.0,1291.5,58.6
+10028,Caneca Ágata 20,Outros,10.0,20.0,5,15,105.0,2100.0,1050.0,50.0
+10035,Imã 15,Outros,5.0,15.0,5,15,138.0,2070.0,1380.0,66.7
+10012,Oxe conjunto,Roupas,37.5,79.17,5,15,24.0,1900.0,1000.0,52.6
+10016,Saída praia,Roupas,39.22,65.0,5,15,29.0,1885.0,747.62,39.7
+10017,Sereia,Roupas,85.0,180.0,5,15,10.0,1800.0,950.0,52.8
+10018,Vestido algodão,Roupas,21.0,59.6,5,15,26.0,1550.0,1004.0,64.8
+10020,Bolsa 55,Bolsas,22.0,55.0,5,15,21.0,1155.0,693.0,60.0
+10000,Bata adulto,Roupas,26.0,60.0,5,15,19.0,1140.0,646.0,56.7
+10010,Oxe adulto,Roupas,28.08,60.0,5,15,16.0,960.0,510.72,53.2
+10011,Oxe infantil,Roupas,32.27,55.0,5,15,17.0,935.0,386.41,41.3
+10009,Macaquinho,Roupas,18.0,48.0,5,15,15.0,719.97,449.97,62.5
+10008,Color XG 65,Roupas,25.5,65.0,5,15,11.0,715.0,434.5,60.8
+10032,Boneca,Outros,17.25,30.0,5,15,21.0,630.0,267.75,42.5
+10029,Caneca Ágata 30,Outros,15.0,30.0,5,15,19.0,570.0,285.0,50.0
+10027,Porta lingerie,Bolsas,8.5,25.0,5,15,22.0,550.0,363.0,66.0
+10001,Bata infantil,Roupas,18.0,44.0,5,15,11.0,485.0,287.0,59.1
+10004,Body conjunto,Roupas,27.5,60.0,5,15,5.0,300.0,162.5,54.2
+10021,Bolsinha 15,Bolsas,6.0,15.0,5,15,18.0,270.0,162.0,60.0
+10033,Chaveiro 5,Outros,1.62,5.0,5,15,48.0,240.0,162.24,67.6
+10022,Bolsinha 20,Bolsas,12.0,20.0,5,15,10.0,200.0,80.0,40.0
+10013,Oxe XG,Roupas,31.9,65.0,5,15,3.0,195.0,99.3,50.9
+10036,Embalagem presente 5,Outros,2.0,5.0,5,15,37.0,185.0,111.0,60.0
+10002,Bata XG 65,Roupas,27.0,65.0,5,15,2.0,130.0,76.0,58.5
+10031,Boné,Outros,28.0,60.0,5,15,2.0,120.0,64.0,53.3
+10037,Embalagem presente 10,Outros,10.0,10.0,5,15,6.0,60.0,0.0,0.0
+00400,Canga Elastano — San Andrés,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00401,Canga Elastano — Olho Grego,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00402,Canga Elastano — Olho Grego Mandala,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00403,Canga Elastano — Fitas Praia,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00404,Canga Elastano — Borboleta,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00405,Canga Elastano — Golfinho,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00406,Canga Elastano — Transparente João Pessoa,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00407,Canga Elastano — Arco-Íris,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00408,Canga Elastano — Tramas,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00409,Canga Elastano — Tye Dye,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00410,Canga Elastano — Brasil,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00411,Canga Elastano — Brasil Tropical,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00412,Canga Elastano — Oxente Transparente,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00413,Canga Elastano — Filtro dos Sonhos,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00414,Canga Elastano — João Pessoa Paisagem,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00415,Canga Elastano — Coqueiros,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00416,Canga Elastano — Mamute,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00417,Canga Elastano — Eu Amo Nordeste Transparente,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00418,Canga Elastano — Estrela,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00419,Canga Elastano — Viajar,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00420,Canga Elastano — Laranja,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00421,Canga Elastano — Listras Onça,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00422,Canga Elastano — Oxente Bege,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00423,Canga Elastano — Flamingo,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00424,Canga Elastano — Juliete,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00425,Canga Elastano — Para Hoje,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00426,Canga Elastano — Vc Fica Linda,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00427,Canga Elastano — Se Avexe Não,Cangas em Elastano,28.5,55.0,10,20,0.0,0.0,0.0,48.2
+00428,Canga Algodão — Instrumentos Musicais,Cangas em Algodão,15.0,40.0,10,20,0.0,0.0,0.0,62.5
+00429,Canga Algodão — Cordel,Cangas em Algodão,15.0,40.0,10,20,0.0,0.0,0.0,62.5
+00430,Canga Algodão — Eu Amo Nordeste,Cangas em Algodão,15.0,40.0,10,20,0.0,0.0,0.0,62.5
+00431,Canga Algodão — Oxente,Cangas em Algodão,15.0,40.0,10,20,0.0,0.0,0.0,62.5

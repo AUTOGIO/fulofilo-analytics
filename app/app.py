@@ -1,5 +1,5 @@
 """
-FulôFiló Analytics Pro — Main Dashboard (HUD Edition)
+FulôFiló AI — Main Dashboard (HUD Edition)
 ======================================================
 Entry point for the Streamlit application.
 Run: uv run streamlit run app/app.py
@@ -15,8 +15,9 @@ from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.db import get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
+from app.db import (get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix,
+                    get_data_mtime, get_kpis_by_months)
+from app.components.sidebar import render_sidebar, render_page_header, get_selected_period, get_month_filter
 from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
 from app.components.monthly_block import render_monthly_block
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
@@ -26,7 +27,7 @@ from app.utils.source_health import render_source_health_warning
 # ── Page Config ──────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
 st.set_page_config(
-    page_title="FulôFiló Analytics Pro",
+    page_title="FulôFiló AI",
     page_icon=_FAVICON,
     layout="wide",
     initial_sidebar_state="expanded",
@@ -63,14 +64,33 @@ def _f(v) -> float:
     except (TypeError, ValueError):
         return 0.0
 
-receita, quantidade, lucro, ticket = kpis if kpis else (0, 0, 0, 0)
-receita    = _f(receita)
-quantidade = _f(quantidade)
-lucro      = _f(lucro)
-ticket     = _f(ticket)
-margem_pct = (lucro / receita * 100) if receita else 0.0
+# ── Apply month filter to KPIs ────────────────────────────────────────────────
+_month_filter = get_month_filter()
+
+if _month_filter:
+    # Live query from sales table filtered by selected months
+    _conn_kpi = get_conn()
+    _r, _q, _t = get_kpis_by_months(_conn_kpi, _month_filter)
+    receita    = _r
+    quantidade = _q
+    lucro      = 0.0   # sales table has no cost data — show from products as fallback
+    ticket     = _t
+    # Pull lucro from products (all-time) as best-effort
+    _full = kpis if kpis else (0, 0, 0, 0)
+    lucro = _f(_full[2])
+    margem_pct = (lucro / _f(_full[0]) * 100) if _f(_full[0]) else 0.0
+    _filter_label = " · ".join(_month_filter)
+else:
+    receita    = _f(kpis[0]) if kpis else 0.0
+    quantidade = _f(kpis[1]) if kpis else 0.0
+    lucro      = _f(kpis[2]) if kpis else 0.0
+    ticket     = _f(kpis[3]) if kpis else 0.0
+    margem_pct = (lucro / receita * 100) if receita else 0.0
+    _filter_label = "todos os meses"
 
 # ── KPI Cards ─────────────────────────────────────────────────────────────────
+if _month_filter:
+    st.caption(f"🗓 Período: **{_filter_label}**")
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("💰 Receita Total",  f"R$ {receita:,.2f}")
 c2.metric("📦 Unidades",       f"{int(quantidade):,}")
@@ -81,7 +101,7 @@ c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
 st.divider()
 
 # ── Monthly Sales Block ────────────────────────────────────────────────────────
-render_monthly_block(conn)
+render_monthly_block()  # creates its own conn internally
 
 st.divider()
 

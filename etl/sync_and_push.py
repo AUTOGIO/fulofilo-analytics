@@ -59,13 +59,13 @@ TRACKED = [
     "data/parquet/quantity_report.parquet",
     "data/parquet/revenue_report.parquet",
     # ── Raw data ──────────────────────────────────────────────────────────────
-    "data/raw/dashboard_data.json",
-    "data/raw/dashboard_data_2026.json",
-    "data/raw/product_catalog.csv",
-    "data/raw/product_catalog_categorized.csv",
-    "data/raw/vendas_marco_26.csv",
-    "data/raw/vendas_abril_26.csv",
-    "data/raw/custos_fixos/custos_fixos.txt",
+    "data/raw/_archive/dashboard_data.json",
+    "data/raw/_archive/dashboard_data_2026.json",
+    "data/raw/catalogs/product_catalog.csv",
+    "data/raw/catalogs/product_catalog_categorized.csv",
+    "data/raw/vendas_2026-03.csv",
+    "data/raw/vendas_2026-04.csv",
+    "data/raw/costs/custos_fixos.txt",
 ]
 
 

@@ -229,7 +229,7 @@ def notify_macos(alerts_df: pd.DataFrame) -> None:
     script = (
         f'display notification "{body}" '
         f'with title "{title}" '
-        f'subtitle "FulôFiló Analytics — Reposição"'
+        f'subtitle "FulôFiló AI — Reposição"'
     )
     try:
         subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)

@@ -64,7 +64,8 @@ for col in ["Category", "Subcategory", "CategoryConfidence"]:
         df = df.with_columns(pl.lit("Não Classificado").alias(col))
 
 ALL_CATEGORIES = sorted([
-    "Acessórios", "Bebidas", "Cangas", "Congelados", "Decoração",
+    "Acessórios", "Bebidas", "Cangas", "Cangas em Elastano", "Cangas em Algodão",
+    "Congelados", "Decoração",
     "Eletrônicos", "Embalagens", "Grãos e Massas", "Higiene",
     "Kits", "Laticínios", "Limpeza", "Mercearia", "Nécessaires",
     "Outros", "Papelaria", "Proteínas", "Saúde", "Snacks",
@@ -72,7 +73,8 @@ ALL_CATEGORIES = sorted([
 ])
 ALL_SUBCATEGORIES = sorted([
     "Aloólicas", "Acessórios", "Bolsas e Mochilas", "Básicos",
-    "Canecas", "Cangas", "Carnes e Pescados", "Cuidado Pessoal",
+    "Canecas", "Cangas", "Cangas em Elastano", "Cangas em Algodão",
+    "Carnes e Pescados", "Cuidado Pessoal",
     "Chaveiros", "Derivados do Leite", "Geral", "Guloseimas",
     "Ímãs de Geladeira", "Kits Presentes", "Material Escolar",
     "Não Alcoólicas", "Não Classificado", "Nécessaires",

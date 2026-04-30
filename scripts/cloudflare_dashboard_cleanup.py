@@ -2,7 +2,7 @@
 """
 Remove dashboard.giovannini.us from Cloudflare Tunnel ingress and ensure DNS is proxied (not *.cfargotunnel.com).
 Requires CLOUDFLARE_API_TOKEN (or .env.cloudflare in repo root) with:
-  Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit for giovannini.us
+  Account → Cloudflare Tunnel → Edit, Zone → DNS → Edit for fulofilo.com
 """
 from __future__ import annotations
 
@@ -43,8 +43,8 @@ def _agent_log(
 
 ROOT = Path(__file__).resolve().parent.parent
 ACCOUNT_ID = "933e6be352787ffcd0129d7fe436de11"
-DASHBOARD_HOST = "dashboard.giovannini.us"
-ZONE_NAME = "giovannini.us"
+DASHBOARD_HOST = "dashboard.fulofilo.com"
+ZONE_NAME = "fulofilo.com"
 
 
 def _load_dotenv_cloudflare() -> None:

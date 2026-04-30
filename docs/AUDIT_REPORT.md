@@ -1,4 +1,4 @@
-# FulôFiló Analytics Pro — Repository Audit & Cleanup
+# FulôFiló AI — Repository Audit & Cleanup
 
 **Date:** 2026-04-22
 **Scope:** Conservative cleanup — no code refactor, no history rewrite
