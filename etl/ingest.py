@@ -508,8 +508,8 @@ def _rebuild_analytics(dry_run: bool) -> None:
                     pl.col("revenue").fill_null(0.0),
                 ])
                 .with_columns(
-                    # profit = revenue × catalog margin
-                    (pl.col("revenue") * pl.col("margin_pct")).alias("profit")
+                    # profit = revenue × catalog margin (margin_pct is 0-100 scale)
+                    (pl.col("revenue") * pl.col("margin_pct") / 100).alias("profit")
                 ))
 
     # Drop old analytics cols before re-adding

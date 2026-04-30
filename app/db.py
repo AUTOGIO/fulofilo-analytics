@@ -132,10 +132,10 @@ def get_summary_kpis(conn, period: str = "ALL"):
     try:
         return conn.execute(f"""
             SELECT
-                SUM(revenue)                                          AS receita,
-                SUM(qty_sold)                                         AS quantidade,
-                SUM(profit)                                           AS lucro,
-                ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2)    AS ticket_medio
+                SUM(revenue)                                               AS receita,
+                SUM(qty_sold)                                              AS quantidade,
+                SUM(revenue * margin_pct / 100)                           AS lucro,
+                ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2)         AS ticket_medio
             FROM products
             WHERE {pf}
         """).fetchone()
@@ -153,7 +153,7 @@ def get_abc_analysis(conn, period: str = "ALL"):
                 category,
                 revenue,
                 qty_sold,
-                profit,
+                revenue * margin_pct / 100  AS profit,
                 abc_class,
                 cum_pct,
                 margin_pct
