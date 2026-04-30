@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  FulôFiló — Sales Drop Watcher (LaunchAgent, daemon mode)
+  =========================================================
+  Runs as a persistent background process.
+  Polls data/incoming/ every 30 seconds.
+  Automatically restarts if it crashes.
+
+  Install:
+    bash scripts/launchagent/install_saleswatch.sh
+
+  Uninstall:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.fulofilo.saleswatch.plist
+    rm ~/Library/LaunchAgents/com.fulofilo.saleswatch.plist
+
+  Logs (live):
+    tail -f /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/saleswatch.log
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fulofilo.saleswatch</string>
+
+    <!-- Persistent daemon: runs the Python loop, launchd restarts on crash -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/giovannini_nuovo/.local/share/uv/python/cpython-3.11.15-macos-aarch64-none/bin/python3.11</string>
+        <string>-c</string>
+        <string>
+import sys
+sys.path.insert(0, '/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/scripts')
+import sales_watcher
+sales_watcher.loop_mode(30)
+        </string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo</string>
+
+    <!-- Keep alive — launchd restarts the process if it exits -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Start immediately when loaded -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/saleswatch.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/logs/saleswatch.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/.venv/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>/Users/giovannini_nuovo</string>
+        <key>PYTHONPATH</key>
+        <string>/Users/giovannini_nuovo/Documents/GitHub/FuloFilo</string>
+    </dict>
+</dict>
+</plist>
