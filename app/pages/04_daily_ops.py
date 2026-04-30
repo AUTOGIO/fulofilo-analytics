@@ -16,7 +16,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 from app.components.sidebar import render_sidebar, render_page_header
 from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
-from app.utils.sales_ops import append_sale_to_excel
 from app.utils.source_health import render_source_health_warning
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -79,77 +78,6 @@ try:
             st.warning("Nenhum produto encontrado.")
 except Exception:
     st.info("Execute `bash scripts/sync_excel.sh` para habilitar a consulta de produtos.")
-
-st.divider()
-
-# ── Daily Sales Entry Form ─────────────────────────────────────────────────────
-st.subheader("📝 Registro de Vendas do Dia")
-st.caption("Cada venda registrada aqui é gravada na aba `DailySales` do Excel master e depois sincronizada.")
-
-product_options = {}
-for _, row in products_df.sort_values(["category", "full_name"]).iterrows():
-    label = f"{row['category']} — {row['full_name']}"
-    product_options[label] = {
-        "sku": str(row["sku"]).zfill(5),
-        "name": str(row["full_name"]),
-        "price": float(row["price"]),
-    }
-
-if not product_options:
-    st.info("Nenhum SKU disponível no catálogo sincronizado.")
-else:
-    selected_label = st.selectbox(
-        "🛍️ Produto",
-        options=list(product_options.keys()),
-        placeholder="Selecione um produto...",
-    )
-    selected_product = product_options.get(selected_label, {})
-    default_price = selected_product.get("price", 0.01)
-
-    with st.form("daily_sale_form", clear_on_submit=True):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            sale_date = st.date_input("Data", value=date.today())
-            quantity = st.number_input("Quantidade", min_value=1, value=1, step=1)
-        with col2:
-            unit_price = st.number_input("Preço Unitário (R$)", min_value=0.00, value=default_price, step=0.50)
-            payment = st.selectbox(
-                "Forma de Pagamento",
-                ["Dinheiro", "Pix", "Débito", "Crédito", "Crédito Parcelado"],
-            )
-        with col3:
-            source = st.selectbox("Origem", ["manual", "app"], index=0)
-            st.markdown(
-                f"<br><span style='color:#00D4FF;font-size:0.85rem;'>SKU: <b>{selected_product.get('sku', '—')}</b></span>",
-                unsafe_allow_html=True,
-            )
-            st.markdown(
-                f"<span style='color:#00D4FF;font-size:0.85rem;'>💰 Preço tabela: <b>R$ {default_price:.2f}</b></span>",
-                unsafe_allow_html=True,
-            )
-
-        submitted = st.form_submit_button("✅ Registrar Venda", use_container_width=True)
-
-    if submitted:
-        try:
-            result = append_sale_to_excel(
-                sale_date=sale_date,
-                sku=selected_product["sku"],
-                product=selected_product["name"],
-                quantity=int(quantity),
-                unit_price=float(unit_price),
-                payment_method=payment,
-                source=source,
-            )
-        except Exception as exc:  # noqa: BLE001
-            st.error(f"❌ Falha ao gravar venda no Excel master: {exc}")
-        else:
-            st.success(
-                f"✅ **{result.product}** × {result.quantity} = **R$ {result.total:.2f}** "
-                f"gravado em `DailySales` e sincronizado."
-            )
-            st.cache_data.clear()
-            st.rerun()
 
 st.divider()
 
