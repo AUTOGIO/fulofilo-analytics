@@ -17,6 +17,7 @@ Parquet schema (from etl/ingest.py):
 """
 
 import duckdb
+from datetime import datetime as _dt
 from pathlib import Path
 import polars as pl
 
@@ -57,11 +58,11 @@ def get_conn():
     conn.execute("SET enable_progress_bar = false")
     conn.execute("SET temp_directory = '/tmp/duckdb_fulofilo'")
 
+    # ── Standard views ────────────────────────────────────────────────────────
     for name, fname in [
-        ("products",   "products.parquet"),
-        ("inventory",  "inventory.parquet"),
-        ("sales",      "daily_sales.parquet"),
-        ("cashflow",   "cashflow.parquet"),
+        ("products",  "products.parquet"),
+        ("sales",     "daily_sales.parquet"),
+        ("cashflow",  "cashflow.parquet"),
     ]:
         p = DATA_DIR / fname
         if p.exists():
@@ -75,6 +76,45 @@ def get_conn():
                     f"CREATE OR REPLACE VIEW {name} AS "
                     f"SELECT * FROM read_parquet('{p}');"
                 )
+
+    # ── Inventory view — live stock = baseline − sales since last sync ────────
+    # inventory.parquet is written by sync_excel.py / ingest_catalog.
+    # Its mtime marks the "restock date": any sales after that date are deducted
+    # from current_stock so the dashboard always shows the real remaining stock.
+    inv_p   = DATA_DIR / "inventory.parquet"
+    sales_p = DATA_DIR / "daily_sales.parquet"
+    if inv_p.exists():
+        sync_date = _dt.fromtimestamp(inv_p.stat().st_mtime).date().isoformat()
+
+        if sales_p.exists():
+            conn.execute(f"""
+                CREATE OR REPLACE VIEW inventory AS
+                SELECT
+                    i.slug,
+                    i.sku,
+                    i.product,
+                    i.category,
+                    GREATEST(0,
+                        CAST(i.current_stock AS BIGINT)
+                        - COALESCE(s.sold_since_sync, 0)
+                    )                          AS current_stock,
+                    i.min_stock,
+                    i.reorder_qty
+                FROM read_parquet('{inv_p}') i
+                LEFT JOIN (
+                    SELECT
+                        Product,
+                        CAST(SUM(Quantity) AS BIGINT) AS sold_since_sync
+                    FROM read_parquet('{sales_p}')
+                    WHERE Date >= '{sync_date}'
+                    GROUP BY Product
+                ) s ON lower(i.product) = lower(s.Product)
+            """)
+        else:
+            conn.execute(
+                f"CREATE OR REPLACE VIEW inventory AS "
+                f"SELECT * FROM read_parquet('{inv_p}');"
+            )
 
     return conn
 
