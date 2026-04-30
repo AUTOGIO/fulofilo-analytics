@@ -101,7 +101,7 @@ c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
 st.divider()
 
 # ── Monthly Sales Block ────────────────────────────────────────────────────────
-render_monthly_block()  # creates its own conn internally
+render_monthly_block()
 
 st.divider()
 
