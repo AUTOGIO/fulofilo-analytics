@@ -447,7 +447,9 @@ def main() -> None:
             pl.col("margin_pct"),
         ]
     )
-    export_cat.write_csv(ROOT / "data" / "raw" / "catalogs" / "product_catalog.csv")
+    catalog_export_path = ROOT / "data" / "raw" / "catalogs" / "product_catalog.csv"
+    catalog_export_path.parent.mkdir(parents=True, exist_ok=True)
+    export_cat.write_csv(catalog_export_path)
 
     health.update(
         {
