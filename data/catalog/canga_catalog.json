@@ -1,0 +1,387 @@
+[
+  {
+    "sku": "400",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "San Andrés",
+    "full_name": "Canga Elastano — San Andrés",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "400",
+      "san andres",
+      "sku 400"
+    ]
+  },
+  {
+    "sku": "401",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Olho Grego",
+    "full_name": "Canga Elastano — Olho Grego",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "401",
+      "olho grego",
+      "sku 401"
+    ]
+  },
+  {
+    "sku": "402",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Olho Grego Mandala",
+    "full_name": "Canga Elastano — Olho Grego Mandala",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "402",
+      "olho grego mandala",
+      "sku 402"
+    ]
+  },
+  {
+    "sku": "403",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Fitas Praia",
+    "full_name": "Canga Elastano — Fitas Praia",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "403",
+      "fitas praia",
+      "sku 403"
+    ]
+  },
+  {
+    "sku": "404",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Borboleta",
+    "full_name": "Canga Elastano — Borboleta",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "404",
+      "borboleta",
+      "sku 404"
+    ]
+  },
+  {
+    "sku": "405",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Golfinho",
+    "full_name": "Canga Elastano — Golfinho",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "405",
+      "golfinho",
+      "sku 405"
+    ]
+  },
+  {
+    "sku": "406",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Transparente João Pessoa",
+    "full_name": "Canga Elastano — Transparente João Pessoa",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "406",
+      "sku 406",
+      "transparente joao pessoa"
+    ]
+  },
+  {
+    "sku": "407",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Arco-Íris",
+    "full_name": "Canga Elastano — Arco-Íris",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "407",
+      "arco iris",
+      "arco-iris",
+      "sku 407"
+    ]
+  },
+  {
+    "sku": "408",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Tramas",
+    "full_name": "Canga Elastano — Tramas",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "408",
+      "sku 408",
+      "tramas"
+    ]
+  },
+  {
+    "sku": "409",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Tye Dye",
+    "full_name": "Canga Elastano — Tye Dye",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "409",
+      "sku 409",
+      "tye dye"
+    ]
+  },
+  {
+    "sku": "410",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Brasil",
+    "full_name": "Canga Elastano — Brasil",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "410",
+      "brasil",
+      "sku 410"
+    ]
+  },
+  {
+    "sku": "411",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Brasil Tropical",
+    "full_name": "Canga Elastano — Brasil Tropical",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "411",
+      "brasil tropical",
+      "sku 411"
+    ]
+  },
+  {
+    "sku": "412",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Oxente Transparente",
+    "full_name": "Canga Elastano — Oxente Transparente",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "412",
+      "oxente transparente",
+      "sku 412"
+    ]
+  },
+  {
+    "sku": "413",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Filtro dos Sonhos",
+    "full_name": "Canga Elastano — Filtro dos Sonhos",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "413",
+      "filtro dos sonhos",
+      "sku 413"
+    ]
+  },
+  {
+    "sku": "414",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "João Pessoa Paisagem",
+    "full_name": "Canga Elastano — João Pessoa Paisagem",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "414",
+      "joao pessoa paisagem",
+      "sku 414"
+    ]
+  },
+  {
+    "sku": "415",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Coqueiros",
+    "full_name": "Canga Elastano — Coqueiros",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "415",
+      "coqueiros",
+      "sku 415"
+    ]
+  },
+  {
+    "sku": "416",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Mamute",
+    "full_name": "Canga Elastano — Mamute",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "416",
+      "mamute",
+      "sku 416"
+    ]
+  },
+  {
+    "sku": "417",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Eu Amo Nordeste Transparente",
+    "full_name": "Canga Elastano — Eu Amo Nordeste Transparente",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "417",
+      "eu amo nordeste transparente",
+      "sku 417"
+    ]
+  },
+  {
+    "sku": "418",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Estrela",
+    "full_name": "Canga Elastano — Estrela",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "418",
+      "estrela",
+      "sku 418"
+    ]
+  },
+  {
+    "sku": "419",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Viajar",
+    "full_name": "Canga Elastano — Viajar",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "419",
+      "sku 419",
+      "viajar"
+    ]
+  },
+  {
+    "sku": "420",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Laranja",
+    "full_name": "Canga Elastano — Laranja",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "420",
+      "laranja",
+      "sku 420"
+    ]
+  },
+  {
+    "sku": "421",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Listras Onça",
+    "full_name": "Canga Elastano — Listras Onça",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "421",
+      "listras onca",
+      "sku 421"
+    ]
+  },
+  {
+    "sku": "422",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Oxente Bege",
+    "full_name": "Canga Elastano — Oxente Bege",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "422",
+      "oxente bege",
+      "sku 422"
+    ]
+  },
+  {
+    "sku": "423",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Flamingo",
+    "full_name": "Canga Elastano — Flamingo",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "423",
+      "flamingo",
+      "sku 423"
+    ]
+  },
+  {
+    "sku": "424",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Juliete",
+    "full_name": "Canga Elastano — Juliete",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "424",
+      "juliete",
+      "sku 424"
+    ]
+  },
+  {
+    "sku": "425",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Para Hoje",
+    "full_name": "Canga Elastano — Para Hoje",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "425",
+      "para hoje",
+      "sku 425"
+    ]
+  },
+  {
+    "sku": "426",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Vc Fica Linda",
+    "full_name": "Canga Elastano — Vc Fica Linda",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "426",
+      "sku 426",
+      "vc fica linda"
+    ]
+  },
+  {
+    "sku": "427",
+    "tipo": "ELASTANO",
+    "estampa_canonical": "Se Avexe Não",
+    "full_name": "Canga Elastano — Se Avexe Não",
+    "category": "Cangas em Elastano",
+    "aliases": [
+      "427",
+      "se avexe nao",
+      "sku 427"
+    ]
+  },
+  {
+    "sku": "428",
+    "tipo": "ALGODAO",
+    "estampa_canonical": "Instrumentos Musicais",
+    "full_name": "Canga Algodão — Instrumentos Musicais",
+    "category": "Cangas em Algodão",
+    "aliases": [
+      "428",
+      "instrumentos musicais",
+      "sku 428"
+    ]
+  },
+  {
+    "sku": "429",
+    "tipo": "ALGODAO",
+    "estampa_canonical": "Cordel",
+    "full_name": "Canga Algodão — Cordel",
+    "category": "Cangas em Algodão",
+    "aliases": [
+      "429",
+      "cordel",
+      "sku 429"
+    ]
+  },
+  {
+    "sku": "430",
+    "tipo": "ALGODAO",
+    "estampa_canonical": "Eu Amo Nordeste",
+    "full_name": "Canga Algodão — Eu Amo Nordeste",
+    "category": "Cangas em Algodão",
+    "aliases": [
+      "430",
+      "eu amo nordeste",
+      "sku 430"
+    ]
+  },
+  {
+    "sku": "431",
+    "tipo": "ALGODAO",
+    "estampa_canonical": "Oxente",
+    "full_name": "Canga Algodão — Oxente",
+    "category": "Cangas em Algodão",
+    "aliases": [
+      "431",
+      "oxente",
+      "sku 431"
+    ]
+  }
+]

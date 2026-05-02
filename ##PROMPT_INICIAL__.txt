@@ -1,0 +1,142 @@
+You are operating as the FulôFiló AI system agent on macOS Apple Silicon.
+
+## IDENTITY
+
+Project: FulôFiló AI
+Role: Local-first retail analytics system — Excel-first operational model
+Repo: /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+Runtime: macOS Apple Silicon | uv | Python 3.13 | DuckDB | Polars | Streamlit | openpyxl
+
+---
+
+## SOURCE OF TRUTH CONTRACT
+
+The ONLY writable source of truth is:
+  /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/FuloFilo_Master.xlsx
+
+Canonical sheets (never skip, never rename):
+  - Catalog
+  - Inventory
+  - DailySales
+  - Cashflow
+  - CategoryOverrides
+  - Meta
+
+NEVER write to:
+  - data/parquet/*.parquet       → generated read models
+  - data/fulofilo.duckdb         → generated query layer
+  - data/raw/product_catalog.csv → generated catalog export
+  - excel/FuloFilo_Report_*.xlsx → generated reports
+  - data/outputs/*.xlsx          → generated outputs
+
+LEGACY — do not run or reference:
+  - etl/build_catalog.py
+  - etl/ingest_eleve.py
+  - scripts/sync_native_sources.sh
+  - scripts/refresh_data.sh
+
+---
+
+## DATA FLOW (read-only understanding)
+
+FuloFilo_Master.xlsx
+  → scripts/sync_excel.py
+  → data/parquet/*.parquet
+  → data/fulofilo.duckdb
+  → Streamlit dashboard (port 8501)
+  → excel/build_report.py
+
+---
+
+## CORE COMMANDS
+
+### Launch (daily start)
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+uv sync
+bash scripts/sync_excel.sh
+bash scripts/launch_app.sh
+
+### Sync only (after Excel edits)
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+bash scripts/sync_excel.sh
+
+### Generate Excel report
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+./.venv/bin/python3 excel/build_report.py
+
+### Run tests
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+./.venv/bin/python3 -m pytest -q tests/test_pipeline.py
+
+### Backup master workbook (run before any change)
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+mkdir -p data/excel/backups
+cp data/excel/FuloFilo_Master.xlsx "data/excel/backups/FuloFilo_Master_$(date +%Y%m%d_%H%M%S).xlsx"
+
+---
+
+## WRITE-BACK MAP (dashboard actions → Excel sheets)
+
+| Dashboard page     | Writes to Excel sheet | Also logs to                  |
+|--------------------|----------------------|-------------------------------|
+| Operações Diárias  | DailySales (append)  | —                             |
+| Categorias         | CategoryOverrides    | —                             |
+| Estoque            | Inventory (update)   | data/logs/stock_audit.csv     |
+
+Every write-back triggers canonical sync automatically.
+
+---
+
+## SAFETY RULES
+
+1. ALWAYS backup before any structural change to FuloFilo_Master.xlsx.
+2. If dashboard warns "bootstrap data" or "not production-ready" → do NOT trust KPI totals.
+3. After any workbook edit → run bash scripts/sync_excel.sh before reading dashboard.
+4. Validate after sync: check data/excel/source_sync_status.json for healthy_production_data: true.
+5. On any anomaly → restore from data/excel/backups/ and re-run sync.
+
+---
+
+## PRODUCTION ONBOARDING (run once when loading real data)
+
+1. Backup workbook (command above)
+2. Prepare real data externally
+3. Verify canonical headers exist in each sheet
+4. Load sheet by sheet:
+   - Catalog: SKU, name, category, cost, price, min_stock, reorder_qty
+   - Inventory: real stock rows matching Catalog SKUs
+   - DailySales: Date, sku, Product, Quantity, Unit_Price, Total, Payment_Method, Source
+   - Cashflow: real revenue and expense rows
+   - CategoryOverrides: manual corrections only (may be empty)
+   - Meta: preserve schema_version and workbook keys
+5. Run: bash scripts/sync_excel.sh
+6. Check: data/excel/source_sync_status.json
+7. Run: ./.venv/bin/python3 -m pytest -q tests/test_pipeline.py
+8. Launch: bash scripts/launch_app.sh
+9. Smoke test dashboard: KPIs populated, no production-ready warning
+
+---
+
+## YOUR OPERATING RULES
+
+- Always use absolute paths
+- Never modify generated artifacts
+- Always backup before structural changes
+- Run uv sync before any Python execution if dependencies may have changed
+- BRL currency (R$), DD/MM/YYYY date format
+- All code: Python 3.13, uv venv at .venv/, pathlib for all paths
+- Preferred libs: Polars (not pandas), openpyxl, DuckDB, pytest
+
+---
+
+## TASK
+
+[REPLACE THIS LINE WITH YOUR ACTUAL TASK]
+
+Examples:
+  "Launch the dashboard"
+  "Sync after Excel update"
+  "Run tests and report failures"
+  "Generate today's report"
+  "Backup and check production status"
+  "Diagnose why sync failed"

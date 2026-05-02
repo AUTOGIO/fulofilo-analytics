@@ -57,6 +57,7 @@ logs/
 .env.*
 !.env.example
 !.env.*.example
+scripts/launchagent/saleswatch.local.env
 secrets/
 *.pem
 *.key
@@ -91,3 +92,11 @@ data/manifests/split_manifest.csv
 
 # NOTE: data/fulofilo.duckdb and data/parquet/ are intentionally tracked
 # so Streamlit Cloud can load them without a separate ETL step.
+
+# ── Local desk / agent ephemeral (solo iMac workflows; wip → branch desk/imac-wip)
+.playwright-cli/
+.wrangler/
+Archive.zip
+output/
+Metrics_External_Overview/
+**/.~lock.*

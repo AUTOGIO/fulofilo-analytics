@@ -10,6 +10,7 @@ import polars as pl
 from openpyxl.worksheet.worksheet import Worksheet
 
 from app.utils.excel_sync import MASTER_PATH, backup_workbook, run_canonical_sync
+from app.utils.workbook_lock import locked_workbook
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 INV_PATH = ROOT / "data" / "parquet" / "inventory.parquet"
@@ -112,12 +113,14 @@ def _write_inventory_stock(
     if new_qty < 0 and not ALLOW_NEGATIVE_STOCK:
         raise ValueError("Negative stock is not allowed by the current configuration.")
 
-    backup_path = backup_workbook(workbook_path) if create_backup else None
-    wb = openpyxl.load_workbook(workbook_path)
-    ws = _require_inventory_sheet(wb)
-    row_idx, product, old_stock = _find_inventory_row(ws, sku_norm)
-    ws.cell(row_idx, _COL_CURRENT_STOCK, int(new_qty))
-    wb.save(workbook_path)
+    backup_path = None
+    with locked_workbook(workbook_path, owner="streamlit_inventory_ops"):
+        backup_path = backup_workbook(workbook_path) if create_backup else None
+        wb = openpyxl.load_workbook(workbook_path)
+        ws = _require_inventory_sheet(wb)
+        row_idx, product, old_stock = _find_inventory_row(ws, sku_norm)
+        ws.cell(row_idx, _COL_CURRENT_STOCK, int(new_qty))
+        wb.save(workbook_path)
 
     _append_audit_log(sku_norm, action, old_stock, int(new_qty), log_path=log_path)
 

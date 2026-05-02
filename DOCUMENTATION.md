@@ -1,216 +1,181 @@
-# FulôFiló Analytics Pro
-## Technical Documentation and Operator Manual (Apple-Tailored Dashboard Track)
+# FulôFiló AI
+## Technical Documentation and Operator Manual
 
-Version: 2.1
-Date: April 2026
-Target: macOS on Apple Silicon (iMac M3 class), local-first
-
----
+Version: 3.0  
+Date: April 2026  
+Target: macOS Apple Silicon, local-first
 
 ## 1. System Identity
 
-FulôFiló Analytics Pro is a local dashboard and reporting system for store operations and management analytics.
+FulôFiló AI is a local retail analytics system built around an Excel-first operational model:
 
-Production track:
-- Streamlit dashboard (`app/`)
-- DuckDB views over Parquet (`app/db.py`)
-- Excel master workbook (`data/excel/FuloFilo_Master.xlsx`) — **canonical source of truth**
-- Sync pipeline (`scripts/sync_excel.sh`)
+- Excel master workbook in `data/excel/FuloFilo_Master.xlsx`
+- Canonical sync in `scripts/sync_excel.py` and `scripts/sync_excel.sh`
+- Generated Parquet read models in `data/parquet/`
+- DuckDB analytical layer in `data/fulofilo.duckdb`
+- Streamlit dashboard in `app/`
+- Excel report export in `excel/build_report.py`
 
-Legacy track (migration fallback only — do not use for normal operations):
-- CSV masters under `data/raw/*_master.csv` (Numbers-edited)
-- Sync pipeline (`scripts/sync_native_sources.sh`)
-- See `scripts/adhoc/` for one-time migration scripts
+Legacy CSV/JSON workflows are archived and are not part of normal operations.
 
-Non-production side tracks:
-- Cloudflare worker deployment helper (`cf-worker/`) — custom domain redirects to Streamlit Cloud; use `bash scripts/deploy_cloudflare_worker.sh https://…streamlit.app` (not a Tunnel; see header in `cf-worker/worker.js` if you see Error 1033)
+## 2. Source-of-Truth Contract
 
-These side tracks are buildable but not part of canonical local dashboard operations.
+Canonical source:
 
----
+- `data/excel/FuloFilo_Master.xlsx`
 
-## 2. Source of Truth Contract
+Canonical sheets:
 
-Canonical source: `data/excel/FuloFilo_Master.xlsx`
+- `Catalog`
+- `Inventory`
+- `DailySales`
+- `Cashflow`
+- `CategoryOverrides`
+- `Meta`
 
-Sheets:
-- `Catalog` — product master (SKU, name, category, cost, price)
-- `Inventory` — stock levels per SKU
-- `DailySales` — transaction history
-- `Cashflow` — revenue and expense entries
-- `CategoryOverrides` — manual category assignments
-- `Meta` — workbook metadata
+Operational rules:
 
-**Row 1 headers (exact names, as implemented in `scripts/sync_excel.py`):**
+- All business edits must land in the Excel master.
+- Dashboard write-back actions must update the Excel master first.
+- `bash scripts/sync_excel.sh` must be run after workbook changes.
+- Generated Parquet, DuckDB, CSV exports, and report workbooks are never operational write targets.
 
-| Sheet | Columns |
-|-------|---------|
-| Catalog | `sku`, `full_name`, `category`, `unit_cost`, `suggested_price`, `min_stock`, `reorder_qty` |
-| Inventory | `sku`, `product`, `category`, `current_stock`, `min_stock`, `reorder_qty`, `supplier`, `lead_time_days`, `notes` |
-| DailySales | `Date`, `sku`, `Product`, `Quantity`, `Unit_Price`, `Total`, `Payment_Method`, `Source` |
-| Cashflow | `Date`, `Type`, `Category`, `Description`, `Amount`, `Payment_Method` |
-| CategoryOverrides | `sku`, `category`, `subcategory`, `confidence` |
-| Meta | `key`, `value` |
-
-First-time workbook: `uv run python scripts/bootstrap_excel_master.py`
-
-Rules:
-- Operators edit the Excel master directly in Microsoft Excel.
-- Dashboard pages are read-only for all source-owned datasets.
-- Parquet and DuckDB are generated read layers only; never edit them directly.
-- Generated report workbooks (`excel/FuloFilo_Report_*.xlsx`) are **read-only artifacts** — they must never be used as operational sync targets.
-- All runtime stock mutations (inventory adjustments, daily sales sync) write back exclusively to `data/excel/FuloFilo_Master.xlsx` via `app/utils/inventory_ops.py` and `app/utils/sales_ops.py`.
-- Every stock write (decrement or manual adjustment) is appended to `data/logs/stock_audit.csv` as an immutable audit trail.
-
-Canonical sync command:
-```bash
-bash scripts/sync_excel.sh
-```
-
-Sync status artifact:
-- `data/excel/source_sync_status.json`
-
----
-
-## 3. Architecture and Data Flow
+## 3. Data Flow
 
 ```text
-data/excel/FuloFilo_Master.xlsx  ← SINGLE CANONICAL WRITE TARGET
-  (Catalog, Inventory, DailySales, Cashflow, CategoryOverrides, Meta, Daily Ops)
-        |
-        v
-scripts/sync_excel.py
-  - schema validation (required columns per sheet)
-  - SKU uniqueness checks
-  - referential integrity (Inventory/Overrides/Sales → Catalog)
-  - non-negativity checks (cost, price)
-  - sales total reconciliation (Total vs Quantity × Unit_Price, tol=0.02)
-  - SKU policy enforcement (balanced/strict)
-  - ABC classification (cumulative revenue: A≤80%, B≤95%, C>95%)
-  - margin computation (unit_profit, margin_pct)
-        |
-        v
-data/parquet/*.parquet  (products, inventory, daily_sales, cashflow,
-                         revenue_report, quantity_report, profit_report)
-data/fulofilo.duckdb    (views over parquet)
-        |
-        v
-Streamlit dashboard
-  app/app.py          — Overview + KPIs
-  pages/01_abc_analysis.py    — ABC Pareto
-  pages/02_margin_matrix.py   — Margin scatter
-  pages/03_inventory.py       — Stock alerts + adjustments
-  pages/04_daily_ops.py       — Sales entry
-  pages/05_categories.py      — Category manager
-  pages/06_export_excel.py    — Excel report builder
-        |
-        | stock adjustments & daily sales write-back (via inventory_ops / sales_ops)
-        v
-data/excel/FuloFilo_Master.xlsx  ← write-back to Inventory + Daily Ops sheets
-data/logs/stock_audit.csv        ← append-only audit trail (every stock mutation)
-        |
-        v
-excel/build_report.py → excel/FuloFilo_Report_*.xlsx  (READ-ONLY artifact — never mutated after generation)
+data/excel/FuloFilo_Master.xlsx
+  -> scripts/sync_excel.py
+  -> data/parquet/*.parquet
+  -> data/fulofilo.duckdb
+  -> Streamlit dashboard
+  -> excel/build_report.py
 ```
 
-**Write-back contract:**
-- `app/utils/inventory_ops.py::sync_to_excel()` → writes only to `data/excel/FuloFilo_Master.xlsx` (Inventory sheet, cols D–F)
-- `app/utils/sales_ops.py::sync_csv_to_excel_daily_ops()` → writes only to `data/excel/FuloFilo_Master.xlsx` (Daily Ops sheet)
-- Generated report workbooks under `excel/` receive **zero runtime writes** after build
+Write-back implemented in the app:
 
----
+- Daily sales append to `DailySales`
+- Category overrides upsert to `CategoryOverrides`
+- Inventory adjustments update `Inventory`
+- Stock mutations append to `data/logs/stock_audit.csv`
+- Each write-back triggers canonical sync
 
-## 4. Launch Paths (Local)
+### Automation lane (`sales_watcher`) vs manual Excel
 
-Terminal launcher:
-```bash
-bash scripts/launch_app.sh
-```
+- **Manual lane:** Edit `FuloFilo_Master.xlsx`, then run `bash scripts/sync_excel.sh`.
+- **Automation lane:** Drop `item-sales-summary-*.csv` into `data/incoming/`. The watcher runs `etl/ingest.py`, merges matching rows into the workbook under an advisory lock file (`data/excel/FuloFilo_Master.xlsx.lock`), runs `bash scripts/sync_excel.sh` so Parquet/DuckDB match the workbook, then archives the CSV and may `git push`.
 
-Finder launcher (canonical GUI path):
-- Double-click `FuloFilo.command`
+Streamlit write-back and `sales_watcher` both use the same `locked_workbook` helper so concurrent saves do not interleave. If another process holds the lock longer than the timeout, the waiter logs a clear error and skips the write.
 
-Both launchers validate `.venv` health using:
-- `.venv/bin/python3`
-- `.venv/bin/streamlit`
+**LaunchAgent:** After moving or cloning the repo, run `bash scripts/launchagent/install_saleswatch.sh` again so `~/Library/LaunchAgents/com.fulofilo.saleswatch.plist` points at the correct repo root and Python. Optional: `scripts/launchagent/saleswatch.local.env.example` → `saleswatch.local.env` for `FULOFILO_ROOT` / `SALESWATCH_PYTHON`.
 
-If venv is missing/corrupt, `FuloFilo.command` heals via `uv sync`.
+## 4. Generated Artifact Classification
 
----
+Source of truth:
 
-## 5. Validation and SKU Policy
+- `data/excel/FuloFilo_Master.xlsx`
 
-Contract checks run against `data/excel/FuloFilo_Master.xlsx`:
-- required columns for all 6 master sheets
-- unique SKU constraints (Catalog, Inventory, CategoryOverrides)
-- referential integrity: Inventory/CategoryOverrides/DailySales SKU → Catalog SKU
-- non-negativity: unit_cost ≥ 0, suggested_price ≥ 0
-- sales reconciliation: Total vs Quantity × Unit_Price (tolerance 0.02)
+Generated read models:
 
-Daily sales SKU policy (`--sku-policy`):
-- `balanced` (default):
-  - unknown SKU: error
-  - blank SKU: warning with KPI-impact count
-- `strict`:
-  - unknown SKU: error
-  - KPI-impact blank SKU rows: error
+- `data/parquet/products.parquet`
+- `data/parquet/inventory.parquet`
+- `data/parquet/daily_sales.parquet`
+- `data/parquet/cashflow.parquet`
+- `data/parquet/revenue_report.parquet`
+- `data/parquet/quantity_report.parquet`
+- `data/parquet/profit_report.parquet`
+- `data/fulofilo.duckdb`
+- `data/raw/product_catalog.csv`
 
-Strict mode:
-```bash
-bash scripts/sync_excel.sh --sku-policy strict
-```
+Generated reports:
 
----
+- `excel/FuloFilo_Report_*.xlsx`
+- `data/outputs/alertas_reposicao.xlsx`
 
-## 6. Operating Procedure
+Archived legacy evidence:
 
-1. Open the Excel master workbook:
-```bash
-open data/excel/FuloFilo_Master.xlsx
-```
+- historical files under `data/raw/`
+- `product_catalog_categorized.csv`
+- `daily_sales_TEMPLATE.csv`
+- legacy JSON exports
 
-2. Edit business data in the relevant sheet (Catalog, Inventory, DailySales, Cashflow, or CategoryOverrides).
+Archived evidence may be inspected, but it is not part of the canonical operational write path.
 
-3. Run sync:
+## 5. Canonical Commands
+
+Sync:
+
 ```bash
 bash scripts/sync_excel.sh
 ```
 
-4. Launch app:
+Launch app:
+
 ```bash
 bash scripts/launch_app.sh
 ```
-Or double-click `FuloFilo.command` in Finder for a self-healing launcher.
 
-5. (Optional) generate Excel report artifact from within the dashboard (page 6 — Exportar Relatório) or via CLI:
+Run tests:
+
 ```bash
-python3 excel/build_report.py
+./.venv/bin/python3 -m pytest -q tests/test_pipeline.py
 ```
 
----
+Build report:
 
-## 7. Testing
-
-Run regression suite:
 ```bash
-.venv/bin/python3 -m pytest -q tests/test_pipeline.py
+./.venv/bin/python3 excel/build_report.py
 ```
 
-The suite covers:
-- source contract integrity
-- sync invariants
-- derived Parquet existence/columns
-- sync status output
-- Excel build path
+## 6. Validation and Safety
 
----
+`scripts/sync_excel.py` validates:
 
-## 8. Hardware Profile Defaults
+- required columns on all canonical sheets
+- SKU referential integrity
+- non-negative costs and prices
+- sales total reconciliation
+- placeholder/bootstrap workbook warnings
+- zero-sales warnings when `DailySales` is empty
+- zero-cashflow warnings when `Cashflow` is empty
+- inventory readiness warnings when `Inventory` is empty or still placeholder-only
+- optional warnings when `CategoryOverrides` is empty
+- missing `Meta` key warnings for `schema_version` and `workbook`
 
-- Machine class: Apple Silicon iMac M3, 8 CPU cores, 16 GB RAM
-- DuckDB local tuning in `app/db.py`:
-  - `threads = 8`
-  - `memory_limit = '8GB'`
-  - local temp dir `/tmp/duckdb_fulofilo`
+Sync status is written to:
 
-These defaults are bounded for stability in local-only operation.
+- `data/excel/source_sync_status.json`
+
+Machine-readable readiness fields include:
+
+- `healthy_production_data`
+- `readiness_state`
+- `placeholder_only`
+- `catalog_rows`
+- `catalog_real_rows`
+- `inventory_rows`
+- `inventory_placeholder_only`
+- `daily_sales_rows`
+- `cashflow_rows`
+- `category_override_rows`
+- `meta_present_keys`
+- `meta_missing_keys`
+
+If the workbook still contains only `00001 / Produto Exemplo`, or if `Inventory`, `DailySales`, or `Cashflow` are empty, the sync may succeed but the generated outputs are not healthy production data.
+
+Workbook backup convention:
+
+- `data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`
+- when two backups fall in the same second, `_01`, `_02`, and so on are appended automatically
+
+The app write-back helpers already use this convention before saving workbook mutations.
+
+## 7. Legacy Path Quarantine
+
+These are not active and must not be presented as canonical:
+
+- `etl/build_catalog.py`
+- `etl/ingest_eleve.py`
+- `scripts/sync_native_sources.sh`
+- `scripts/refresh_data.sh`
+
+`scripts/refresh_data.sh` remains in the repository only as an archived stub that tells the operator to use the Excel-first flow.

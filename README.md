@@ -1,26 +1,43 @@
-# FulôFiló Analytics Pro (Apple-Tailored, Local-First)
+# FulôFiló AI
 
-Dashboard and reporting stack for FulôFiló, optimized for macOS on Apple Silicon.
+Local-first retail analytics for FulôFiló on macOS Apple Silicon.
 
-The canonical daily operation in production is the dashboard track: Streamlit + DuckDB + Parquet, fed by an Excel master workbook.
+## Canonical Architecture
 
-## Canonical Operating Model
+```text
+data/excel/FuloFilo_Master.xlsx
+  -> bash scripts/sync_excel.sh
+  -> data/parquet/*.parquet
+  -> data/fulofilo.duckdb
+  -> Streamlit dashboard
+  -> .venv/bin/python3 excel/build_report.py
+```
 
-- Source of truth: `data/excel/FuloFilo_Master.xlsx`
-- Editor: Excel (operator edits the workbook directly)
-- Sync command: `bash scripts/sync_excel.sh`
-- Read model: `data/parquet/*.parquet` and `data/fulofilo.duckdb`
-- Dashboard behavior: read-only for source-owned business datasets
+## Source of Truth
 
-Excel master sheets (input):
-- `Catalog` — product definitions, costs, prices
-- `Inventory` — current stock levels
-- `DailySales` — transaction history
-- `Cashflow` — revenue and expense entries
-- `CategoryOverrides` — category assignments and confidence
-- `Meta` — schema version and workbook metadata
+The only operational source of truth is:
 
-## Quick Start (Dashboard)
+- `data/excel/FuloFilo_Master.xlsx`
+
+Primary sheets:
+
+- `Catalog`
+- `Inventory`
+- `DailySales`
+- `Cashflow`
+- `CategoryOverrides`
+- `Meta`
+
+Do not treat these as source-of-truth:
+
+- `data/parquet/*.parquet` — generated read models
+- `data/fulofilo.duckdb` — generated query layer
+- `data/raw/product_catalog.csv` — generated catalog export
+- `excel/FuloFilo_Report_*.xlsx` — generated reports
+
+Historical raw CSV and JSON files remain in the repository as archived evidence only.
+
+## Quick Start
 
 ```bash
 cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
@@ -31,51 +48,51 @@ bash scripts/launch_app.sh
 
 App URL: `http://127.0.0.1:8501`
 
-GUI launcher (canonical Finder path): double-click `FuloFilo.command`
+## Daily Operation
 
-## Daily Operations
+1. Open `data/excel/FuloFilo_Master.xlsx`.
+2. Update the relevant canonical sheet.
+3. Run `bash scripts/sync_excel.sh`.
+4. Launch or refresh the app with `bash scripts/launch_app.sh`.
+5. Optionally generate a report with `./.venv/bin/python3 excel/build_report.py`.
 
-1. Open the Excel master: `open data/excel/FuloFilo_Master.xlsx`
-2. Edit the relevant sheet (Catalog, Inventory, DailySales, etc.).
-3. Run sync:
-   `bash scripts/sync_excel.sh`
-4. Open dashboard and review:
-   `bash scripts/launch_app.sh` or `FuloFilo.command`
-5. Optional report artifact:
-   `python3 excel/build_report.py` (or use page `06_export_excel`)
+## Production Onboarding Checklist
 
-## Bootstrap (first time)
+1. Back up the workbook first.
+   Backup convention: `data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`
+   If a backup already exists for that second, the system appends `_01`, `_02`, and so on.
+2. Prepare source data outside the repo and confirm the canonical sheet columns before pasting.
+3. Replace bootstrap rows in `Catalog` and `Inventory` with real business data.
+4. Load real history into `DailySales` and `Cashflow`.
+5. Add `CategoryOverrides` only where manual corrections are needed.
+6. Confirm `Meta` still contains at least `schema_version` and `workbook`.
+7. Run `bash scripts/sync_excel.sh`.
+8. Review `data/excel/source_sync_status.json`.
+9. Run `./.venv/bin/python3 -m pytest -q tests/test_pipeline.py`.
+10. Open the dashboard and confirm KPIs are no longer empty.
 
-If you don't have the Excel master yet, generate it from existing CSV data:
+Manual backup example:
 
 ```bash
-uv run python scripts/bootstrap_excel_master.py
+mkdir -p data/excel/backups
+cp data/excel/FuloFilo_Master.xlsx "data/excel/backups/FuloFilo_Master_$(date +%Y%m%d_%H%M%S).xlsx"
 ```
 
-## Validation Policies
+## Bootstrap Note
 
-`scripts/sync_excel.py` enforces:
-- required columns for all master sheets
-- SKU uniqueness in Catalog
-- referential integrity (Inventory, DailySales, CategoryOverrides SKUs must exist in Catalog)
-- non-negativity for prices, costs, and quantities
-- Sales total reconciliation (Total vs Quantity * Unit_Price)
-- KPI-impact reporting for blank `sku` in daily sales
+`uv run python scripts/bootstrap_excel_master.py` creates a starter workbook with a placeholder SKU so the first sync can run. That workbook is not healthy production data until real catalog and sales rows replace the bootstrap content.
 
-Policy modes:
-- `balanced` (default): blank SKU is reported as warning with KPI-impact count
-- `strict`: KPI-impact rows with blank SKU become sync errors
+## Validation
 
-Strict mode example:
 ```bash
-bash scripts/sync_excel.sh --sku-policy strict
+cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+uv sync
+bash scripts/sync_excel.sh
+./.venv/bin/python3 -m pytest -q tests/test_pipeline.py
+./.venv/bin/python3 excel/build_report.py
 ```
 
-## Legacy CSV Pipeline
+## Legacy Paths
 
-The previous Numbers/CSV workflow (`scripts/sync_native_sources.sh`) is still available
-during the migration period. It reads from `data/raw/*_master.csv` files.
-
-## Out of Scope for Dashboard Runbook
-
-- `cf-worker/` is deployment infrastructure and not required for local dashboard operations.
+- `scripts/refresh_data.sh` is archived and intentionally disabled.
+- Deleted ETL paths such as `etl/build_catalog.py`, `etl/ingest_eleve.py`, and `scripts/sync_native_sources.sh` are not part of the active workflow.

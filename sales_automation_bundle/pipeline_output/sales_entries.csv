@@ -1,0 +1,3 @@
+sale_date,source_file,source_path,page,category,product_label,print_name,size,units,notes
+2025-01-01,2025-01-01_regionais.pdf,/mnt/data/test_input/2025-01-01_regionais.pdf,1,BÁSICAS,CAMISETA BASICA,CABEDELO PEITO,M,5,Extracted from sale annotation
+2025-01-01,2025-01-01_regionais.pdf,/mnt/data/test_input/2025-01-01_regionais.pdf,1,BABY,CAMISETA BABY,FÉ,P,2,Extracted from sale annotation

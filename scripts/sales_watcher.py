@@ -4,26 +4,29 @@ FulôFiló — Sales Drop Watcher v3
 ==================================
 Drop a file in data/incoming/ → full pipeline runs automatically.
 
-Workflow:
+Operational data flow (POS automation lane — coexists with Excel-canonical docs):
   1. Scan data/incoming/ for item-sales-summary-*.csv files
   2. Validate filename pattern + internal column signature
   3. Fuzzy product-name check — catch POS name drift before ingest
   4. Duplicate guard — warn if period already ingested
-  5. Run etl/ingest.py → updates parquets + rebuilds analytics
-  6. Sync back to FuloFilo_Master.xlsx (DailySales + Cashflow sheets)
-  7. Archive file → data/raw/
-  8. git commit + push → Streamlit Cloud redeploys (~90s)
-  9. macOS notification with units + revenue summary
- 10. Auto-open dashboard in browser
+  5. Run etl/ingest.py → updates daily_sales / cashflow parquets + analytics
+  6. Write back matching rows to FuloFilo_Master.xlsx (DailySales + Cashflow) under flock
+  7. Run scripts/sync_excel.sh so derived Parquet/DuckDB match validated workbook schema
+  8. Archive file → data/raw/
+  9. git commit + push (optional) → notifications + dashboard
+
+Manual lane remains: edit workbook → bash scripts/sync_excel.sh (see DOCUMENTATION.md).
 
 Usage:
-    python scripts/sales_watcher.py            # process incoming/
-    python scripts/sales_watcher.py --dry-run  # simulate, no writes
+    python scripts/sales_watcher.py              # process incoming/ once
+    python scripts/sales_watcher.py --dry-run    # simulate, no writes
+    python scripts/sales_watcher.py --daemon --interval 30   # LaunchAgent mode
 """
 
 from __future__ import annotations
 
 import argparse
+import contextvars
 import csv
 import datetime
 import difflib
@@ -32,10 +35,15 @@ import re
 import shutil
 import subprocess
 import sys
+import uuid
 from pathlib import Path
+
+from app.utils.workbook_lock import locked_workbook
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT         = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 INCOMING     = ROOT / "data" / "incoming"
 ARCHIVE      = ROOT / "data" / "raw"
 LOGS_DIR     = ROOT / "logs"
@@ -59,17 +67,44 @@ REQUIRED_COLS = {"sku", "itens vendidos", "vendas líquidas", "custo das mercado
 # 0.72 catches dash variants, accents, minor typos without false positives
 FUZZY_CUTOFF = 0.72
 
-# ── Logging ───────────────────────────────────────────────────────────────────
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s  %(levelname)-8s  %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler(sys.stdout),
-    ],
+# ── Logging (correlation id per process_file) ────────────────────────────────
+_correlation_id: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "correlation_id", default="-"
 )
+
+
+class _CorrelationIdFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.correlation_id = _correlation_id.get()
+        return True
+
+
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
+_log_fmt = logging.Formatter(
+    "%(asctime)s  %(correlation_id)s  %(levelname)-8s  %(message)s"
+)
+_fh = logging.FileHandler(LOG_FILE)
+_sh = logging.StreamHandler(sys.stdout)
+for _h in (_fh, _sh):
+    _h.setFormatter(_log_fmt)
+    _h.addFilter(_CorrelationIdFilter())
+
 log = logging.getLogger("saleswatch")
+log.handlers.clear()
+log.setLevel(logging.INFO)
+log.addHandler(_fh)
+log.addHandler(_sh)
+log.propagate = False
+
+
+def _run_validate_sync_from_excel() -> tuple[bool, str]:
+    """Re-run canonical sync so workbook remains SSoT for all derived artifacts."""
+    script = ROOT / "scripts" / "sync_excel.sh"
+    r = subprocess.run(
+        ["bash", str(script)], cwd=str(ROOT), capture_output=True, text=True
+    )
+    parts = [p.strip() for p in (r.stdout, r.stderr) if p and p.strip()]
+    return r.returncode == 0, "\n".join(parts)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -295,71 +330,102 @@ def _sync_excel_master(source_id: str, date_start: str, date_end: str, dry_run: 
         log.info("  [DRY-RUN] Excel sync: %d DailySales rows + Cashflow", new_sales.shape[0])
         return True
 
-    # Backup
     EXCEL_BACKUP.mkdir(parents=True, exist_ok=True)
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     backup = EXCEL_BACKUP / f"FuloFilo_Master_before_{source_id}_{ts}.xlsx"
-    shutil.copy2(str(EXCEL_MASTER), str(backup))
-    log.info("  💾 Excel backup → backups/%s", backup.name)
 
-    wb = openpyxl.load_workbook(str(EXCEL_MASTER))
+    try:
+        with locked_workbook(EXCEL_MASTER, owner="sales_watcher"):
+            shutil.copy2(str(EXCEL_MASTER), str(backup))
+            log.info("  💾 Excel backup → backups/%s", backup.name)
 
-    # ── DailySales ────────────────────────────────────────────────────────────
-    ws_sales = wb["DailySales"]
-    rows_keep = []
-    for i, row in enumerate(ws_sales.iter_rows(values_only=True)):
-        if i == 0:
-            continue
-        if row and str(row[-1]) != source_id:
-            rows_keep.append(row)
-    ws_sales.delete_rows(2, ws_sales.max_row)
-    for row in rows_keep:
-        ws_sales.append(list(row))
+            wb = openpyxl.load_workbook(str(EXCEL_MASTER))
 
-    sku_map: dict[str, str] = {}
-    prod_path = PARQUET_DIR / "products.parquet"
-    if prod_path.exists():
-        prods = pl.read_parquet(prod_path)
-        if "full_name" in prods.columns and "sku" in prods.columns:
-            sku_map = dict(zip(prods["full_name"].to_list(), prods["sku"].to_list()))
+            # ── DailySales ────────────────────────────────────────────────────
+            ws_sales = wb["DailySales"]
+            rows_keep = []
+            for i, row in enumerate(ws_sales.iter_rows(values_only=True)):
+                if i == 0:
+                    continue
+                if row and str(row[-1]) != source_id:
+                    rows_keep.append(row)
+            ws_sales.delete_rows(2, ws_sales.max_row)
+            for row in rows_keep:
+                ws_sales.append(list(row))
 
-    appended = 0
-    for row in new_sales.iter_rows(named=True):
-        sku = sku_map.get(row["Product"], "")
-        ws_sales.append([
-            row["Date"], str(sku), row["Product"],
-            round(float(row["Quantity"]), 3),
-            round(float(row["Unit_Price"]), 2),
-            round(float(row["Total"]), 2),
-            row["Payment_Method"], row["Source"],
-        ])
-        appended += 1
-    log.info("  📊 DailySales: +%d rows", appended)
+            sku_map: dict[str, str] = {}
+            prod_path = PARQUET_DIR / "products.parquet"
+            if prod_path.exists():
+                prods = pl.read_parquet(prod_path)
+                if "full_name" in prods.columns and "sku" in prods.columns:
+                    sku_map = dict(
+                        zip(prods["full_name"].to_list(), prods["sku"].to_list())
+                    )
 
-    # ── Cashflow ──────────────────────────────────────────────────────────────
-    if cf_path.exists():
-        cf = pl.read_parquet(cf_path)
-        ws_cf = wb["Cashflow"]
-        prefix = f"Vendas {date_start}"
-        cf_keep = []
-        for i, row in enumerate(ws_cf.iter_rows(values_only=True)):
-            if i == 0:
-                continue
-            if row and not str(row[3] or "").startswith(prefix):
-                cf_keep.append(row)
-        ws_cf.delete_rows(2, ws_cf.max_row)
-        for row in cf_keep:
-            ws_cf.append(list(row))
-        new_cf = cf.filter(pl.col("Description").str.starts_with(prefix)) if "Description" in cf.columns else pl.DataFrame()
-        for row in new_cf.iter_rows(named=True):
-            ws_cf.append([row["Date"], row["Type"], row["Category"],
-                          row["Description"], round(float(row["Amount"]), 2),
-                          row["Payment_Method"]])
-        log.info("  📊 Cashflow: +%d entries", new_cf.shape[0])
+            appended = 0
+            for row in new_sales.iter_rows(named=True):
+                sku = sku_map.get(row["Product"], "")
+                ws_sales.append([
+                    row["Date"],
+                    str(sku),
+                    row["Product"],
+                    round(float(row["Quantity"]), 3),
+                    round(float(row["Unit_Price"]), 2),
+                    round(float(row["Total"]), 2),
+                    row["Payment_Method"],
+                    row["Source"],
+                ])
+                appended += 1
+            log.info("  📊 DailySales: +%d rows", appended)
 
-    wb.save(str(EXCEL_MASTER))
-    wb.close()
-    log.info("  ✅ Excel Master saved")
+            # ── Cashflow ──────────────────────────────────────────────────────
+            if cf_path.exists():
+                cf = pl.read_parquet(cf_path)
+                ws_cf = wb["Cashflow"]
+                prefix = f"Vendas {date_start}"
+                cf_keep = []
+                for i, row in enumerate(ws_cf.iter_rows(values_only=True)):
+                    if i == 0:
+                        continue
+                    if row and not str(row[3] or "").startswith(prefix):
+                        cf_keep.append(row)
+                ws_cf.delete_rows(2, ws_cf.max_row)
+                for row in cf_keep:
+                    ws_cf.append(list(row))
+                new_cf = (
+                    cf.filter(pl.col("Description").str.starts_with(prefix))
+                    if "Description" in cf.columns
+                    else pl.DataFrame()
+                )
+                for row in new_cf.iter_rows(named=True):
+                    ws_cf.append([
+                        row["Date"],
+                        row["Type"],
+                        row["Category"],
+                        row["Description"],
+                        round(float(row["Amount"]), 2),
+                        row["Payment_Method"],
+                    ])
+                log.info("  📊 Cashflow: +%d entries", new_cf.shape[0])
+
+            wb.save(str(EXCEL_MASTER))
+            wb.close()
+            log.info("  ✅ Excel Master saved")
+    except TimeoutError as exc:
+        log.error("  ❌ Workbook lock: %s", exc)
+        return False
+
+    sync_ok, sync_out = _run_validate_sync_from_excel()
+    if not sync_ok:
+        log.error(
+            "  ❌ sync_excel.sh failed after workbook write — check logs; output:\n%s",
+            sync_out[:4000] if sync_out else "(no output)",
+        )
+        return False
+    if sync_out:
+        for line in sync_out.strip().splitlines()[:80]:
+            log.info("     sync: %s", line)
+    log.info("  ✅ Derived artifacts aligned (sync_excel.sh)")
     return True
 
 
@@ -425,6 +491,14 @@ def _git_commit_push(archived: Path, date_start: str, date_end: str, dry_run: bo
 # ══════════════════════════════════════════════════════════════════════════════
 
 def process_file(path: Path, dry_run: bool) -> bool:
+    cid_token = _correlation_id.set(uuid.uuid4().hex[:12])
+    try:
+        return _process_file_inner(path, dry_run)
+    finally:
+        _correlation_id.reset(cid_token)
+
+
+def _process_file_inner(path: Path, dry_run: bool) -> bool:
     log.info("━" * 60)
     log.info("📥 Processing: %s", path.name)
 
@@ -475,7 +549,14 @@ def process_file(path: Path, dry_run: bool) -> bool:
 
     # 7 — Sync Excel Master
     log.info("  📋 Syncing Excel Master...")
-    _sync_excel_master(source_id, date_start, date_end, dry_run)
+    if not _sync_excel_master(source_id, date_start, date_end, dry_run):
+        log.error("  ❌ Excel write or post-sync failed — file left in incoming/")
+        _notify(
+            "❌ FulôFiló — Excel / sync failed",
+            f"Check logs: {path.name}",
+            success=False,
+        )
+        return False
 
     # 8 — Archive
     archived = _archive(path, date_start, date_end, dry_run)
@@ -525,7 +606,7 @@ def scan_and_process(dry_run: bool) -> int:
     return ok_count
 
 
-def loop_mode(interval: int = 30) -> None:
+def loop_mode(interval: int = 30, dry_run: bool = False) -> None:
     """Persistent daemon mode — polls every N seconds."""
     import time
     log.info("=" * 60)
@@ -534,7 +615,7 @@ def loop_mode(interval: int = 30) -> None:
     log.info("=" * 60)
     while True:
         try:
-            scan_and_process(dry_run=False)
+            scan_and_process(dry_run=dry_run)
         except Exception as exc:
             log.error("Unhandled error in scan loop: %s", exc)
         time.sleep(interval)
@@ -544,6 +625,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="FulôFiló — Sales Drop Watcher v3")
     parser.add_argument("--dry-run", action="store_true",
                         help="Simulate — no files written, no git push, no browser")
+    parser.add_argument("--daemon", action="store_true",
+                        help="Poll incoming/ forever (LaunchAgent / long-running host)")
+    parser.add_argument("--interval", type=int, default=30,
+                        help="Seconds between scans in --daemon mode (default: 30)")
     args = parser.parse_args()
 
     log.info("=" * 60)
@@ -553,7 +638,10 @@ def main() -> None:
     log.info("Watch folder: %s", INCOMING)
     log.info("=" * 60)
 
-    scan_and_process(args.dry_run)
+    if args.daemon:
+        loop_mode(args.interval, dry_run=args.dry_run)
+    else:
+        scan_and_process(args.dry_run)
 
 
 if __name__ == "__main__":

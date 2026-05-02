@@ -8,6 +8,7 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 
 from app.utils.excel_sync import MASTER_PATH, backup_workbook, run_canonical_sync
+from app.utils.workbook_lock import locked_workbook
 
 SHEET_CATALOG = "Catalog"
 SHEET_SALES = "DailySales"
@@ -78,30 +79,32 @@ def append_sale_to_excel(
     if not workbook_path.exists():
         raise FileNotFoundError(f"Workbook not found: {workbook_path}")
 
-    backup_path = backup_workbook(workbook_path) if create_backup else None
-    wb = openpyxl.load_workbook(workbook_path)
-    catalog_ws = _require_sheet(wb, SHEET_CATALOG)
-    sales_ws = _require_sheet(wb, SHEET_SALES)
+    backup_path = None
+    with locked_workbook(workbook_path, owner="streamlit_sales_ops"):
+        backup_path = backup_workbook(workbook_path) if create_backup else None
+        wb = openpyxl.load_workbook(workbook_path)
+        catalog_ws = _require_sheet(wb, SHEET_CATALOG)
+        sales_ws = _require_sheet(wb, SHEET_SALES)
 
-    catalog = _catalog_lookup(catalog_ws)
-    if sku_norm not in catalog:
-        raise ValueError(f"SKU not found in Catalog: {sku_norm}")
+        catalog = _catalog_lookup(catalog_ws)
+        if sku_norm not in catalog:
+            raise ValueError(f"SKU not found in Catalog: {sku_norm}")
 
-    expected_product = catalog[sku_norm]
-    product_name = (product or expected_product).strip() or expected_product
-    total = round(quantity * float(unit_price), 2)
-    row = [
-        sale_date.strftime("%Y-%m-%d"),
-        sku_norm,
-        product_name,
-        int(quantity),
-        round(float(unit_price), 2),
-        total,
-        str(payment_method).strip(),
-        str(source).strip() or "manual",
-    ]
-    sales_ws.append(row)
-    wb.save(workbook_path)
+        expected_product = catalog[sku_norm]
+        product_name = (product or expected_product).strip() or expected_product
+        total = round(quantity * float(unit_price), 2)
+        row = [
+            sale_date.strftime("%Y-%m-%d"),
+            sku_norm,
+            product_name,
+            int(quantity),
+            round(float(unit_price), 2),
+            total,
+            str(payment_method).strip(),
+            str(source).strip() or "manual",
+        ]
+        sales_ws.append(row)
+        wb.save(workbook_path)
 
     sync_output = ""
     if run_sync:

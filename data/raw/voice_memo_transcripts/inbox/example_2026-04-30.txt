@@ -1,0 +1,5 @@
+--- memo_begin 2026-04-30T10:00:00 Estoque cangas ---
+elastano olho grego 3
+canga algodao cordel cinco
+fitas praia 2 elastano
+--- memo_end ---
