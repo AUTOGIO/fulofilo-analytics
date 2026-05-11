@@ -416,12 +416,15 @@ def ingest_sales(path: Path, dry_run: bool) -> None:
         cf_path = OUT / "cashflow.parquet"
         if cf_path.exists():
             existing_cf = pl.read_parquet(cf_path)
-            # Remove entries for overlapping period
-            period_desc_prefix = f"Vendas {date_start}"
+            # Remove prior revenue and COGS rows for this period before replacing.
+            vendas_prefix = f"Vendas {date_start}"
+            cmv_prefix = f"CMV {date_start}"
             if "Description" in existing_cf.columns:
-                existing_cf = existing_cf.filter(
-                    ~pl.col("Description").str.starts_with(period_desc_prefix)
+                period_rows = (
+                    pl.col("Description").str.starts_with(vendas_prefix)
+                    | pl.col("Description").str.starts_with(cmv_prefix)
                 )
+                existing_cf = existing_cf.filter(~period_rows)
             combined_cf = pl.concat([existing_cf, new_cf]).sort("Date")
         else:
             combined_cf = new_cf.sort("Date")
