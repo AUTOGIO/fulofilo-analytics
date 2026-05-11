@@ -115,6 +115,29 @@ _cf_df, _cf_total = _load_custos()
 folha     = float(_cf_df.filter(pl.col("categoria") == "Funcionário")["valor_mensal_brl"].sum())
 pct_recv  = (_cf_total / receita * 100) if receita else 0.0
 
+# ── Net Profit calculation (fixed costs prorated to data period) ──────────────
+import datetime as _datetime
+from app.db import get_conn as _get_conn2
+_conn_dates = _get_conn2()
+_date_range = _conn_dates.execute(
+    "SELECT MIN(Date) AS d_min, MAX(Date) AS d_max FROM sales"
+).fetchone()
+_conn_dates.close()
+if _date_range and _date_range[0] and _date_range[1]:
+    _d_min = _datetime.date.fromisoformat(str(_date_range[0])[:10])
+    _d_max = _datetime.date.fromisoformat(str(_date_range[1])[:10])
+    _period_days   = (_d_max - _d_min).days + 1
+    _period_months = _period_days / 30.44
+else:
+    _period_months = 1.0
+
+_fixed_period  = _cf_total * _period_months          # fixed costs for the whole data period
+_net_profit    = lucro - _fixed_period                # net profit after fixed costs
+_net_margin    = (_net_profit / receita * 100) if receita else 0.0
+_gross_margin  = (lucro / receita) if receita else 0.0
+_breakeven_rev = (_cf_total / _gross_margin) if _gross_margin else 0.0  # monthly breakeven
+_avg_monthly_rev = (receita / _period_months) if _period_months else 0.0
+
 render_hud_topbar("Custos Fixos Mensais", "💸")
 
 k1, k2, k3 = st.columns(3)
@@ -203,6 +226,59 @@ with st.expander("📋 Ver detalhamento completo", expanded=False):
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         )
         st.plotly_chart(fig_cf, use_container_width=True)
+
+st.divider()
+
+# ── Lucro Líquido & Breakeven ─────────────────────────────────────────────────
+render_hud_topbar("Resultado Líquido", "📉")
+
+_net_color = HUD["green"] if _net_profit >= 0 else "#FF4455"
+_net_icon  = "✅" if _net_profit >= 0 else "🔴"
+_be_status = "✅ Acima" if _avg_monthly_rev >= _breakeven_rev else "🔴 Abaixo"
+
+n1, n2, n3, n4 = st.columns(4)
+n1.metric(
+    f"{_net_icon} Lucro Líquido (período)",
+    f"R$ {_net_profit:,.2f}",
+    help=f"Lucro Bruto R${lucro:,.0f} − Custos Fixos período R${_fixed_period:,.0f} ({_period_months:.1f} meses)",
+)
+n2.metric(
+    "📊 Margem Líquida",
+    f"{_net_margin:.1f}%",
+    help="Lucro Líquido ÷ Receita Total",
+)
+n3.metric(
+    "⚖️ Ponto de Equilíbrio/mês",
+    f"R$ {_breakeven_rev:,.0f}",
+    help=f"Custos Fixos R${_cf_total:,.0f} ÷ Margem Bruta {_gross_margin*100:.1f}%",
+)
+n4.metric(
+    f"{_be_status} Receita Média/mês",
+    f"R$ {_avg_monthly_rev:,.0f}",
+    help=f"R${receita:,.0f} ÷ {_period_months:.1f} meses",
+)
+
+# Visual breakeven bar
+_be_pct = min(_avg_monthly_rev / _breakeven_rev * 100, 200) if _breakeven_rev else 100
+_bar_color = HUD["green"] if _avg_monthly_rev >= _breakeven_rev else "#FF4455"
+st.markdown(f"""
+<div style="margin:8px 0 4px;font-size:0.75rem;color:{HUD['text_dim']};">
+  Cobertura do ponto de equilíbrio &nbsp;
+  <span style="color:{_bar_color};font-weight:700;">{_avg_monthly_rev/_breakeven_rev*100:.0f}%</span>
+  &nbsp;(receita média vs. breakeven mensal)
+</div>
+<div style="background:rgba(255,255,255,0.08);border-radius:6px;height:12px;overflow:hidden;">
+  <div style="width:{min(_be_pct,100):.1f}%;background:{_bar_color};height:100%;border-radius:6px;
+              box-shadow:0 0 8px {_bar_color}88;transition:width 0.4s ease;">
+  </div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:0.68rem;
+            color:{HUD['text_dim']};margin-top:3px;">
+  <span>R$ 0</span>
+  <span>Breakeven R$ {_breakeven_rev:,.0f}</span>
+  <span>R$ {max(_avg_monthly_rev, _breakeven_rev)*1.1:,.0f}</span>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
