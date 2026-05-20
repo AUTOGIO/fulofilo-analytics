@@ -1,8 +1,8 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — Matriz de Margem (HUD Edition)
-==========================================
+FulôFiló — Matriz de Margem (Terminal Edition)
+==============================================
 Scatter plot: X = Quantity Sold, Y = Margin %, Bubble = Revenue
 Quadrants: Stars (high vol + high margin), Cash Cows, Hidden Gems, Dogs
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
-from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
+from app.components.terminal import inject_terminal_css, render_terminal_header, terminal_plotly_layout, TERMINAL
 from core.classification import classify_dataframe, FIXED_MARGIN_THRESHOLD, FIXED_QTY_THRESHOLD
 from core.recommendations import enrich_with_recommendations
 from core.reporting import generate_weekly_report
@@ -24,10 +24,10 @@ from core.alerts import generate_alerts
 from core.analytics import aggregate_by_category
 
 st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon=_FAVICON, layout="wide")
-inject_hud_css()
+inject_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Matriz de Margem", "💹")
+render_terminal_header("Matriz de Margem", "💹")
 
 st.markdown("""
 Identifica o posicionamento estratégico de cada produto:
@@ -80,9 +80,9 @@ fig = px.scatter(
     hover_name="full_name",
     hover_data={"category": True, "revenue": ":,.2f", "qty_sold": True, "margin_pct": ":.1f%"},
     color_continuous_scale=[
-        [0.0,  "#FF4455"],
-        [0.5,  "#FFD700"],
-        [1.0,  "#00FF88"],
+        [0.0,  TERMINAL["accent_red"]],
+        [0.5,  TERMINAL["warning"]],
+        [1.0,  TERMINAL["accent_lime"]],
     ],
     size_max=60,
     labels={
@@ -97,16 +97,16 @@ fig = px.scatter(
 # Change FIXED_MARGIN_THRESHOLD / FIXED_QTY_THRESHOLD in core/classification.py
 fig.add_vline(
     x=FIXED_QTY_THRESHOLD,
-    line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1,
+    line_dash="dash", line_color="rgba(0,201,230,0.35)", line_width=1,
     annotation_text=f"Vol={int(FIXED_QTY_THRESHOLD)} un",
-    annotation_font_color="rgba(0,212,255,0.6)",
+    annotation_font_color="rgba(0,201,230,0.6)",
     annotation_position="top right",
 )
 fig.add_hline(
     y=FIXED_MARGIN_THRESHOLD,
-    line_dash="dash", line_color="rgba(0,212,255,0.35)", line_width=1,
+    line_dash="dash", line_color="rgba(0,201,230,0.35)", line_width=1,
     annotation_text=f"Margem={FIXED_MARGIN_THRESHOLD:.0f}%",
-    annotation_font_color="rgba(0,212,255,0.6)",
+    annotation_font_color="rgba(0,201,230,0.6)",
     annotation_position="bottom right",
 )
 
@@ -114,19 +114,19 @@ fig.add_hline(
 font_base = dict(family="Inter, sans-serif", size=13)
 fig.add_annotation(x=pdf["qty_sold"].max()*0.85, y=pdf["margin_pct"].max()*0.95,
                    text="🌟 Stars", showarrow=False,
-                   font={**font_base, "color": "#00FF88"})
+                   font={**font_base, "color": TERMINAL["accent_lime"]})
 fig.add_annotation(x=pdf["qty_sold"].max()*0.85, y=pdf["margin_pct"].min()*1.1,
                    text="🐄 Cash Cows", showarrow=False,
-                   font={**font_base, "color": "#FFD700"})
+                   font={**font_base, "color": TERMINAL["warning"]})
 fig.add_annotation(x=pdf["qty_sold"].min()*1.5, y=pdf["margin_pct"].max()*0.95,
                    text="💎 Hidden Gems", showarrow=False,
-                   font={**font_base, "color": "#00D4FF"})
+                   font={**font_base, "color": TERMINAL["accent_cyan"]})
 fig.add_annotation(x=pdf["qty_sold"].min()*1.5, y=pdf["margin_pct"].min()*1.1,
                    text="🐕 Dogs", showarrow=False,
-                   font={**font_base, "color": "#FF4455"})
+                   font={**font_base, "color": TERMINAL["accent_red"]})
 
 fig.update_layout(coloraxis_showscale=True)
-hud_plotly_layout(fig, height=560)
+terminal_plotly_layout(fig, height=560)
 st.plotly_chart(fig, use_container_width=True)
 
 # ── Top / Bottom Margin Tables ─────────────────────────────────────────────────

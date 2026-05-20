@@ -1,9 +1,9 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 📦 Gestão de Estoque (HUD Edition)
-===============================================
-Critical alert banner, reorder table with HUD alert pills, stacked value chart.
+FulôFiló — 📦 Gestão de Estoque (Terminal Edition)
+===================================================
+Critical alert banner, reorder table with terminal alert pills, stacked value chart.
 """
 
 import sys
@@ -16,18 +16,28 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_stock_turnover, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
+from app.components.terminal import inject_terminal_css, render_terminal_header, terminal_plotly_layout, TERMINAL
 from app.utils.inventory_ops import load_inventory, adjust_stock
 from app.utils.source_health import render_source_health_warning
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
-inject_hud_css()
+inject_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Gestão de Estoque", "📦")
+render_terminal_header("Gestão de Estoque", "📦")
 render_source_health_warning()
 
 st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
+
+# ── Alert badge formatter ──────────────────────────────────────────────────────
+def alert_badge(value):
+    """Format alert status as color-coded HTML badge."""
+    badges = {
+        "🔴 Crítico": '<span style="background:#F55C47;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🔴 Crítico</span>',
+        "🟡 Baixo": '<span style="background:#FFB91C;color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟡 Baixo</span>',
+        "🟢 OK": '<span style="background:#8FD929;color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟢 OK</span>',
+    }
+    return badges.get(value, str(value))
 
 @st.cache_data
 def load(data_version: str):  # noqa: ARG001
@@ -49,14 +59,14 @@ if not criticos.empty:
     extra = f" + {len(criticos)-5} mais" if len(criticos) > 5 else ""
     st.markdown(f"""
 <div style="
-    background: rgba(255,68,85,0.10);
-    border: 1px solid #FF4455;
+    background: rgba(245,92,71,0.10);
+    border: 1px solid {TERMINAL['accent_red']};
     border-radius: 10px;
     padding: 12px 18px;
     margin-bottom: 16px;
-    box-shadow: 0 0 16px rgba(255,68,85,0.25);
+    box-shadow: 0 0 16px rgba(245,92,71,0.25);
     font-size: 0.9rem;
-    color: #FF4455;
+    color: {TERMINAL['accent_red']};
 ">
 🚨 <strong>{len(criticos)} ITEM(NS) CRÍTICO(S):</strong> {names}{extra} — estoque abaixo do mínimo!
 </div>
@@ -88,10 +98,10 @@ if not giro_df.is_empty():
     n_baixo   = (giro_pd["giro_class"] == "🐢 Baixo").sum()
     n_zerado  = (giro_pd["giro_class"] == "⚠️ Sem estoque").sum()
 
-    st.markdown("""
-<div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.20);
+    st.markdown(f"""
+<div style="background:rgba(0,201,230,0.06);border:1px solid rgba(0,201,230,0.20);
 border-radius:10px;padding:12px 18px;margin-bottom:12px;">
-<span style="font-size:0.7rem;letter-spacing:0.12em;color:#4A5568;text-transform:uppercase;">
+<span style="font-size:0.7rem;letter-spacing:0.12em;color:{TERMINAL['text_secondary']};text-transform:uppercase;">
 🔄 Giro do Estoque — Vendas ÷ Estoque Atual
 </span></div>
 """, unsafe_allow_html=True)
@@ -115,17 +125,17 @@ st.divider()
 tab1, tab2, tab3 = st.tabs(["📊 Níveis", "🔄 Reposição", "💰 Valor em Estoque"])
 
 COLOR_MAP = {
-    "🔴 Crítico": "#FF4455",
-    "🟡 Baixo":   "#FFD700",
-    "🟢 OK":      "#00FF88",
+    "🔴 Crítico": TERMINAL["accent_red"],
+    "🟡 Baixo":   TERMINAL["warning"],
+    "🟢 OK":      TERMINAL["accent_lime"],
 }
 
 CATEGORY_COLORS = {
-    "Camisetas Básicas":     "#00D4FF",
+    "Camisetas Básicas":     TERMINAL["accent_cyan"],
     "Baby Look":             "#FF79C6",
-    "Regatas":               "#FFD700",
+    "Regatas":               TERMINAL["warning"],
     "Camisetas Infantis":    "#A78BFA",
-    "Canecas Ágata Pequena": "#00FF88",
+    "Canecas Ágata Pequena": TERMINAL["accent_lime"],
     "Canecas Ágata Grande":  "#34D399",
     "Canecas Loucas":        "#FB923C",
     "Cangas":                "#F43F5E",
@@ -151,7 +161,7 @@ with tab1:
         title="Estoque Atual por Produto — por Categoria",
     )
     fig.update_traces(marker_line_width=0)
-    hud_plotly_layout(fig, height=max(420, len(view)*22))
+    terminal_plotly_layout(fig, height=max(420, len(view)*22))
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
@@ -211,10 +221,10 @@ with tab3:
             title="Valor em Estoque por Categoria (R$)",
             labels={"total_value":"Valor (R$)","category":"Categoria"},
             color="total_value",
-            color_continuous_scale=[[0, "#00FF88"], [1, "#00D4FF"]],
+            color_continuous_scale=[[0, TERMINAL["accent_lime"]], [1, TERMINAL["accent_cyan"]]],
         )
         fig3.update_traces(marker_line_width=0)
-        hud_plotly_layout(fig3, height=400)
+        terminal_plotly_layout(fig3, height=400)
         st.plotly_chart(fig3, use_container_width=True)
         total_val = cat_val["total_value"].sum()
         st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")

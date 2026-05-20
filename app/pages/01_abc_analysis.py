@@ -1,9 +1,9 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 📊 Análise ABC (HUD Edition)
-=========================================
-ABC Pareto with live filters, treemap, metric cards, and HUD aesthetic.
+FulôFiló — 📊 Análise ABC (Terminal Edition)
+=============================================
+ABC Pareto with live filters, treemap, metric cards, and terminal aesthetic.
 """
 
 import sys
@@ -17,17 +17,17 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
-from app.components.hud import (
-    inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout,
-    action_tag_badge, priority_badge,
+from app.components.terminal import (
+    inject_terminal_css, render_terminal_header, terminal_plotly_layout,
+    TERMINAL
 )
 from core.decision_engine import enrich_with_decisions
 
 st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
-inject_hud_css()
+inject_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Análise ABC", "📊")
+render_terminal_header("Análise ABC", "📊")
 
 st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
 
@@ -42,8 +42,37 @@ if df.is_empty():
 
 pdf = df.to_pandas()
 
-# HUD neon colors for ABC
-COLORS = {"A": "#00FF88", "B": "#FFD700", "C": "#FF4455"}
+# Terminal colors for ABC
+COLORS = {"A": TERMINAL["accent_lime"], "B": TERMINAL["warning"], "C": TERMINAL["accent_red"]}
+
+# ── Badge formatters ──────────────────────────────────────────────────────────
+def abc_badge(value):
+    """Format ABC class as color-coded badge."""
+    badges = {
+        "A": f'<span style="background:{TERMINAL["accent_lime"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟢 A</span>',
+        "B": f'<span style="background:{TERMINAL["warning"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟡 B</span>',
+        "C": f'<span style="background:{TERMINAL["accent_red"]};color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🔴 C</span>',
+    }
+    return badges.get(value, str(value))
+
+def action_tag_badge(value):
+    """Format action tag as color-coded badge."""
+    tags = {
+        "INVESTIGATE": f'<span style="background:{TERMINAL["accent_cyan"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🔍 INVESTIGATE</span>',
+        "HOLD": f'<span style="background:{TERMINAL["warning"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">⏸ HOLD</span>',
+        "EXPAND": f'<span style="background:{TERMINAL["accent_lime"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">📈 EXPAND</span>',
+        "DISCONTINUE": f'<span style="background:{TERMINAL["accent_red"]};color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">❌ DISCONTINUE</span>',
+    }
+    return tags.get(value, str(value))
+
+def priority_badge(value):
+    """Format priority as color-coded badge."""
+    priorities = {
+        "HIGH": f'<span style="background:{TERMINAL["accent_red"]};color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🔴 HIGH</span>',
+        "MEDIUM": f'<span style="background:{TERMINAL["warning"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟡 MEDIUM</span>',
+        "LOW": f'<span style="background:{TERMINAL["accent_lime"]};color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">🟢 LOW</span>',
+    }
+    return priorities.get(value, str(value))
 
 # ── Sidebar filters ────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -101,27 +130,27 @@ with tab1:
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=filtered["full_name"], y=filtered["revenue"],
-        marker_color=[COLORS.get(c,"#4A5568") for c in filtered["abc_live"]],
+        marker_color=[COLORS.get(c, TERMINAL["text_secondary"]) for c in filtered["abc_live"]],
         name="Receita", hovertemplate="%{x}<br>R$ %{y:,.2f}",
         marker_line_width=0,
     ))
     fig.add_trace(go.Scatter(
         x=filtered["full_name"], y=filtered["cum_pct_live"],
         name="% Acumulado", yaxis="y2",
-        line=dict(color="#FFD700", width=2.5), mode="lines+markers",
-        marker=dict(size=5, color="#FFD700"),
+        line=dict(color=TERMINAL["warning"], width=2.5), mode="lines+markers",
+        marker=dict(size=5, color=TERMINAL["warning"]),
     ))
-    fig.add_hline(y=80, line_dash="dash", line_color="#FF4455", opacity=0.7,
+    fig.add_hline(y=80, line_dash="dash", line_color=TERMINAL["accent_red"], opacity=0.7,
                   annotation_text="80% — corte Classe A",
-                  annotation_font_color="#FF4455")
+                  annotation_font_color=TERMINAL["accent_red"])
     fig.update_layout(
-        yaxis=dict(title="Receita (R$)", gridcolor="rgba(0,212,255,0.08)"),
+        yaxis=dict(title="Receita (R$)", gridcolor="rgba(0,201,230,0.08)"),
         yaxis2=dict(title="% Acumulado", overlaying="y", side="right", range=[0,110],
                     gridcolor="rgba(0,0,0,0)"),
         xaxis_tickangle=-45,
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
-    hud_plotly_layout(fig, height=480)
+    terminal_plotly_layout(fig, height=480)
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
@@ -133,7 +162,7 @@ with tab2:
             hover_data={"revenue": ":.2f", "qty_sold": True},
         )
         fig2.update_traces(marker_line_width=1, marker_line_color="#080C18")
-        hud_plotly_layout(fig2, height=540)
+        terminal_plotly_layout(fig2, height=540)
         st.plotly_chart(fig2, use_container_width=True)
     else:
         st.info("Dados de categoria não disponíveis.")

@@ -13,7 +13,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from app.db import get_monthly_breakdown, get_conn, get_data_mtime
 from app.components.sidebar import get_month_filter
-from app.components.hud import hud_plotly_layout, HUD
+from app.components.terminal import terminal_plotly_layout, TERMINAL
 
 _MONTH_LABELS = {
     "2026-01": "Jan 2026", "2026-02": "Fev 2026", "2026-03": "Mar 2026",
@@ -59,8 +59,8 @@ def render_monthly_block(conn=None):
 
     # ── Section header ────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="font-size:0.68rem;letter-spacing:0.15em;color:#4A5568;'
-        'text-transform:uppercase;margin-bottom:10px;">◈ Vendas por Mês</div>',
+        f'<div style="font-size:0.68rem;letter-spacing:0.15em;color:{TERMINAL["text_secondary"]};'
+        f'text-transform:uppercase;margin-bottom:10px;">◈ Vendas por Mês</div>',
         unsafe_allow_html=True,
     )
 
@@ -100,7 +100,7 @@ def render_monthly_block(conn=None):
             _MONTH_LABELS.get(m, m) for m in (selected or months_raw)
         )
         bar_colors = [
-            HUD["cyan"] if lbl in selected_labels else "rgba(0,212,255,0.25)"
+            TERMINAL["accent_cyan"] if lbl in selected_labels else "rgba(0,201,230,0.25)"
             for lbl in labels
         ]
 
@@ -115,7 +115,7 @@ def render_monthly_block(conn=None):
             marker_line_color="rgba(0,0,0,0)",
             text=[f"R$ {v:,.0f}" for v in revenues],
             textposition="outside",
-            textfont=dict(color=HUD["text"], size=11),
+            textfont=dict(color=TERMINAL["text_primary"], size=11),
             customdata=units,
             hovertemplate=(
                 "<b>%{x}</b><br>"
@@ -128,23 +128,23 @@ def render_monthly_block(conn=None):
         fig.add_hline(
             y=total_rev / len(revenues) if revenues else 0,
             line_dash="dot",
-            line_color=HUD["gold"],
+            line_color=TERMINAL["warning"],
             annotation_text=f"Média R$ {total_rev / len(revenues):,.0f}",
             annotation_position="top right",
-            annotation_font_color=HUD["gold"],
+            annotation_font_color=TERMINAL["warning"],
             annotation_font_size=11,
         )
 
-        hud_plotly_layout(fig, height=280)
+        terminal_plotly_layout(fig, height=280)
         fig.update_layout(
             margin=dict(l=10, r=10, t=36, b=10),
             xaxis_title="",
             yaxis_title="Receita (R$)",
             showlegend=False,
             title=dict(
-                text=f"Receita por Mês  ·  <span style='color:{HUD['gold']};font-size:13px;'>"
+                text=f"Receita por Mês  ·  <span style='color:{TERMINAL['warning']};font-size:13px;'>"
                      f"Total R$ {total_rev:,.2f}</span>",
-                font=dict(size=13, color=HUD["text"]),
+                font=dict(size=13, color=TERMINAL["text_primary"]),
                 x=0,
             ),
         )
@@ -156,7 +156,7 @@ def render_monthly_block(conn=None):
             # Table header
             st.markdown(
                 f'<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">'
-                f'<thead><tr style="color:{HUD["text_dim"]};text-transform:uppercase;'
+                f'<thead><tr style="color:{TERMINAL["text_muted"]};text-transform:uppercase;'
                 f'font-size:0.68rem;letter-spacing:0.08em;">'
                 f'<th style="text-align:left;padding:6px 10px;">Mês</th>'
                 f'<th style="text-align:right;padding:6px 10px;">Receita</th>'
@@ -175,17 +175,17 @@ def render_monthly_block(conn=None):
                 tkt   = rev / uni if uni else 0.0
                 if prev_receita and prev_receita > 0:
                     mom   = (rev - prev_receita) / prev_receita * 100
-                    mom_color = HUD["green"] if mom >= 0 else "#FF4455"
+                    mom_color = TERMINAL["accent_lime"] if mom >= 0 else TERMINAL["accent_red"]
                     mom_str = f'<span style="color:{mom_color};">{mom:+.1f}%</span>'
                 else:
-                    mom_str = '<span style="color:#4A5568;">—</span>'
+                    mom_str = f'<span style="color:{TERMINAL["text_secondary"]};">—</span>'
                 rows_html += (
-                    f'<tr style="border-top:1px solid rgba(0,212,255,0.08);">'
-                    f'<td style="color:{HUD["text"]};padding:6px 10px;">{lbl}</td>'
-                    f'<td style="color:{HUD["gold"]};text-align:right;padding:6px 10px;'
+                    f'<tr style="border-top:1px solid rgba(0,201,230,0.08);">'
+                    f'<td style="color:{TERMINAL["text_primary"]};padding:6px 10px;">{lbl}</td>'
+                    f'<td style="color:{TERMINAL["warning"]};text-align:right;padding:6px 10px;'
                     f'font-variant-numeric:tabular-nums;">R$ {rev:,.2f}</td>'
-                    f'<td style="color:{HUD["text"]};text-align:right;padding:6px 10px;">{uni:,}</td>'
-                    f'<td style="color:{HUD["text_dim"]};text-align:right;padding:6px 10px;">'
+                    f'<td style="color:{TERMINAL["text_primary"]};text-align:right;padding:6px 10px;">{uni:,}</td>'
+                    f'<td style="color:{TERMINAL["text_muted"]};text-align:right;padding:6px 10px;">'
                     f'R$ {tkt:,.2f}</td>'
                     f'<td style="text-align:right;padding:6px 10px;">{mom_str}</td>'
                     f'</tr>'
@@ -196,13 +196,13 @@ def render_monthly_block(conn=None):
             total_uni = sum(int(float(r["unidades"])) for r in rows_sorted)
             total_tkt = receita / total_uni if total_uni else 0.0
             rows_html += (
-                f'<tr style="border-top:2px solid {HUD["cyan"]};">'
-                f'<td style="color:{HUD["cyan"]};font-weight:700;padding:8px 10px;">TOTAL</td>'
-                f'<td style="color:{HUD["cyan"]};font-weight:700;text-align:right;padding:8px 10px;'
+                f'<tr style="border-top:2px solid {TERMINAL["accent_cyan"]};">'
+                f'<td style="color:{TERMINAL["accent_cyan"]};font-weight:700;padding:8px 10px;">TOTAL</td>'
+                f'<td style="color:{TERMINAL["accent_cyan"]};font-weight:700;text-align:right;padding:8px 10px;'
                 f'font-variant-numeric:tabular-nums;">R$ {receita:,.2f}</td>'
-                f'<td style="color:{HUD["cyan"]};font-weight:700;text-align:right;padding:8px 10px;">'
+                f'<td style="color:{TERMINAL["accent_cyan"]};font-weight:700;text-align:right;padding:8px 10px;">'
                 f'{total_uni:,}</td>'
-                f'<td style="color:{HUD["cyan"]};font-weight:700;text-align:right;padding:8px 10px;">'
+                f'<td style="color:{TERMINAL["accent_cyan"]};font-weight:700;text-align:right;padding:8px 10px;">'
                 f'R$ {total_tkt:,.2f}</td>'
                 f'<td></td>'
                 f'</tr>'
@@ -210,7 +210,7 @@ def render_monthly_block(conn=None):
             st.markdown(rows_html + "</tbody></table>", unsafe_allow_html=True)
 
     st.markdown(
-        f'<div style="font-size:0.7rem;color:#4A5568;text-align:right;margin-top:4px;">'
+        f'<div style="font-size:0.7rem;color:{TERMINAL["text_secondary"]};text-align:right;margin-top:4px;">'
         f'{subtitle}</div>',
         unsafe_allow_html=True,
     )

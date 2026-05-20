@@ -1,6 +1,6 @@
 """
-FulôFiló — Operações Diárias (HUD Edition)
-==========================================
+FulôFiló — Operações Diárias (Terminal Edition)
+===============================================
 Read-only daily sales view over the canonical Excel-first sync outputs.
 """
 
@@ -15,7 +15,7 @@ from datetime import date, timedelta
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
+from app.components.terminal import inject_terminal_css, render_terminal_header, terminal_plotly_layout, TERMINAL
 from app.utils.source_health import render_source_health_warning
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -40,10 +40,10 @@ def load_sales_history() -> pd.DataFrame:
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Operações Diárias — FulôFiló", page_icon="⚡", layout="wide")
-inject_hud_css()
+inject_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Operações Diárias", "⚡")
+render_terminal_header("Operações Diárias", "⚡")
 render_source_health_warning()
 
 st.markdown(f"**Hoje:** {date.today().strftime('%d/%m/%Y')}")
@@ -158,14 +158,14 @@ else:
     fig = px.bar(
         daily_agg, x="Data", y="Receita (R$)",
         title=chart_title,
-        color_discrete_sequence=["#00D4FF"],
+        color_discrete_sequence=[TERMINAL["accent_cyan"]],
     )
     fig.update_traces(marker_line_width=0)
-    fig.add_hline(y=avg_daily, line_dash="dot", line_color="#FFD700", opacity=0.7,
+    fig.add_hline(y=avg_daily, line_dash="dot", line_color=TERMINAL["warning"], opacity=0.7,
                   annotation_text=f"Média R$ {avg_daily:,.0f}",
-                  annotation_font_color="#FFD700",
+                  annotation_font_color=TERMINAL["warning"],
                   annotation_position="top left")
-    hud_plotly_layout(fig, height=380)
+    terminal_plotly_layout(fig, height=380)
     st.plotly_chart(fig, use_container_width=True)
 
     # ── Payment method breakdown ───────────────────────────────────────────────
@@ -183,13 +183,13 @@ else:
             fig_pay = px.pie(
                 pay_agg, values="Receita (R$)", names="Pagamento",
                 title="Receita por Forma de Pagamento",
-                color_discrete_sequence=["#00D4FF","#00FF88","#FFD700","#FF4455","#A78BFA"],
+                color_discrete_sequence=[TERMINAL["accent_cyan"], TERMINAL["accent_lime"], TERMINAL["warning"], TERMINAL["accent_red"], "#A78BFA"],
             )
             fig_pay.update_traces(
                 textfont_color="#E2E8F0",
                 marker=dict(line=dict(color="#080C18", width=2)),
             )
-            hud_plotly_layout(fig_pay, height=320)
+            terminal_plotly_layout(fig_pay, height=320)
             st.plotly_chart(fig_pay, use_container_width=True)
 
         with col_tbl:

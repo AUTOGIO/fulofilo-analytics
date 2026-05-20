@@ -1,8 +1,8 @@
 from pathlib import Path as _Path
 _FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
 """
-FulôFiló — 🏷️ Category Manager (HUD Edition)
-=============================================
+FulôFiló — 🏷️ Category Manager (Terminal Edition)
+==================================================
 Interactive product category management:
 - View/filter all products with their Category/Subcategory
 - Inline reassignment via dropdowns
@@ -21,15 +21,27 @@ sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, LOGO_44
-from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
+from app.components.terminal import inject_terminal_css, render_terminal_header, terminal_plotly_layout, TERMINAL
 from app.utils.category_ops import upsert_category_override
 from app.utils.source_health import render_source_health_warning
 
+# ── Confidence badge formatter ─────────────────────────────────────────────────
+def conf_badge(value):
+    """Format CategoryConfidence as color-coded HTML badge."""
+    badges = {
+        "manual": f'<span style="background:#8FD929;color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">✓ Manual</span>',
+        "high": f'<span style="background:#8FD929;color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">✓ Alta</span>',
+        "medium": f'<span style="background:#FFB91C;color:#000;padding:2px 6px;border-radius:3px;font-size:0.75rem;">~ Média</span>',
+        "unmatched": f'<span style="background:#F55C47;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">✗ Não Class.</span>',
+        "derived": f'<span style="background:#A8A8A8;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75rem;">≈ Derivada</span>',
+    }
+    return badges.get(value, str(value))
+
 st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
-inject_hud_css()
+inject_terminal_css()
 render_sidebar()
 render_page_header(logo_path=LOGO_44)
-render_hud_topbar("Gerenciador de Categorias", "🏷️")
+render_terminal_header("Gerenciador de Categorias", "🏷️")
 render_source_health_warning()
 
 st.caption("Visualize categorias derivadas do sync canônico e grave overrides manuais no Excel master.")
@@ -193,10 +205,10 @@ try:
             title="Receita Total por Categoria",
             labels={"total_rev":"Receita (R$)","category":"Categoria"},
             color="avg_margin",
-            color_continuous_scale=[[0, "#00D4FF"], [1, "#00FF88"]],
+            color_continuous_scale=[[0, TERMINAL["accent_cyan"]], [1, TERMINAL["accent_lime"]]],
         )
         fig.update_traces(marker_line_width=0)
-        hud_plotly_layout(fig, height=400)
+        terminal_plotly_layout(fig, height=400)
         st.plotly_chart(fig, use_container_width=True)
 except Exception as e:
     st.info(f"Dados de receita não disponíveis: {e}")

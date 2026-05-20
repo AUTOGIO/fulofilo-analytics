@@ -1,6 +1,6 @@
 """
-FulôFiló — Fornecedores
-========================
+FulôFiló — Fornecedores (Terminal Edition)
+===========================================
 Embeds the suppliers dashboard HTML inline and provides
 a one-click button to open it in the default browser.
 
@@ -15,7 +15,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar
+from app.components.terminal import inject_terminal_css, render_terminal_header
 
 # ── Page config ───────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
@@ -26,10 +26,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-inject_hud_css()
+inject_terminal_css()
 render_sidebar(active_page="pages/07_suppliers.py")
 render_page_header()
-render_hud_topbar("Fornecedores", "🏭")
+render_terminal_header("Fornecedores", "🏭")
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 _ROOT          = Path(__file__).resolve().parent.parent.parent

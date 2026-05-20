@@ -1,7 +1,9 @@
 """
-FulôFiló AI — Main Dashboard (HUD Edition)
+FulôFiló AI — Trading Terminal Dashboard
 ======================================================
 Entry point for the Streamlit application.
+Professional Bloomberg/Goldman Sachs-style trading terminal.
+
 Run: uv run streamlit run app/app.py
 Access: http://localhost:8501
 """
@@ -18,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db import (get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix,
                     get_data_mtime, get_kpis_by_months)
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period, get_month_filter
-from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
+from app.components.terminal import inject_terminal_css, render_terminal_header, TERMINAL, terminal_plotly_layout
 from app.components.monthly_block import render_monthly_block
 from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
 from app.utils.fixed_costs import load_fixed_costs
@@ -33,15 +35,35 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── HUD Theme ─────────────────────────────────────────────────────────────────
-inject_hud_css()
+# ── Terminal Theme ───────────────────────────────────────────────────────────
+inject_terminal_css()
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 render_sidebar(active_page='app.py')
 render_page_header()
 
-# ── Top Bar ───────────────────────────────────────────────────────────────────
-render_hud_topbar("Visão Geral", "🌺")
+# ── Render Main Title ─────────────────────────────────────────────────────────
+st.markdown(f"""
+<div style="
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+">
+    <h1 style="
+        margin: 0;
+        color: {TERMINAL['accent_cyan']};
+        text-shadow: 0 0 10px rgba(0, 201, 230, 0.3);
+    ">🌺 FulôFiló Analytics</h1>
+    <div style="
+        font-size: 0.85rem;
+        color: {TERMINAL['text_secondary']};
+        border-left: 2px solid {TERMINAL['accent_cyan']};
+        padding-left: 12px;
+    ">Trading Terminal Dashboard</div>
+</div>
+""", unsafe_allow_html=True)
+
 render_source_health_warning()
 
 # ── Load Data ─────────────────────────────────────────────────────────────────
@@ -89,18 +111,45 @@ else:
     _filter_label = "todos os meses"
 
 # ── KPI Cards ─────────────────────────────────────────────────────────────────
+render_terminal_header("Visão Geral de Métricas", "📊")
+
 if _month_filter:
-    st.caption(f"🗓 Período: **{_filter_label}**")
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("💰 Receita Total",  f"R$ {receita:,.2f}")
-c2.metric("📦 Unidades",       f"{int(quantidade):,}")
-c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}")
-c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
-c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
+    st.markdown(f"<p style='color:{TERMINAL['text_secondary']};font-size:0.85rem;margin:0 0 12px 0;'>🗓 Período: <strong>{_filter_label}</strong></p>", unsafe_allow_html=True)
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.metric(
+        "💰 Receita Total",
+        f"R$ {receita:,.0f}",
+        delta=f"+{receita/quantidade:.2f} p/un" if quantidade > 0 else None,
+    )
+
+with c2:
+    st.metric(
+        "📦 Unidades Vendidas",
+        f"{int(quantidade):,}",
+        delta=f"Ø {ticket:.2f}" if ticket > 0 else None,
+    )
+
+with c3:
+    st.metric(
+        "📈 Lucro Bruto",
+        f"R$ {lucro:,.0f}",
+        delta=f"{margem_pct:.1f}% margem" if margem_pct > 0 else None,
+    )
+
+with c4:
+    st.metric(
+        "🎫 Ticket Médio",
+        f"R$ {ticket:,.2f}",
+        delta=f"Valor médio/un" if ticket > 0 else None,
+    )
 
 st.divider()
 
 # ── Monthly Sales Block ────────────────────────────────────────────────────────
+render_terminal_header("Vendas Mensais", "📅")
 render_monthly_block()
 
 st.divider()
@@ -138,11 +187,11 @@ _gross_margin  = (lucro / receita) if receita else 0.0
 _breakeven_rev = (_cf_total / _gross_margin) if _gross_margin else 0.0  # monthly breakeven
 _avg_monthly_rev = (receita / _period_months) if _period_months else 0.0
 
-render_hud_topbar("Custos Fixos Mensais", "💸")
+render_terminal_header("Custos Fixos Mensais", "💸")
 
 k1, k2, k3 = st.columns(3)
 k1.metric("💸 Total Mensal",        f"R$ {_cf_total:,.0f}")
-k2.metric("📊 % da Receita MTD",    f"{pct_recv:.1f}%")
+k2.metric("📊 % da Receita",        f"{pct_recv:.1f}%")
 k3.metric("👥 Folha de Pessoal",    f"R$ {folha:,.0f}")
 
 with st.expander("📋 Ver detalhamento completo", expanded=False):
@@ -150,23 +199,23 @@ with st.expander("📋 Ver detalhamento completo", expanded=False):
 
     with col_table:
         # ── Styled table ──────────────────────────────────────────────────────
-        _cat_colors = {"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]}
+        _cat_colors = {"Custo Fixo": TERMINAL["accent_cyan"], "Funcionário": TERMINAL["accent_lime"]}
         rows_html = ""
         for cat, grp in _cf_df.group_by("categoria", maintain_order=True):
             cat_str = cat[0] if isinstance(cat, tuple) else cat
-            color = _cat_colors.get(cat_str, HUD["text_dim"])
+            color = _cat_colors.get(cat_str, TERMINAL["text_secondary"])
             for row in grp.iter_rows(named=True):
                 rows_html += f"""
 <tr>
   <td style="color:{color};font-size:0.75rem;padding:5px 10px;white-space:nowrap;">{row['categoria']}</td>
-  <td style="color:{HUD['text']};font-size:0.82rem;padding:5px 10px;">{row['item']}</td>
-  <td style="color:{HUD['gold']};font-size:0.82rem;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
+  <td style="color:{TERMINAL['text_primary']};font-size:0.82rem;padding:5px 10px;">{row['item']}</td>
+  <td style="color:{TERMINAL['accent_cyan']};font-size:0.82rem;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
       R$ {row['valor_mensal_brl']:,.0f}
   </td>
 </tr>"""
             subtotal = float(grp["valor_mensal_brl"].sum())
             rows_html += f"""
-<tr style="border-top:1px solid {HUD['border']};">
+<tr style="border-top:1px solid {TERMINAL['border']};">
   <td colspan="2" style="color:{color};font-size:0.78rem;font-weight:700;padding:5px 10px;text-align:right;">
       Subtotal {cat_str}
   </td>
@@ -177,23 +226,23 @@ with st.expander("📋 Ver detalhamento completo", expanded=False):
 <tr><td colspan="3" style="height:6px;"></td></tr>"""
 
         rows_html += f"""
-<tr style="border-top:2px solid {HUD['cyan']};">
-  <td colspan="2" style="color:{HUD['cyan']};font-size:0.85rem;font-weight:700;padding:7px 10px;text-align:right;text-shadow:{HUD['glow']};">
+<tr style="border-top:2px solid {TERMINAL['accent_cyan']};">
+  <td colspan="2" style="color:{TERMINAL['accent_cyan']};font-size:0.85rem;font-weight:700;padding:7px 10px;text-align:right;">
       🏦 TOTAL MENSAL
   </td>
-  <td style="color:{HUD['cyan']};font-size:0.88rem;font-weight:700;padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;text-shadow:{HUD['glow']};">
+  <td style="color:{TERMINAL['accent_cyan']};font-size:0.88rem;font-weight:700;padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;">
       R$ {_cf_total:,.0f}
   </td>
 </tr>"""
 
         st.markdown(f"""
 <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.02);
-              border:1px solid {HUD['border']};border-radius:10px;overflow:hidden;">
+              border:1px solid {TERMINAL['border']};border-radius:10px;overflow:hidden;">
   <thead>
-    <tr style="background:rgba(0,212,255,0.08);">
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Categoria</th>
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Item</th>
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:right;">R$/mês</th>
+    <tr style="background:rgba(0,201,230,0.08);">
+      <th style="color:{TERMINAL['text_secondary']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Categoria</th>
+      <th style="color:{TERMINAL['text_secondary']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Item</th>
+      <th style="color:{TERMINAL['text_secondary']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:right;">R$/mês</th>
     </tr>
   </thead>
   <tbody>{rows_html}</tbody>
@@ -210,16 +259,16 @@ with st.expander("📋 Ver detalhamento completo", expanded=False):
             y="item",
             orientation="h",
             color="categoria",
-            color_discrete_map={"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]},
+            color_discrete_map={"Custo Fixo": TERMINAL["accent_cyan"], "Funcionário": TERMINAL["accent_lime"]},
             labels={"valor_mensal_brl": "R$/mês", "item": "", "categoria": "Categoria"},
             text="valor_mensal_brl",
         )
         fig_cf.update_traces(
             texttemplate="R$ %{x:,.0f}",
             textposition="outside",
-            textfont_color=HUD["text"],
+            textfont_color=TERMINAL["text_primary"],
         )
-        hud_plotly_layout(fig_cf, height=400)
+        terminal_plotly_layout(fig_cf, height=400)
         fig_cf.update_layout(
             xaxis_title="R$/mês",
             margin=dict(l=10, r=80, t=20, b=20),
@@ -230,9 +279,9 @@ with st.expander("📋 Ver detalhamento completo", expanded=False):
 st.divider()
 
 # ── Lucro Líquido & Breakeven ─────────────────────────────────────────────────
-render_hud_topbar("Resultado Líquido", "📉")
+render_terminal_header("Resultado Líquido", "📉")
 
-_net_color = HUD["green"] if _net_profit >= 0 else "#FF4455"
+_net_color = TERMINAL["accent_lime"] if _net_profit >= 0 else TERMINAL["accent_red"]
 _net_icon  = "✅" if _net_profit >= 0 else "🔴"
 _be_status = "✅ Acima" if _avg_monthly_rev >= _breakeven_rev else "🔴 Abaixo"
 
@@ -260,9 +309,9 @@ n4.metric(
 
 # Visual breakeven bar
 _be_pct = min(_avg_monthly_rev / _breakeven_rev * 100, 200) if _breakeven_rev else 100
-_bar_color = HUD["green"] if _avg_monthly_rev >= _breakeven_rev else "#FF4455"
+_bar_color = TERMINAL["accent_lime"] if _avg_monthly_rev >= _breakeven_rev else TERMINAL["accent_red"]
 st.markdown(f"""
-<div style="margin:8px 0 4px;font-size:0.75rem;color:{HUD['text_dim']};">
+<div style="margin:8px 0 4px;font-size:0.75rem;color:{TERMINAL['text_secondary']};">
   Cobertura do ponto de equilíbrio &nbsp;
   <span style="color:{_bar_color};font-weight:700;">{_avg_monthly_rev/_breakeven_rev*100:.0f}%</span>
   &nbsp;(receita média vs. breakeven mensal)
@@ -273,7 +322,7 @@ st.markdown(f"""
   </div>
 </div>
 <div style="display:flex;justify-content:space-between;font-size:0.68rem;
-            color:{HUD['text_dim']};margin-top:3px;">
+            color:{TERMINAL['text_secondary']};margin-top:3px;">
   <span>R$ 0</span>
   <span>Breakeven R$ {_breakeven_rev:,.0f}</span>
   <span>R$ {max(_avg_monthly_rev, _breakeven_rev)*1.1:,.0f}</span>
@@ -303,8 +352,8 @@ if not _alerts_df.empty:
         st.session_state["reorder_notified"] = True
 
     # Banner
-    border_color = "#FF4455" if n_urgent > 0 else "#FFA500"
-    bg_color     = "rgba(255,68,85,0.10)"  if n_urgent > 0 else "rgba(255,165,0,0.08)"
+    border_color = TERMINAL["accent_red"] if n_urgent > 0 else TERMINAL["warning"]
+    bg_color     = f"rgba(245,92,71,0.10)"  if n_urgent > 0 else f"rgba(255,185,28,0.08)"
     icon         = "🔴" if n_urgent > 0 else "⚠️"
     top3         = ", ".join(_alerts_df.head(3)["product"].tolist())
     extra        = f" + {n_total - 3} mais" if n_total > 3 else ""
@@ -338,17 +387,18 @@ if not _alerts_df.empty:
         show["Pedir (45d)"]    = show["Pedir (45d)"].astype(int)
         st.dataframe(show, use_container_width=True, hide_index=True)
 
-# ── ABC Color Map (HUD neon palette) ─────────────────────────────────────────
+# ── ABC Color Map ─────────────────────────────────────────────────────────────
 COLORS = {
-    "A": "#00FF88",  # neon green
-    "B": "#FFD700",  # gold
-    "C": "#FF4455",  # neon red
+    "A": TERMINAL["accent_lime"],    # lime: A class
+    "B": TERMINAL["warning"],         # orange: B class
+    "C": TERMINAL["accent_red"],      # red: C class
 }
 
 # ── Charts ────────────────────────────────────────────────────────────────────
 has_sales = not abc_df.is_empty() and float(abc_df["revenue"].sum()) > 0
 
 if has_sales:
+    render_terminal_header("Análise ABC de Vendas", "📊")
     left, right = st.columns(2)
 
     with left:
@@ -362,7 +412,7 @@ if has_sales:
             title="Receita por Produto — Classificação ABC",
         )
         fig.update_layout(xaxis_tickangle=-40, showlegend=True)
-        hud_plotly_layout(fig, height=420)
+        terminal_plotly_layout(fig, height=420)
         st.plotly_chart(fig, use_container_width=True)
 
     with right:
@@ -373,21 +423,25 @@ if has_sales:
         fig2 = px.pie(
             cat_df, values="revenue", names="category",
             color_discrete_sequence=[
-                "#00D4FF","#00FF88","#FFD700","#FF4455",
-                "#A78BFA","#FB923C","#34D399","#F472B6",
+                TERMINAL["accent_cyan"],
+                TERMINAL["accent_lime"],
+                TERMINAL["warning"],
+                TERMINAL["accent_red"],
+                TERMINAL["primary_teal"],
+                TERMINAL["accent_brown"],
             ],
             title="Distribuição de Receita por Categoria",
         )
         fig2.update_traces(
-            textfont_color="#E2E8F0",
-            marker=dict(line=dict(color="#080C18", width=2)),
+            textfont_color=TERMINAL["text_primary"],
+            marker=dict(line=dict(color=TERMINAL["bg_dark"], width=2)),
         )
-        hud_plotly_layout(fig2, height=420)
+        terminal_plotly_layout(fig2, height=420)
         st.plotly_chart(fig2, use_container_width=True)
 
     st.divider()
 
-    # ── ABC Summary Table with badges ────────────────────────────────────────
+    # ── ABC Summary Table ─────────────────────────────────────────────────────
     st.subheader("📋 Resumo ABC — Vendas")
     abc_summary = abc_df.group_by("abc_class").agg([
         pl.col("full_name").count().alias("full_name"),
@@ -397,7 +451,16 @@ if has_sales:
     abc_summary.columns = ["Classe", "Qtd Produtos", "Receita Total (R$)", "Lucro Total (R$)"]
     abc_summary["Receita Total (R$)"] = abc_summary["Receita Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
     abc_summary["Lucro Total (R$)"]   = abc_summary["Lucro Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    abc_summary["Classe"] = abc_summary["Classe"].apply(lambda c: abc_badge(c))
+
+    # Apply badge styling to classes
+    def class_badge(c: str) -> str:
+        colors = {"A": TERMINAL["accent_lime"], "B": TERMINAL["warning"], "C": TERMINAL["accent_red"]}
+        color = colors.get(c, TERMINAL["accent_cyan"])
+        icons = {"A": "🟢", "B": "🟠", "C": "🔴"}
+        icon = icons.get(c, "•")
+        return f'<span style="color:{color};font-weight:700;">{icon} {c}</span>'
+
+    abc_summary["Classe"] = abc_summary["Classe"].apply(class_badge)
 
     st.markdown(
         abc_summary.to_html(escape=False, index=False),
@@ -406,16 +469,17 @@ if has_sales:
 
 else:
     # ── Catalog-ready state (no sales yet) ───────────────────────────────────
-    st.markdown("""
+    render_terminal_header("Status do Catálogo", "⚡")
+    st.markdown(f"""
 <div style="
-    background: rgba(0,212,255,0.06);
-    border: 1px solid rgba(0,212,255,0.25);
+    background: rgba(0,201,230,0.06);
+    border: 1px solid rgba(0,201,230,0.25);
     border-radius: 12px;
     padding: 20px 28px;
     margin-bottom: 20px;
 ">
-<h4 style="color:#00D4FF;margin:0 0 6px;">⚡ Catálogo carregado — aguardando primeiras vendas</h4>
-<p style="color:#718096;margin:0;font-size:0.9rem;">
+<h4 style="color:{TERMINAL['accent_cyan']};margin:0 0 6px;">⚡ Catálogo carregado — aguardando primeiras vendas</h4>
+<p style="color:{TERMINAL['text_secondary']};margin:0;font-size:0.9rem;">
     Registre vendas na aba <strong>DailySales</strong> do Excel master e execute
     <code>bash scripts/sync_excel.sh</code> para atualizar o dashboard.
 </p>
@@ -438,10 +502,12 @@ else:
 
         st.subheader("👕 Catálogo de Camisetas")
         cols = st.columns(len(cat_counts))
-        cat_colors = {"Camisetas Básicas":"#00D4FF","Baby Look":"#00FF88",
-                      "Regatas":"#FFD700","Camisetas Infantis":"#A78BFA"}
+        cat_colors = {"Camisetas Básicas": TERMINAL["accent_cyan"],
+                      "Baby Look": TERMINAL["accent_lime"],
+                      "Regatas": TERMINAL["warning"],
+                      "Camisetas Infantis": TERMINAL["primary_teal"]}
         for col, (_, row) in zip(cols, cat_counts.iterrows()):
-            color = cat_colors.get(row["category"], "#E2E8F0")
+            color = cat_colors.get(row["category"], TERMINAL["text_primary"])
             col.markdown(f"""
 <div style="
     background:rgba(255,255,255,0.04);
@@ -452,8 +518,8 @@ else:
     text-align:center;
 ">
 <div style="color:{color};font-size:1.6rem;font-weight:700;">{int(row['skus'])}</div>
-<div style="color:#E2E8F0;font-size:0.85rem;font-weight:600;margin:4px 0;">{row['category']}</div>
-<div style="color:#718096;font-size:0.75rem;">R${row['preco_min']:.0f}–R${row['preco_max']:.0f}</div>
+<div style="color:{TERMINAL['text_primary']};font-size:0.85rem;font-weight:600;margin:4px 0;">{row['category']}</div>
+<div style="color:{TERMINAL['text_secondary']};font-size:0.75rem;">R${row['preco_min']:.0f}–R${row['preco_max']:.0f}</div>
 <div style="color:{color};font-size:0.75rem;opacity:0.8;">{row['margem_media']:.1f}% margem média</div>
 </div>
 """, unsafe_allow_html=True)

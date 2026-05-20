@@ -1,6 +1,6 @@
 """
-FulôFiló — Shared Sidebar with Logo (HUD Edition)
-===================================================
+FulôFiló — Shared Sidebar with Logo (Terminal Edition)
+=======================================================
 Import and call render_sidebar() from every page to get a
 consistent logo + navigation across the entire app.
 """
@@ -10,6 +10,7 @@ import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
+from app.components.terminal import TERMINAL
 
 # ── Month filter session-state key ────────────────────────────────────────────
 MONTH_FILTER_KEY = "ff_month_filter"
@@ -113,10 +114,10 @@ def render_sidebar(active_page: str = ""):
     """
     inject_logo()
 
-    # HUD sidebar extra CSS (supplements hud.py global styles)
-    st.markdown("""
+    # Terminal sidebar extra CSS (supplements terminal.py global styles)
+    st.markdown(f"""
 <style>
-[data-testid="stSidebar"] .stPageLink a {
+[data-testid="stSidebar"] .stPageLink a {{
     display: block;
     padding: 6px 12px;
     border-radius: 8px;
@@ -124,40 +125,40 @@ def render_sidebar(active_page: str = ""):
     letter-spacing: 0.03em;
     transition: background 0.2s, box-shadow 0.2s;
     text-decoration: none !important;
-}
-[data-testid="stSidebar"] .stPageLink a:hover {
-    background: rgba(0,212,255,0.10) !important;
-    box-shadow: 0 0 10px rgba(0,212,255,0.20);
-}
-.sidebar-section-label {
+}}
+[data-testid="stSidebar"] .stPageLink a:hover {{
+    background: rgba(0, 201, 230, 0.10) !important;
+    box-shadow: 0 0 10px rgba(0, 201, 230, 0.20);
+}}
+.sidebar-section-label {{
     font-size: 0.65rem;
     letter-spacing: 0.15em;
-    color: #4A5568;
+    color: {TERMINAL['text_secondary']};
     text-transform: uppercase;
     padding: 4px 12px 2px;
     margin-top: 8px;
-}
-.sidebar-footer {
+}}
+.sidebar-footer {{
     font-size: 0.68rem;
-    color: #4A5568;
+    color: {TERMINAL['text_secondary']};
     letter-spacing: 0.06em;
     text-align: center;
     padding: 8px 0 4px;
-}
-.sidebar-status-dot {
+}}
+.sidebar-status-dot {{
     display: inline-block;
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: #00FF88;
-    box-shadow: 0 0 6px rgba(0,255,136,0.8);
+    background: {TERMINAL['accent_lime']};
+    box-shadow: 0 0 6px rgba(143, 217, 41, 0.8);
     margin-right: 5px;
     vertical-align: middle;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
     with st.sidebar:
-        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:4px 0 10px;">', unsafe_allow_html=True)
+        st.markdown(f'<hr style="border-color:rgba(0, 201, 230, 0.18);margin:4px 0 10px;">', unsafe_allow_html=True)
 
         # ── Month filter ──────────────────────────────────────────────────────
         st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
@@ -177,21 +178,21 @@ def render_sidebar(active_page: str = ""):
         except Exception:
             pass
 
-        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:8px 0 10px;">', unsafe_allow_html=True)
+        st.markdown(f'<hr style="border-color:rgba(0, 201, 230, 0.18);margin:8px 0 10px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">◈ Navegação</div>', unsafe_allow_html=True)
 
         for page, icon, label in _NAV:
             st.page_link(page, label=f"{icon}  {label}")
 
         # ── Data contract label ────────────────────────────────────────────────
-        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
+        st.markdown(f'<hr style="border-color:rgba(0, 201, 230, 0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">◈ Fonte ativa</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div style="text-align:center;font-size:0.75rem;color:#00D4FF;'
-            'letter-spacing:0.06em;padding:6px 0;opacity:0.9;">'
-            '📘 Excel master sincronizado<br>'
-            '<span style="font-size:0.68rem;color:#4A5568;">sem cortes por período</span>'
-            '</div>',
+            f'<div style="text-align:center;font-size:0.75rem;color:{TERMINAL["accent_cyan"]};'
+            f'letter-spacing:0.06em;padding:6px 0;opacity:0.9;">'
+            f'📘 Excel master sincronizado<br>'
+            f'<span style="font-size:0.68rem;color:{TERMINAL["text_secondary"]};">sem cortes por período</span>'
+            f'</div>',
             unsafe_allow_html=True,
         )
         status = get_source_health()
@@ -206,7 +207,7 @@ def render_sidebar(active_page: str = ""):
                 "Carregue dados reais no Excel master antes de confiar nos indicadores."
             )
 
-        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
+        st.markdown(f'<hr style="border-color:rgba(0, 201, 230, 0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
             '<div class="sidebar-footer">'
             '<span class="sidebar-status-dot"></span>'
@@ -221,7 +222,7 @@ def render_sidebar(active_page: str = ""):
         is_cloud = bool(os.environ.get("STREAMLIT_SHARING_MODE") or
                         os.environ.get("IS_STREAMLIT_CLOUD"))
         if not is_cloud:
-            st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
+            st.markdown(f'<hr style="border-color:rgba(0, 201, 230, 0.10);margin:6px 0;">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-section-label">◈ Deploy</div>', unsafe_allow_html=True)
             if st.button("🚀 Sync & Push", use_container_width=True, help="Rebuilds parquets e faz git push → Streamlit redeploys"):
                 sync_script = Path(__file__).resolve().parent.parent.parent / "etl" / "sync_and_push.py"
