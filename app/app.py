@@ -1,397 +1,380 @@
 """
-FulôFiló AI — Main Dashboard (HUD Edition)
+FulôFiló AI — Institutional Retail Operations Terminal
 ======================================================
-Entry point for the Streamlit application.
 Run: uv run streamlit run app/app.py
 Access: http://localhost:8501
 """
 
-import streamlit as st
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+import sys
+
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import polars as pl
-import sys
-from pathlib import Path
+import streamlit as st
 
-# Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.db import (get_conn, get_summary_kpis, get_abc_analysis, get_margin_matrix,
-                    get_data_mtime, get_kpis_by_months)
-from app.components.sidebar import render_sidebar, render_page_header, get_selected_period, get_month_filter
-from app.components.hud import inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout, HUD
-from app.components.monthly_block import render_monthly_block
-from app.utils.reorder_engine import get_alerts, export_excel, notify_macos, ALERT_THRESHOLD, LEAD_TIME_DAYS
-from app.utils.fixed_costs import load_fixed_costs
-from app.utils.source_health import render_source_health_warning
 
-# ── Page Config ──────────────────────────────────────────────────────────────
+from app.components.hud import HUD, hud_plotly_layout, inject_hud_css
+from app.components.sidebar import get_month_filter, render_page_header, render_sidebar
+from app.components.terminal import (
+    dataframe_table,
+    feed,
+    kpi_grid,
+    money,
+    number,
+    panel,
+    render_terminal_css,
+    status_bar,
+    status_color,
+    terminal_header,
+)
+from app.db import (
+    get_abc_analysis,
+    get_available_months,
+    get_cashflow_summary,
+    get_conn,
+    get_daily_sales_trend,
+    get_data_mtime,
+    get_inventory_alerts,
+    get_kpis_by_months,
+    get_margin_matrix,
+    get_monthly_breakdown,
+    get_stock_turnover,
+    get_summary_kpis,
+)
+from app.utils.fixed_costs import load_fixed_costs
+from app.utils.reorder_engine import LEAD_TIME_DAYS, get_alerts
+from app.utils.source_health import ROOT, STATUS_PATH, get_source_health, render_source_health_warning
+
+
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
 st.set_page_config(
-    page_title="FulôFiló AI",
+    page_title="FulôFiló AI Terminal",
     page_icon=_FAVICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ── HUD Theme ─────────────────────────────────────────────────────────────────
 inject_hud_css()
-
-# ── Sidebar ───────────────────────────────────────────────────────────────────
-render_sidebar(active_page='app.py')
+render_terminal_css()
+render_sidebar(active_page="app.py")
 render_page_header()
-
-# ── Top Bar ───────────────────────────────────────────────────────────────────
-render_hud_topbar("Visão Geral", "🌺")
 render_source_health_warning()
 
-# ── Load Data ─────────────────────────────────────────────────────────────────
-period = get_selected_period()
 
-@st.cache_data
-def load_all(data_version: str, period: str):  # noqa: ARG001
-    conn = get_conn()
-    kpis = get_summary_kpis(conn, period)
-    abc  = get_abc_analysis(conn, period)
-    mm   = get_margin_matrix(conn, period)
-    return kpis, abc, mm
-
-kpis, abc_df, mm_df = load_all(get_data_mtime(), period)
-
-def _f(v) -> float:
-    """Safely convert any DB value (None, Decimal, int) to float."""
+def _f(value: object) -> float:
     try:
-        return float(v) if v is not None else 0.0
+        return float(value) if value is not None else 0.0
     except (TypeError, ValueError):
         return 0.0
 
-# ── Apply month filter to KPIs ────────────────────────────────────────────────
-_month_filter = get_month_filter()
 
-if _month_filter:
-    # Live query from sales table filtered by selected months
-    _conn_kpi = get_conn()
-    _r, _q, _t = get_kpis_by_months(_conn_kpi, _month_filter)
-    receita    = _r
-    quantidade = _q
-    lucro      = 0.0   # sales table has no cost data — show from products as fallback
-    ticket     = _t
-    # Pull lucro from products (all-time) as best-effort
-    _full = kpis if kpis else (0, 0, 0, 0)
-    lucro = _f(_full[2])
-    margem_pct = (lucro / _f(_full[0]) * 100) if _f(_full[0]) else 0.0
-    _filter_label = " · ".join(_month_filter)
-else:
-    receita    = _f(kpis[0]) if kpis else 0.0
-    quantidade = _f(kpis[1]) if kpis else 0.0
-    lucro      = _f(kpis[2]) if kpis else 0.0
-    ticket     = _f(kpis[3]) if kpis else 0.0
-    margem_pct = (lucro / receita * 100) if receita else 0.0
-    _filter_label = "todos os meses"
+def _last_sync_label() -> str:
+    candidates = [
+        STATUS_PATH,
+        ROOT / "data" / "parquet" / "products.parquet",
+        ROOT / "data" / "parquet" / "daily_sales.parquet",
+        ROOT / "data" / "parquet" / "inventory.parquet",
+        ROOT / "data" / "parquet" / "cashflow.parquet",
+    ]
+    mtimes = [p.stat().st_mtime for p in candidates if p.exists()]
+    if not mtimes:
+        return "never"
+    return datetime.fromtimestamp(max(mtimes)).strftime("%Y-%m-%d %H:%M")
 
-# ── KPI Cards ─────────────────────────────────────────────────────────────────
-if _month_filter:
-    st.caption(f"🗓 Período: **{_filter_label}**")
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("💰 Receita Total",  f"R$ {receita:,.2f}")
-c2.metric("📦 Unidades",       f"{int(quantidade):,}")
-c3.metric("📈 Lucro Bruto",    f"R$ {lucro:,.2f}")
-c4.metric("📊 Margem",         f"{margem_pct:.1f}%")
-c5.metric("🎫 Ticket Médio",   f"R$ {ticket:,.2f}")
 
-st.divider()
-
-# ── Monthly Sales Block ────────────────────────────────────────────────────────
-render_monthly_block()
-
-st.divider()
-
-# ── Custos Fixos ──────────────────────────────────────────────────────────────
 @st.cache_data
-def _load_custos():
-    return load_fixed_costs()
-
-_cf_df, _cf_total = _load_custos()
-
-folha     = float(_cf_df.filter(pl.col("categoria") == "Funcionário")["valor_mensal_brl"].sum())
-pct_recv  = (_cf_total / receita * 100) if receita else 0.0
-
-render_hud_topbar("Custos Fixos Mensais", "💸")
-
-k1, k2, k3 = st.columns(3)
-k1.metric("💸 Total Mensal",        f"R$ {_cf_total:,.0f}")
-k2.metric("📊 % da Receita MTD",    f"{pct_recv:.1f}%")
-k3.metric("👥 Folha de Pessoal",    f"R$ {folha:,.0f}")
-
-with st.expander("📋 Ver detalhamento completo", expanded=False):
-    col_table, col_chart = st.columns([1, 1.4])
-
-    with col_table:
-        # ── Styled table ──────────────────────────────────────────────────────
-        _cat_colors = {"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]}
-        rows_html = ""
-        for cat, grp in _cf_df.group_by("categoria", maintain_order=True):
-            cat_str = cat[0] if isinstance(cat, tuple) else cat
-            color = _cat_colors.get(cat_str, HUD["text_dim"])
-            for row in grp.iter_rows(named=True):
-                rows_html += f"""
-<tr>
-  <td style="color:{color};font-size:0.75rem;padding:5px 10px;white-space:nowrap;">{row['categoria']}</td>
-  <td style="color:{HUD['text']};font-size:0.82rem;padding:5px 10px;">{row['item']}</td>
-  <td style="color:{HUD['gold']};font-size:0.82rem;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
-      R$ {row['valor_mensal_brl']:,.0f}
-  </td>
-</tr>"""
-            subtotal = float(grp["valor_mensal_brl"].sum())
-            rows_html += f"""
-<tr style="border-top:1px solid {HUD['border']};">
-  <td colspan="2" style="color:{color};font-size:0.78rem;font-weight:700;padding:5px 10px;text-align:right;">
-      Subtotal {cat_str}
-  </td>
-  <td style="color:{color};font-size:0.82rem;font-weight:700;padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums;">
-      R$ {subtotal:,.0f}
-  </td>
-</tr>
-<tr><td colspan="3" style="height:6px;"></td></tr>"""
-
-        rows_html += f"""
-<tr style="border-top:2px solid {HUD['cyan']};">
-  <td colspan="2" style="color:{HUD['cyan']};font-size:0.85rem;font-weight:700;padding:7px 10px;text-align:right;text-shadow:{HUD['glow']};">
-      🏦 TOTAL MENSAL
-  </td>
-  <td style="color:{HUD['cyan']};font-size:0.88rem;font-weight:700;padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;text-shadow:{HUD['glow']};">
-      R$ {_cf_total:,.0f}
-  </td>
-</tr>"""
-
-        st.markdown(f"""
-<table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.02);
-              border:1px solid {HUD['border']};border-radius:10px;overflow:hidden;">
-  <thead>
-    <tr style="background:rgba(0,212,255,0.08);">
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Categoria</th>
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;">Item</th>
-      <th style="color:{HUD['text_dim']};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:right;">R$/mês</th>
-    </tr>
-  </thead>
-  <tbody>{rows_html}</tbody>
-</table>
-""", unsafe_allow_html=True)
-
-    with col_chart:
-        # ── Horizontal bar chart ──────────────────────────────────────────────
-        _chart_df = _cf_df.sort("valor_mensal_brl", descending=True).to_pandas()
-
-        fig_cf = px.bar(
-            _chart_df,
-            x="valor_mensal_brl",
-            y="item",
-            orientation="h",
-            color="categoria",
-            color_discrete_map={"Custo Fixo": HUD["cyan"], "Funcionário": HUD["green"]},
-            labels={"valor_mensal_brl": "R$/mês", "item": "", "categoria": "Categoria"},
-            text="valor_mensal_brl",
-        )
-        fig_cf.update_traces(
-            texttemplate="R$ %{x:,.0f}",
-            textposition="outside",
-            textfont_color=HUD["text"],
-        )
-        hud_plotly_layout(fig_cf, height=400)
-        fig_cf.update_layout(
-            xaxis_title="R$/mês",
-            margin=dict(l=10, r=80, t=20, b=20),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        )
-        st.plotly_chart(fig_cf, use_container_width=True)
-
-st.divider()
-
-# ── Reorder Alert System ──────────────────────────────────────────────────────
-@st.cache_data
-def load_reorder_alerts(data_version: str):  # noqa: ARG001
+def load_terminal_data(data_version: str, selected_months: tuple[str, ...]):  # noqa: ARG001
     conn = get_conn()
-    alerts = get_alerts(conn)
-    xlsx_path = export_excel(conn)
-    return alerts, str(xlsx_path) if xlsx_path else None
+    kpis = get_summary_kpis(conn)
+    abc_df = get_abc_analysis(conn)
+    margin_df = get_margin_matrix(conn)
+    inventory_df = get_inventory_alerts(conn)
+    turnover_df = get_stock_turnover(conn)
+    cashflow_df = get_cashflow_summary(conn)
+    sales_trend_df = get_daily_sales_trend(conn, top_n=8)
+    available_months = get_available_months(conn)
+    monthly_df = get_monthly_breakdown(conn, list(selected_months))
+    if selected_months:
+        revenue, units, ticket = get_kpis_by_months(conn, list(selected_months))
+        kpis = (revenue, units, _f(kpis[2]) if kpis else 0.0, ticket)
 
-_alerts_df, _xlsx_path = load_reorder_alerts(get_data_mtime())
-
-if not _alerts_df.empty:
-    n_total   = len(_alerts_df)
-    n_urgent  = len(_alerts_df[_alerts_df["days_remaining"] <= LEAD_TIME_DAYS])
-    n_atencao = n_total - n_urgent
-
-    # macOS popup — once per session
-    if not st.session_state.get("reorder_notified", False):
-        notify_macos(_alerts_df)
-        st.session_state["reorder_notified"] = True
-
-    # Banner
-    border_color = "#FF4455" if n_urgent > 0 else "#FFA500"
-    bg_color     = "rgba(255,68,85,0.10)"  if n_urgent > 0 else "rgba(255,165,0,0.08)"
-    icon         = "🔴" if n_urgent > 0 else "⚠️"
-    top3         = ", ".join(_alerts_df.head(3)["product"].tolist())
-    extra        = f" + {n_total - 3} mais" if n_total > 3 else ""
-
-    st.markdown(f"""
-<div style="
-    background:{bg_color};
-    border:1px solid {border_color};
-    border-radius:10px;
-    padding:14px 20px;
-    margin-bottom:16px;
-    box-shadow: 0 0 18px {border_color}44;
-    font-size:0.88rem;
-    color:{border_color};
-">
-{icon} <strong>ALERTA REPOSIÇÃO — {n_total} produto(s):</strong>
-{"🔴 <b>" + str(n_urgent) + " URGENTE(S)</b> &nbsp;·&nbsp;" if n_urgent > 0 else ""}
-{"⚠️ " + str(n_atencao) + " em atenção" if n_atencao > 0 else ""}
-<br><span style="font-size:0.80rem;opacity:0.85;">{top3}{extra}</span>
-{"<br><span style='font-size:0.75rem;opacity:0.65;'>📄 Planilha gerada: data/outputs/alertas_reposicao.xlsx</span>" if _xlsx_path else ""}
-</div>
-""", unsafe_allow_html=True)
-
-    # Expandable detail table
-    with st.expander(f"📋 Ver {n_total} produto(s) para reposição", expanded=(n_urgent > 0)):
-        show = _alerts_df[["product", "category", "current_stock",
-                            "days_remaining", "daily_rate", "suggested_qty"]].copy()
-        show.columns = ["Produto", "Categoria", "Estoque", "Dias Restantes", "Venda/Dia", "Pedir (45d)"]
-        show["Venda/Dia"]      = show["Venda/Dia"].apply(lambda x: f"{x:.2f}")
-        show["Dias Restantes"] = show["Dias Restantes"].astype(int)
-        show["Pedir (45d)"]    = show["Pedir (45d)"].astype(int)
-        st.dataframe(show, use_container_width=True, hide_index=True)
-
-# ── ABC Color Map (HUD neon palette) ─────────────────────────────────────────
-COLORS = {
-    "A": "#00FF88",  # neon green
-    "B": "#FFD700",  # gold
-    "C": "#FF4455",  # neon red
-}
-
-# ── Charts ────────────────────────────────────────────────────────────────────
-has_sales = not abc_df.is_empty() and float(abc_df["revenue"].sum()) > 0
-
-if has_sales:
-    left, right = st.columns(2)
-
-    with left:
-        st.subheader("📊 Top 15 Produtos por Receita (ABC)")
-        top15 = abc_df.head(15).to_pandas()
-        fig = px.bar(
-            top15, x="full_name", y="revenue",
-            color="abc_class",
-            color_discrete_map=COLORS,
-            labels={"full_name": "Produto", "revenue": "Receita (R$)", "abc_class": "Classe"},
-            title="Receita por Produto — Classificação ABC",
-        )
-        fig.update_layout(xaxis_tickangle=-40, showlegend=True)
-        hud_plotly_layout(fig, height=420)
-        st.plotly_chart(fig, use_container_width=True)
-
-    with right:
-        st.subheader("🥧 Receita por Categoria")
-        cat_df = abc_df.group_by("category").agg(
-            pl.col("revenue").sum().alias("revenue")
-        ).sort("revenue", descending=True).to_pandas()
-        fig2 = px.pie(
-            cat_df, values="revenue", names="category",
-            color_discrete_sequence=[
-                "#00D4FF","#00FF88","#FFD700","#FF4455",
-                "#A78BFA","#FB923C","#34D399","#F472B6",
-            ],
-            title="Distribuição de Receita por Categoria",
-        )
-        fig2.update_traces(
-            textfont_color="#E2E8F0",
-            marker=dict(line=dict(color="#080C18", width=2)),
-        )
-        hud_plotly_layout(fig2, height=420)
-        st.plotly_chart(fig2, use_container_width=True)
-
-    st.divider()
-
-    # ── ABC Summary Table with badges ────────────────────────────────────────
-    st.subheader("📋 Resumo ABC — Vendas")
-    abc_summary = abc_df.group_by("abc_class").agg([
-        pl.col("full_name").count().alias("full_name"),
-        pl.col("revenue").sum().alias("revenue"),
-        pl.col("profit").sum().alias("profit"),
-    ]).sort("abc_class").to_pandas()
-    abc_summary.columns = ["Classe", "Qtd Produtos", "Receita Total (R$)", "Lucro Total (R$)"]
-    abc_summary["Receita Total (R$)"] = abc_summary["Receita Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    abc_summary["Lucro Total (R$)"]   = abc_summary["Lucro Total (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    abc_summary["Classe"] = abc_summary["Classe"].apply(lambda c: abc_badge(c))
-
-    st.markdown(
-        abc_summary.to_html(escape=False, index=False),
-        unsafe_allow_html=True,
-    )
-
-else:
-    # ── Catalog-ready state (no sales yet) ───────────────────────────────────
-    st.markdown("""
-<div style="
-    background: rgba(0,212,255,0.06);
-    border: 1px solid rgba(0,212,255,0.25);
-    border-radius: 12px;
-    padding: 20px 28px;
-    margin-bottom: 20px;
-">
-<h4 style="color:#00D4FF;margin:0 0 6px;">⚡ Catálogo carregado — aguardando primeiras vendas</h4>
-<p style="color:#718096;margin:0;font-size:0.9rem;">
-    Registre vendas na aba <strong>DailySales</strong> do Excel master e execute
-    <code>bash scripts/sync_excel.sh</code> para atualizar o dashboard.
-</p>
-</div>
-""", unsafe_allow_html=True)
-
-    # ── Catalog overview by type ──────────────────────────────────────────────
-    conn = get_conn()
     try:
-        cat_counts = conn.execute("""
-            SELECT category,
-                   COUNT(*)              AS skus,
-                   MIN(price)            AS preco_min,
-                   MAX(price)            AS preco_max,
-                   ROUND(AVG(margin_pct),1) AS margem_media
+        inventory_value = conn.execute("""
+            SELECT SUM(CAST(i.current_stock AS DOUBLE) * COALESCE(p.unit_cost, 0)) AS inventory_value
+            FROM inventory i
+            LEFT JOIN products p ON lower(i.product) = lower(p.full_name)
+        """).fetchone()[0]
+    except Exception:
+        inventory_value = 0.0
+
+    try:
+        payment_df = conn.execute("""
+            SELECT Payment_Method, SUM(Total) AS revenue
+            FROM sales
+            GROUP BY Payment_Method
+            ORDER BY revenue DESC
+        """).pl()
+    except Exception:
+        payment_df = pl.DataFrame()
+
+    try:
+        latest_sales_df = conn.execute("""
+            SELECT Date, Product, Quantity, Total, Payment_Method, Source
+            FROM sales
+            ORDER BY CAST(Date AS DATE) DESC, Product
+            LIMIT 10
+        """).pl()
+    except Exception:
+        latest_sales_df = pl.DataFrame()
+
+    try:
+        category_df = conn.execute("""
+            SELECT category, SUM(revenue) AS revenue, SUM(profit) AS profit, SUM(qty_sold) AS units
             FROM products
             GROUP BY category
-            ORDER BY category
-        """).pl().to_pandas()
-
-        st.subheader("👕 Catálogo de Camisetas")
-        cols = st.columns(len(cat_counts))
-        cat_colors = {"Camisetas Básicas":"#00D4FF","Baby Look":"#00FF88",
-                      "Regatas":"#FFD700","Camisetas Infantis":"#A78BFA"}
-        for col, (_, row) in zip(cols, cat_counts.iterrows()):
-            color = cat_colors.get(row["category"], "#E2E8F0")
-            col.markdown(f"""
-<div style="
-    background:rgba(255,255,255,0.04);
-    border:1px solid {color}44;
-    border-top:3px solid {color};
-    border-radius:10px;
-    padding:16px;
-    text-align:center;
-">
-<div style="color:{color};font-size:1.6rem;font-weight:700;">{int(row['skus'])}</div>
-<div style="color:#E2E8F0;font-size:0.85rem;font-weight:600;margin:4px 0;">{row['category']}</div>
-<div style="color:#718096;font-size:0.75rem;">R${row['preco_min']:.0f}–R${row['preco_max']:.0f}</div>
-<div style="color:{color};font-size:0.75rem;opacity:0.8;">{row['margem_media']:.1f}% margem média</div>
-</div>
-""", unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        inv = conn.execute("""
-            SELECT category, SUM(current_stock) AS total_units
-            FROM inventory GROUP BY category ORDER BY category
-        """).pl().to_pandas()
-
-        st.subheader("📦 Estoque Inicial")
-        c1, c2, c3, c4 = st.columns(4)
-        for col, (_, row) in zip([c1,c2,c3,c4], inv.iterrows()):
-            col.metric(row["category"], f"{int(row['total_units']):,} un.")
-
+            ORDER BY revenue DESC
+        """).pl()
     except Exception:
-        st.info("Execute `bash scripts/sync_excel.sh` para carregar o catálogo.")
+        category_df = pl.DataFrame()
+
+    conn.close()
+    return {
+        "kpis": kpis,
+        "abc": abc_df,
+        "margin": margin_df,
+        "inventory": inventory_df,
+        "turnover": turnover_df,
+        "cashflow": cashflow_df,
+        "sales_trend": sales_trend_df,
+        "available_months": available_months,
+        "monthly": monthly_df,
+        "inventory_value": _f(inventory_value),
+        "payment": payment_df,
+        "latest_sales": latest_sales_df,
+        "category": category_df,
+        "health": get_source_health(),
+    }
+
+
+selected_months = tuple(get_month_filter())
+data = load_terminal_data(get_data_mtime(), selected_months)
+health = data["health"].get("health", {})
+readiness = str(health.get("readiness_state", "unknown")).upper()
+
+revenue = _f(data["kpis"][0]) if data["kpis"] else 0.0
+units = _f(data["kpis"][1]) if data["kpis"] else 0.0
+profit = _f(data["kpis"][2]) if data["kpis"] else 0.0
+ticket = _f(data["kpis"][3]) if data["kpis"] else 0.0
+margin_pct = (profit / revenue * 100) if revenue else 0.0
+
+inventory_pd = data["inventory"].to_pandas() if not data["inventory"].is_empty() else pd.DataFrame()
+critical_count = int((inventory_pd.get("alert") == "🔴 Crítico").sum()) if not inventory_pd.empty else 0
+low_count = int((inventory_pd.get("alert") == "🟡 Baixo").sum()) if not inventory_pd.empty else 0
+total_skus = int(len(inventory_pd))
+healthy_skus = int((inventory_pd.get("alert") == "🟢 OK").sum()) if not inventory_pd.empty else 0
+ops_score = 100
+ops_score -= min(35, critical_count * 7)
+ops_score -= min(20, low_count * 3)
+ops_score -= 20 if readiness != "READY" else 0
+ops_score = max(0, ops_score)
+
+cashflow_pd = data["cashflow"].to_pandas() if not data["cashflow"].is_empty() else pd.DataFrame()
+cash_in = float(cashflow_pd.loc[cashflow_pd["Type"] == "Entrada", "total"].sum()) if not cashflow_pd.empty else 0.0
+cash_out = float(cashflow_pd.loc[cashflow_pd["Type"] == "Saída", "total"].sum()) if not cashflow_pd.empty else 0.0
+cash_net = cash_in - cash_out
+
+fixed_costs, fixed_total = load_fixed_costs()
+burn_ratio = (float(fixed_total) / revenue * 100) if revenue else 0.0
+turnover_pd = data["turnover"].to_pandas() if not data["turnover"].is_empty() else pd.DataFrame()
+avg_turnover = float(turnover_pd["giro"].mean()) if not turnover_pd.empty else 0.0
+sell_through = (units / (units + inventory_pd["current_stock"].sum()) * 100) if not inventory_pd.empty and units else 0.0
+
+terminal_header(
+    [
+        {"label": "Daily Revenue", "value": money(revenue, 0), "sub": "selected operating window", "color": HUD["green"]},
+        {"label": "Cashflow Status", "value": money(cash_net, 0), "sub": f"in {money(cash_in, 0)} / out {money(cash_out, 0)}", "color": HUD["gold"] if cash_net >= 0 else HUD["red"]},
+        {"label": "Inventory Valuation", "value": money(data["inventory_value"], 0), "sub": f"{total_skus} active SKUs", "color": HUD["cyan"]},
+        {"label": "Operational Health", "value": f"{ops_score}/100", "sub": readiness, "color": HUD["green"] if ops_score >= 80 else HUD["amber"]},
+        {"label": "Sync Status", "value": "SYNCED" if data["health"].get("ok") else "CHECK", "sub": _last_sync_label(), "color": status_color("ready" if data["health"].get("ok") else "warning")},
+        {"label": "AI Assistant", "value": "WATCH", "sub": "rules engine online", "color": HUD["cyan"]},
+    ]
+)
+
+main_col, ai_col = st.columns([2.85, 1.15], gap="small")
+
+with main_col:
+    panel(
+        "Executive KPI Cluster",
+        "financial + operational control",
+        kpi_grid(
+            [
+                {"label": "Revenue", "value": money(revenue, 0), "delta": "gross sales intelligence", "color": HUD["green"]},
+                {"label": "Margin", "value": f"{margin_pct:.1f}%", "delta": money(profit, 0), "color": HUD["gold"]},
+                {"label": "Inventory Turnover", "value": f"{avg_turnover:.2f}x", "delta": "sales / live stock", "color": HUD["cyan"]},
+                {"label": "Sell-through", "value": f"{sell_through:.1f}%", "delta": "units sold vs available", "color": HUD["green"]},
+                {"label": "Average Ticket", "value": money(ticket, 2), "delta": f"{number(units, 0)} units", "color": HUD["text"]},
+                {"label": "Low Stock Alerts", "value": str(low_count), "delta": f"{critical_count} critical", "color": HUD["red"] if critical_count else HUD["amber"]},
+                {"label": "Ops Efficiency", "value": f"{ops_score}/100", "delta": readiness.lower(), "color": HUD["green"] if ops_score >= 80 else HUD["amber"]},
+                {"label": "Fixed Burn", "value": f"{burn_ratio:.1f}%", "delta": money(float(fixed_total), 0), "color": HUD["gold"]},
+            ]
+        ),
+    )
+
+    grid_left, grid_mid = st.columns([1.15, 1], gap="small")
+
+    with grid_left:
+        if not inventory_pd.empty:
+            stock_matrix = (
+                inventory_pd.pivot_table(index="category", columns="alert", values="product", aggfunc="count", fill_value=0)
+                .reset_index()
+            )
+            stock_matrix.columns = [str(c).replace("🔴 ", "").replace("🟡 ", "").replace("🟢 ", "") for c in stock_matrix.columns]
+            fig_stock = px.imshow(
+                stock_matrix.set_index("category"),
+                aspect="auto",
+                color_continuous_scale=[[0, "#0B1515"], [0.5, HUD["amber"]], [1, HUD["red"]]],
+                labels=dict(color="SKUs"),
+            )
+            hud_plotly_layout(fig_stock, height=300)
+            fig_stock.update_layout(margin=dict(l=8, r=8, t=18, b=8), coloraxis_showscale=False)
+            panel("Inventory Intelligence", "stock health matrix", "")
+            st.plotly_chart(fig_stock, use_container_width=True)
+
+            critical_table = inventory_pd.sort_values(["alert", "current_stock"]).head(8).copy()
+            critical_table = critical_table[["product", "category", "current_stock", "min_stock", "alert"]]
+            critical_table.columns = ["SKU", "Category", "Stock", "Min", "State"]
+            panel("Critical SKU Watchlist", "reorder + risk", dataframe_table(critical_table, 8))
+        else:
+            panel("Inventory Intelligence", "awaiting sync", "Run bash scripts/sync_excel.sh to rebuild read models.")
+
+    with grid_mid:
+        monthly_pd = data["monthly"].to_pandas() if not data["monthly"].is_empty() else pd.DataFrame()
+        if not monthly_pd.empty:
+            fig_month = go.Figure()
+            fig_month.add_bar(x=monthly_pd["mes"], y=monthly_pd["receita"], name="Revenue", marker_color=HUD["green"])
+            fig_month.add_scatter(x=monthly_pd["mes"], y=monthly_pd["unidades"], name="Units", yaxis="y2", line=dict(color=HUD["cyan"], width=2))
+            hud_plotly_layout(fig_month, height=300)
+            fig_month.update_layout(
+                margin=dict(l=8, r=8, t=18, b=8),
+                yaxis2=dict(overlaying="y", side="right", showgrid=False, color=HUD["cyan"]),
+                legend=dict(orientation="h", y=1.08, x=0),
+            )
+            panel("Sales Intelligence", "velocity + demand trend", "")
+            st.plotly_chart(fig_month, use_container_width=True)
+
+        category_pd = data["category"].to_pandas() if not data["category"].is_empty() else pd.DataFrame()
+        if not category_pd.empty:
+            category_view = category_pd.head(8).copy()
+            category_view["revenue"] = category_view["revenue"].map(lambda x: money(x, 0))
+            category_view["profit"] = category_view["profit"].map(lambda x: money(x, 0))
+            category_view.columns = ["Category", "Revenue", "Profit", "Units"]
+            panel("Category Intelligence", "premium retail mix", dataframe_table(category_view, 8))
+
+    lower_left, lower_right = st.columns([1, 1], gap="small")
+
+    with lower_left:
+        if not cashflow_pd.empty:
+            fig_cash = px.bar(
+                cashflow_pd,
+                x="Category",
+                y="total",
+                color="Type",
+                color_discrete_map={"Entrada": HUD["green"], "Saída": HUD["red"]},
+                labels={"total": "R$", "Category": ""},
+            )
+            hud_plotly_layout(fig_cash, height=285)
+            fig_cash.update_layout(margin=dict(l=8, r=8, t=18, b=40), legend=dict(orientation="h", y=1.08, x=0))
+            panel("Cashflow Operations", "revenue vs expenses", "")
+            st.plotly_chart(fig_cash, use_container_width=True)
+
+    with lower_right:
+        payment_pd = data["payment"].to_pandas() if not data["payment"].is_empty() else pd.DataFrame()
+        if not payment_pd.empty:
+            fig_pay = px.bar(
+                payment_pd,
+                x="Payment_Method",
+                y="revenue",
+                color="revenue",
+                color_continuous_scale=[[0, HUD["navy"]], [1, HUD["cyan"]]],
+                labels={"revenue": "R$", "Payment_Method": ""},
+            )
+            hud_plotly_layout(fig_pay, height=285)
+            fig_pay.update_layout(margin=dict(l=8, r=8, t=18, b=40), coloraxis_showscale=False)
+            panel("Payment Method Analytics", "daily commerce rails", "")
+            st.plotly_chart(fig_pay, use_container_width=True)
+
+    abc_pd = data["abc"].to_pandas() if not data["abc"].is_empty() else pd.DataFrame()
+    if not abc_pd.empty:
+        product_perf = abc_pd.head(12).copy()
+        product_perf = product_perf[["full_name", "category", "revenue", "qty_sold", "margin_pct", "abc_class"]]
+        product_perf["revenue"] = product_perf["revenue"].map(lambda x: money(x, 0))
+        product_perf["margin_pct"] = product_perf["margin_pct"].map(lambda x: f"{x:.1f}%")
+        product_perf.columns = ["SKU", "Category", "Revenue", "Units", "Margin", "ABC"]
+        panel("Bloomberg-Style Product Tape", "top revenue drivers", dataframe_table(product_perf, 12))
+
+    latest_pd = data["latest_sales"].to_pandas() if not data["latest_sales"].is_empty() else pd.DataFrame()
+    feed_rows = [
+        {"time": _last_sync_label()[-5:], "type": "SYNC", "message": "Excel master synchronized into parquet/DuckDB read models.", "color": HUD["green"]},
+        {"time": "LIVE", "type": "DATA", "message": f"{health.get('catalog_real_rows', 0)} catalog rows, {health.get('daily_sales_rows', 0)} sales rows, {health.get('cashflow_rows', 0)} cashflow rows.", "color": HUD["cyan"]},
+    ]
+    if critical_count:
+        top_critical = inventory_pd.loc[inventory_pd["alert"] == "🔴 Crítico", "product"].head(1).to_list()
+        feed_rows.append({"time": "RISK", "type": "ALERT", "message": f"Critical inventory exposure detected: {top_critical[0] if top_critical else critical_count}." , "color": HUD["red"]})
+    for row in latest_pd.head(5).itertuples(index=False):
+        feed_rows.append({"time": str(row.Date)[5:], "type": "SALE", "message": f"{row.Product} | {int(row.Quantity)} un. | {money(row.Total, 2)} via {row.Payment_Method}", "color": HUD["gold"]})
+    panel("Operational Feed", "sync logs + audit events + recent sales", feed(feed_rows))
+
+with ai_col:
+    reorder_df = get_alerts(get_conn())
+    insights = []
+    if not reorder_df.empty:
+        urgent = reorder_df[reorder_df["days_remaining"] <= LEAD_TIME_DAYS].head(4)
+        for row in urgent.itertuples(index=False):
+            insights.append({"time": "AI", "type": "RESTOCK", "message": f"{row.product}: {int(row.days_remaining)} days remaining. Suggested buy {int(row.suggested_qty)} units.", "color": HUD["red"]})
+    if margin_pct < 45 and revenue > 0:
+        insights.append({"time": "AI", "type": "MARGIN", "message": f"Gross margin at {margin_pct:.1f}%. Review pricing on high-velocity low-margin SKUs.", "color": HUD["amber"]})
+    if burn_ratio > 35:
+        insights.append({"time": "AI", "type": "BURN", "message": f"Fixed monthly cost load is {burn_ratio:.1f}% of revenue. Monitor runway and staffing sensitivity.", "color": HUD["gold"]})
+    if readiness != "READY":
+        insights.append({"time": "AI", "type": "DATA", "message": "Production readiness is not green. Validate workbook Meta, sales, inventory, and cashflow before executive use.", "color": HUD["amber"]})
+    if healthy_skus and not critical_count:
+        insights.append({"time": "AI", "type": "HEALTH", "message": "Inventory risk is contained. Use category mix and ABC velocity to prioritize restock capital.", "color": HUD["green"]})
+    if not insights:
+        insights.append({"time": "AI", "type": "WATCH", "message": "No material anomaly detected in the current read models.", "color": HUD["green"]})
+
+    panel("AI Retail Insights", "assistant watchlist", feed(insights))
+
+    risk_rows = [
+        {"time": "SKU", "type": "RISK", "message": f"{critical_count} critical SKUs require immediate attention.", "color": HUD["red"] if critical_count else HUD["green"]},
+        {"time": "INV", "type": "SLOW", "message": f"{int((turnover_pd['giro'] < 0.25).sum()) if not turnover_pd.empty else 0} slow-moving SKUs on overstock watch.", "color": HUD["amber"]},
+        {"time": "SRC", "type": "DATA", "message": f"Reliability state: {readiness}. Source health governs executive confidence.", "color": status_color(str(health.get("readiness_state", "")))},
+        {"time": "CF", "type": "CASH", "message": f"Runway signal {'OK' if cash_net >= 0 else 'NEG'} at {money(cash_net, 0)} net.", "color": HUD["green"] if cash_net >= 0 else HUD["red"]},
+    ]
+    panel("Operational Anomalies", "risk warnings", feed(risk_rows))
+
+    flow_body = f"""
+<div style="font-size:0.72rem;line-height:1.75;color:{HUD['text']};">
+  <div><strong style="color:{HUD['gold']};">CANONICAL WRITE:</strong> data/excel/FuloFilo_Master.xlsx</div>
+  <div><strong style="color:{HUD['cyan']};">SYNC PATH:</strong> bash scripts/sync_excel.sh</div>
+  <div><strong style="color:{HUD['text_dim']};">READ MODELS:</strong> parquet + DuckDB + reports</div>
+  <div><strong style="color:{HUD['green']};">POLICY:</strong> generated layers remain reproducible and read-only</div>
+</div>
+"""
+    panel("System Contract", "Excel-first architecture", flow_body)
+
+status_bar(
+    [
+        {"label": "Excel Sync", "value": "MASTER ONLINE" if data["health"].get("ok") else "VERIFY", "state": "ready" if data["health"].get("ok") else "warning"},
+        {"label": "DuckDB", "value": "VIEW LAYER", "state": "online"},
+        {"label": "Streamlit Runtime", "value": "ACTIVE", "state": "online"},
+        {"label": "Last Sync", "value": _last_sync_label(), "state": "synced"},
+        {"label": "Data Health", "value": readiness, "state": str(health.get("readiness_state", ""))},
+        {"label": "Production Readiness", "value": "GREEN" if health.get("healthy_production_data") else "AMBER", "state": "ready" if health.get("healthy_production_data") else "warning"},
+    ]
+)

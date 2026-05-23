@@ -16,7 +16,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
-from app.components.hud import inject_hud_css, render_hud_topbar, hud_plotly_layout
+from app.components.hud import inject_hud_css, hud_plotly_layout
+from app.components.terminal import page_command_header, render_terminal_css
+from app.utils.source_health import render_source_health_warning
 from core.classification import classify_dataframe, FIXED_MARGIN_THRESHOLD, FIXED_QTY_THRESHOLD
 from core.recommendations import enrich_with_recommendations
 from core.reporting import generate_weekly_report
@@ -25,17 +27,17 @@ from core.analytics import aggregate_by_category
 
 st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
+render_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Matriz de Margem", "💹")
+page_command_header(
+    "Cashflow + Margin Matrix",
+    "CF / profitability control",
+    "margin signal -> product classification -> cash discipline",
+)
+render_source_health_warning()
 
-st.markdown("""
-Identifica o posicionamento estratégico de cada produto:
-- 🌟 **Stars** (alto volume + alta margem) — prioridade máxima de estoque
-- 🐄 **Cash Cows** (alto volume + margem moderada) — base do negócio
-- 💎 **Hidden Gems** (baixo volume + alta margem) — potencial de crescimento
-- 🐕 **Dogs** (baixo volume + baixa margem) — candidatos a descontinuação
-""")
+st.caption("Classificação operacional por volume, margem, receita e recomendação tática.")
 
 @st.cache_data
 def load(data_version: str, period: str):  # noqa: ARG001

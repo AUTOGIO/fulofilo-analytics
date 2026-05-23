@@ -1,5 +1,5 @@
-# FulôFiló Analytics Pro
-## Technical Documentation and Operator Manual (Apple-Tailored Dashboard Track)
+# FulôFiló AI Retail Operations Terminal
+## Technical Documentation and Operator Manual (Apple-Tailored Official Dashboard Track)
 
 Version: 2.1
 Date: April 2026
@@ -9,23 +9,24 @@ Target: macOS on Apple Silicon (iMac M3 class), local-first
 
 ## 1. System Identity
 
-FulôFiló Analytics Pro is a local dashboard and reporting system for store operations and management analytics.
+FulôFiló AI Retail Operations Terminal is the official local-first institutional dashboard for store operations, inventory intelligence, cashflow awareness, and executive retail analytics.
 
 Production track:
-- Streamlit dashboard (`app/`)
+- Official Streamlit terminal (`app/app.py` + `app/pages/*`)
 - DuckDB views over Parquet (`app/db.py`)
 - Excel master workbook (`data/excel/FuloFilo_Master.xlsx`) — **canonical source of truth**
 - Sync pipeline (`scripts/sync_excel.sh`)
+- Automation entrypoint (`scripts/automation_cli.py`)
+- Optional external orchestration (`n8n`, via webhook/CLI calls)
 
-Legacy track (migration fallback only — do not use for normal operations):
-- CSV masters under `data/raw/*_master.csv` (Numbers-edited)
-- Sync pipeline (`scripts/sync_native_sources.sh`)
-- See `scripts/adhoc/` for one-time migration scripts
+Legacy material:
+- Historical CSV/JSON files retained for audit and migration traceability
+- Not part of the active operational write path
 
 Non-production side tracks:
 - Cloudflare worker deployment helper (`cf-worker/`) — custom domain redirects to Streamlit Cloud; use `bash scripts/deploy_cloudflare_worker.sh https://…streamlit.app` (not a Tunnel; see header in `cf-worker/worker.js` if you see Error 1033)
 
-These side tracks are buildable but not part of canonical local dashboard operations.
+These side tracks are buildable but not part of canonical local terminal operations.
 
 ---
 
@@ -95,14 +96,15 @@ data/parquet/*.parquet  (products, inventory, daily_sales, cashflow,
 data/fulofilo.duckdb    (views over parquet)
         |
         v
-Streamlit dashboard
-  app/app.py          — Overview + KPIs
-  pages/01_abc_analysis.py    — ABC Pareto
-  pages/02_margin_matrix.py   — Margin scatter
-  pages/03_inventory.py       — Stock alerts + adjustments
-  pages/04_daily_ops.py       — Sales entry
-  pages/05_categories.py      — Category manager
-  pages/06_export_excel.py    — Excel report builder
+Streamlit retail operations terminal
+  app/app.py          — Executive Overview + AI operations command center
+  pages/01_abc_analysis.py    — Sales Analytics / ABC Pareto
+  pages/02_margin_matrix.py   — Cashflow + Margin Matrix
+  pages/03_inventory.py       — Inventory Intelligence
+  pages/04_daily_ops.py       — Daily Operations / sales entry
+  pages/05_categories.py      — Category Intelligence
+  pages/06_export_excel.py    — Executive Reports
+  pages/07_suppliers.py       — AI Insights + Supplier Desk
         |
         | stock adjustments & daily sales write-back (via inventory_ops / sales_ops)
         v
@@ -111,6 +113,20 @@ data/logs/stock_audit.csv        ← append-only audit trail (every stock mutati
         |
         v
 excel/build_report.py → excel/FuloFilo_Report_*.xlsx  (READ-ONLY artifact — never mutated after generation)
+
+External control plane (optional):
+n8n schedule/webhook/trigger
+        |
+        v
+scripts/automation_cli.py
+  - refresh-dashboard-data
+  - sync-excel-master
+  - generate-replenishment-alerts
+  - export-reports
+  - validate-data-integrity
+        |
+        v
+existing business logic modules/scripts (no business logic in n8n)
 ```
 
 **Write-back contract:**
@@ -214,3 +230,28 @@ The suite covers:
   - local temp dir `/tmp/duckdb_fulofilo`
 
 These defaults are bounded for stability in local-only operation.
+
+---
+
+## 9. n8n Orchestration Boundary
+
+n8n is used only for:
+- schedule orchestration
+- trigger/webhook fan-in
+- workflow ordering and retry control
+
+n8n must not:
+- write directly to `data/excel/FuloFilo_Master.xlsx`
+- duplicate pricing/inventory/validation logic outside Python
+- replace `scripts/sync_excel.py` contract checks
+
+Local startup:
+```bash
+docker compose -f /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docker-compose.n8n.yml up -d
+```
+
+Automation webhook bridge:
+```bash
+export FULOFILO_AUTOMATION_TOKEN="change-this-token"
+make automation-webhook
+```

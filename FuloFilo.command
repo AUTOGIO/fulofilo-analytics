@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-#  🌺  FulôFiló Analytics Pro — One-Click Launcher
-#  Double-click this file in Finder to start the system.
+#  FulôFiló AI Retail Operations Terminal — One-Click Launcher
+#  Double-click this file in Finder to start the official dashboard.
 # ============================================================
 
 # Resolve PROJECT relative to this script (portable — no hardcoded path)
@@ -22,8 +22,8 @@ mkdir -p "$PROJECT/logs"
 
 clear
 echo "╔══════════════════════════════════════════╗"
-echo "║   🌺  FulôFiló Analytics Pro             ║"
-echo "║   Iniciando sistema...                   ║"
+echo "║   FulôFiló AI Terminal                   ║"
+echo "║   Iniciando dashboard oficial...         ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 echo "📂 Projeto: $PROJECT"
@@ -91,10 +91,10 @@ nohup "$STREAMLIT" run app/app.py \
     --server.address 127.0.0.1 \
     --server.headless true \
     --theme.base dark \
-    --theme.primaryColor "#52B788" \
-    --theme.backgroundColor "#1A1A2E" \
-    --theme.secondaryBackgroundColor "#16213E" \
-    --theme.textColor "#E0E0E0" \
+    --theme.primaryColor "#35D07F" \
+    --theme.backgroundColor "#050809" \
+    --theme.secondaryBackgroundColor "#0B1515" \
+    --theme.textColor "#DCE6E3" \
     > "$LOG" 2>&1 &
 
 STREAMLIT_PID=$!

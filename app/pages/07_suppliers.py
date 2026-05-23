@@ -15,7 +15,8 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar
+from app.components.hud import inject_hud_css
+from app.components.terminal import page_command_header, render_terminal_css
 
 # ── Page config ───────────────────────────────────────────────────────────────
 _FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
@@ -27,9 +28,14 @@ st.set_page_config(
 )
 
 inject_hud_css()
+render_terminal_css()
 render_sidebar(active_page="pages/07_suppliers.py")
 render_page_header()
-render_hud_topbar("Fornecedores", "🏭")
+page_command_header(
+    "AI Insights + Supplier Desk",
+    "AI / supplier intelligence",
+    "supplier artifacts -> opportunity review -> sourcing decisions",
+)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 _ROOT          = Path(__file__).resolve().parent.parent.parent

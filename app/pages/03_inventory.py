@@ -16,18 +16,24 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_stock_turnover, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header
-from app.components.hud import inject_hud_css, render_hud_topbar, alert_badge, hud_plotly_layout
-from app.utils.inventory_ops import load_inventory, adjust_stock
+from app.components.hud import inject_hud_css, alert_badge, hud_plotly_layout
+from app.components.terminal import page_command_header, render_terminal_css
+from app.utils.inventory_ops import load_inventory
 from app.utils.source_health import render_source_health_warning
 
 st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
+render_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Gestão de Estoque", "📦")
+page_command_header(
+    "Inventory Intelligence",
+    "IN / stock control",
+    "live stock health -> reorder exposure -> inventory valuation",
+)
 render_source_health_warning()
 
-st.markdown("Monitore níveis de estoque, alertas de reposição e giro de produtos.")
+st.caption("Monitoramento tático de estoque, reposição, giro e exposição por SKU.")
 
 @st.cache_data
 def load(data_version: str):  # noqa: ARG001
@@ -223,10 +229,13 @@ with tab3:
 
 # ── Stock Adjustment + Excel Sync ──────────────────────────────────────────────
 st.divider()
-st.subheader("🔧 Ajustar Estoque")
+st.subheader("🔧 Ajuste Manual de Estoque")
+st.warning(
+    "Para o fluxo atual, apenas `DailySales` deve ser lançado manualmente. "
+    "Ajustes manuais de estoque nesta tela estão temporariamente desabilitados."
+)
 st.caption(
-    "Este ajuste grava primeiro na aba `Inventory` do Excel master, registra auditoria em "
-    "`data/logs/stock_audit.csv` e executa a sincronização canônica."
+    "Use a rotina automática na barra lateral para atualizar o restante do sistema."
 )
 
 inv_full = load_inventory()
@@ -253,7 +262,7 @@ if not inv_full.is_empty():
             with fc3:
                 new_qty = st.number_input("Novo Estoque", min_value=0, value=cur_stock, step=1)
 
-            submitted_adj = st.form_submit_button("💾 Salvar Ajuste", use_container_width=True)
+            submitted_adj = st.form_submit_button("💾 Salvar Ajuste", use_container_width=True, disabled=True)
 
         if submitted_adj and len(slug_vals):
             try:

@@ -13,14 +13,22 @@ from pathlib import Path
 import streamlit as st
 
 from app.components.sidebar import render_sidebar, render_page_header
+from app.components.hud import inject_hud_css
+from app.components.terminal import page_command_header, render_terminal_css
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 st.set_page_config(page_title="Exportar Excel — FulôFiló", page_icon=_FAVICON, layout="wide")
+inject_hud_css()
+render_terminal_css()
 render_sidebar()
 render_page_header()
-st.markdown("## 📤 Exportar Relatório Excel")
+page_command_header(
+    "Executive Reports",
+    "RP / reporting desk",
+    "read model snapshot -> controlled workbook artifact -> executive distribution",
+)
 st.caption("Gera o workbook completo com 9 abas a partir dos dados atuais em Parquet.")
 st.warning("Os arquivos `excel/FuloFilo_Report_*.xlsx` são artefatos somente leitura e não podem ser usados como fonte operacional.")
 

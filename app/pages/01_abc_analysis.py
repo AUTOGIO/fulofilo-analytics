@@ -18,18 +18,24 @@ sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
 from app.components.hud import (
-    inject_hud_css, render_hud_topbar, abc_badge, hud_plotly_layout,
+    inject_hud_css, abc_badge, hud_plotly_layout,
     action_tag_badge, priority_badge,
 )
+from app.components.terminal import page_command_header, render_terminal_css
 from core.decision_engine import enrich_with_decisions
 
 st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
+render_terminal_css()
 render_sidebar()
 render_page_header()
-render_hud_topbar("Análise ABC", "📊")
+page_command_header(
+    "Sales Analytics",
+    "SA / ABC revenue control",
+    "revenue concentration -> SKU priority -> tactical assortment decisions",
+)
 
-st.markdown("Identifica quais produtos geram **80%** da receita (A), **15%** (B) e **5%** (C).")
+st.caption("Identifica concentração de receita, prioridade ABC e decisões táticas por produto.")
 
 @st.cache_data
 def load(data_version: str, period: str):  # noqa: ARG001

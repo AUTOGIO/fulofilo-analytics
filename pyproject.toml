@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "streamlit>=1.32.0",
-    "polars>=0.20.15",
+    "polars==1.36.1",
     "duckdb>=0.10.0",
     "plotly>=5.19.0",
     "pandas>=2.2.1",
