@@ -183,7 +183,7 @@ show_enriched = show_enriched.rename(columns={
     "classification": "Classificação", "recommended_action": "Ação Recomendada",
 })
 if "Margem" in show_enriched.columns:
-    show_enriched["Margem"] = show_enriched["Margem"].apply(lambda x: f"{x*100:.1f}%")
+    show_enriched["Margem"] = show_enriched["Margem"].apply(lambda x: f"{x:.1f}%")
 if "Receita (R$)" in show_enriched.columns:
     show_enriched["Receita (R$)"] = show_enriched["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
 
@@ -223,7 +223,7 @@ st.markdown('<div class="ff-section-label">Category Summary</div>', unsafe_allow
 cat_summary = aggregate_by_category(enriched_pdf)
 if not cat_summary.empty:
     cat_show = cat_summary.copy()
-    cat_show["avg_margin_pct"] = cat_show["avg_margin_pct"].apply(lambda x: f"{x*100:.1f}%")
+    cat_show["avg_margin_pct"] = cat_show["avg_margin_pct"].apply(lambda x: f"{x:.1f}%")
     cat_show["total_revenue"]  = cat_show["total_revenue"].apply(lambda x: f"R$ {x:,.2f}")
     rename_cat = {
         "category": "Categoria", "avg_margin_pct": "Margem Média",

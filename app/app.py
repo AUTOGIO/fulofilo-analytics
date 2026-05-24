@@ -50,6 +50,7 @@ from app.db import (
 from app.utils.fixed_costs import load_fixed_costs
 from app.utils.reorder_engine import LEAD_TIME_DAYS, get_alerts
 from app.utils.source_health import ROOT, STATUS_PATH, get_source_health, render_source_health_warning
+from core.classification import classify_dataframe
 
 
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
@@ -194,6 +195,16 @@ burn_ratio = (float(fixed_total) / revenue * 100) if revenue else 0.0
 turnover_pd = data["turnover"].to_pandas() if not data["turnover"].is_empty() else pd.DataFrame()
 avg_turnover = float(turnover_pd["giro"].mean()) if not turnover_pd.empty else 0.0
 sell_through = (units / (units + inventory_pd["current_stock"].sum()) * 100) if not inventory_pd.empty and units else 0.0
+matrix_pd = data["margin"].to_pandas() if not data["margin"].is_empty() else pd.DataFrame()
+matrix_rows = int(len(matrix_pd))
+matrix_weighted_margin = (
+    float((matrix_pd["revenue"] * matrix_pd["margin_pct"]).sum() / matrix_pd["revenue"].sum())
+    if not matrix_pd.empty and float(matrix_pd["revenue"].sum()) else 0.0
+)
+matrix_dist = (
+    classify_dataframe(matrix_pd)["classification"].value_counts().to_dict()
+    if not matrix_pd.empty else {}
+)
 
 terminal_header(
     [
@@ -222,6 +233,8 @@ with main_col:
                 {"label": "Low Stock Alerts", "value": str(low_count), "delta": f"{critical_count} critical", "color": HUD["red"] if critical_count else HUD["amber"]},
                 {"label": "Ops Efficiency", "value": f"{ops_score}/100", "delta": readiness.lower(), "color": HUD["green"] if ops_score >= 80 else HUD["amber"]},
                 {"label": "Fixed Burn", "value": f"{burn_ratio:.1f}%", "delta": money(float(fixed_total), 0), "color": HUD["gold"]},
+                {"label": "Matrix Coverage", "value": f"{matrix_rows} SKUs", "delta": f"{matrix_weighted_margin:.1f}% weighted margin", "color": HUD["cyan"]},
+                {"label": "Matrix Stars", "value": str(matrix_dist.get("Star", 0)), "delta": f"{matrix_dist.get('Hidden Gem', 0)} hidden gems / {matrix_dist.get('Dog', 0)} dogs", "color": HUD["green"]},
             ]
         ),
     )
