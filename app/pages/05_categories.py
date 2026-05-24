@@ -90,7 +90,7 @@ ALL_SUBCATEGORIES = sorted([
 
 # ── Sidebar filters ────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🔍 Filtros")
+    st.markdown("### Filters")
     cats_avail   = ["Todas"] + sorted(df["Category"].unique().to_list())
     sel_cat      = st.selectbox("Categoria", cats_avail)
     conf_avail   = ["Todas"] + sorted(df["CategoryConfidence"].unique().to_list())
@@ -98,8 +98,8 @@ with st.sidebar:
     search_term  = st.text_input("Buscar produto", placeholder="Digite parte do nome...")
 
     st.divider()
-    st.markdown("### ⚡ Ações")
-    st.button("🔄 Re-executar Auto-Categorização", disabled=True)
+    st.markdown("### Actions")
+    st.button("Run Auto Categorization", disabled=True)
 
 # ── Apply filters ─────────────────────────────────────────────────────────────
 view = df.clone()
@@ -116,9 +116,9 @@ n_cats      = df["Category"].n_unique()
 
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Total SKUs",           total)
-c2.metric("✅ Alta confiança",    n_high,      delta=f"{n_high/total:.0%}")
-c3.metric("🟡 Média",            n_medium,    delta=f"{n_medium/total:.0%}")
-c4.metric("❌ Não classificado", n_unmatched,
+c2.metric("High Confidence",    n_high,      delta=f"{n_high/total:.0%}")
+c3.metric("Medium",            n_medium,    delta=f"{n_medium/total:.0%}")
+c4.metric("Unclassified", n_unmatched,
           delta=f"{n_unmatched/total:.0%}", delta_color="inverse")
 c5.metric("Categorias únicas",    n_cats)
 
@@ -126,7 +126,7 @@ st.divider()
 
 # ── Unmatched alert ────────────────────────────────────────────────────────────
 unmatched_df = df.filter(pl.col("CategoryConfidence") == "unmatched")
-with st.expander("✍️ Gravar override manual", expanded=not unmatched_df.is_empty()):
+with st.expander("Manual Override Control", expanded=not unmatched_df.is_empty()):
     st.caption("Use a rotina automática na barra lateral para manter o restante do sistema atualizado.")
     if not unmatched_df.is_empty():
         st.caption(f"{unmatched_df.shape[0]} produto(s) sem categorização detectados no read model atual.")
@@ -155,10 +155,10 @@ with st.expander("✍️ Gravar override manual", expanded=not unmatched_df.is_e
     with col_c:
         confidence = st.selectbox("Confiança", ["manual", "high", "medium"], index=0)
 
-    st.button("💾 Salvar override manual", disabled=True)
+    st.button("Save Manual Override", disabled=True)
 
 # ── Main products table with confidence badges ─────────────────────────────────
-st.subheader(f"📋 Produtos ({view.shape[0]} de {total})")
+st.markdown(f'<div class="ff-section-label">Products ({view.shape[0]} of {total})</div>', unsafe_allow_html=True)
 cols_show = [c for c in ["slug","full_name","category","Category","Subcategory","CategoryConfidence"]
              if c in view.columns]
 display = view.select(cols_show).to_pandas()
@@ -168,7 +168,7 @@ st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 # ── Category summary ───────────────────────────────────────────────────────────
 st.divider()
-st.subheader("📊 Receita por Categoria (via DuckDB)")
+st.markdown('<div class="ff-section-label">Category Revenue via DuckDB</div>', unsafe_allow_html=True)
 try:
     conn = get_conn()
     cat_rev = conn.execute("""
@@ -196,7 +196,7 @@ except Exception as e:
 st.divider()
 csv_bytes = view.select(cols_show).to_pandas().to_csv(index=False).encode("utf-8")
 st.download_button(
-    "📥 Exportar visão atual",
+    "Export Current View",
     csv_bytes,
     file_name="categorias_visualizacao.csv",
     mime="text/csv",

@@ -49,6 +49,194 @@ def status_color(state: str) -> str:
 def render_terminal_css() -> None:
     st.markdown(f"""
 <style>
+/* Terminal hardening for every Streamlit page/tab. */
+.block-container {{
+    padding-top: 0.7rem !important;
+}}
+.stMarkdown, .stCaption, label, p, span, div {{
+    letter-spacing: 0 !important;
+}}
+h1, h2, h3 {{
+    color: {HUD['text']} !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em !important;
+}}
+h2, h3 {{
+    font-size: 0.96rem !important;
+    border-bottom: 1px solid {HUD['border']} !important;
+    padding: 8px 0 6px !important;
+    margin: 12px 0 8px !important;
+}}
+[data-testid="stCaptionContainer"] p {{
+    color: {HUD['text_dim']} !important;
+    font-size: 0.72rem !important;
+}}
+.stAlert {{
+    border-radius: 4px !important;
+    border: 1px solid {HUD['border']} !important;
+}}
+[data-testid="stForm"] {{
+    background: linear-gradient(180deg, rgba(9,16,16,0.98), rgba(5,9,10,0.98)) !important;
+    border: 1px solid {HUD['border']} !important;
+    border-radius: 4px !important;
+    padding: 12px !important;
+}}
+div[data-testid="stVerticalBlockBorderWrapper"] {{
+    border-color: {HUD['border']} !important;
+    border-radius: 4px !important;
+}}
+div[data-testid="stSelectbox"] label,
+div[data-testid="stTextInput"] label,
+div[data-testid="stNumberInput"] label,
+div[data-testid="stDateInput"] label,
+div[data-testid="stMultiSelect"] label {{
+    color: {HUD['text']} !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+}}
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div,
+input,
+textarea {{
+    background: #0A1715 !important;
+    border-color: {HUD['border']} !important;
+    border-radius: 3px !important;
+    color: {HUD['text']} !important;
+    min-height: 34px !important;
+}}
+div[data-baseweb="select"] span,
+div[data-baseweb="input"] input,
+input {{
+    color: {HUD['text']} !important;
+    font-size: 0.78rem !important;
+    font-variant-numeric: tabular-nums !important;
+}}
+button[kind="primary"],
+button[kind="secondary"],
+button[data-testid="baseButton-primary"],
+button[data-testid="baseButton-secondary"],
+[data-testid="stDownloadButton"] button {{
+    background: #111820 !important;
+    border: 1px solid {HUD['border']} !important;
+    border-radius: 3px !important;
+    color: {HUD['text']} !important;
+    min-height: 34px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    box-shadow: none !important;
+}}
+button[kind="primary"]:hover,
+button[kind="secondary"]:hover,
+[data-testid="stDownloadButton"] button:hover {{
+    background: #142322 !important;
+    border-color: {HUD['cyan']} !important;
+    color: {HUD['cyan']} !important;
+}}
+[data-testid="stTabs"] [role="tablist"] {{
+    gap: 1px !important;
+    border-bottom: 1px solid {HUD['border']} !important;
+}}
+[data-testid="stTabs"] [data-baseweb="tab"] {{
+    background: #07100E !important;
+    border: 1px solid {HUD['border']} !important;
+    border-bottom: 0 !important;
+    border-radius: 3px 3px 0 0 !important;
+    height: 34px !important;
+    padding: 0 10px !important;
+    color: {HUD['text_dim']} !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+}}
+[data-testid="stTabs"] [aria-selected="true"] {{
+    background: #0B1D1B !important;
+    color: {HUD['cyan']} !important;
+    border-color: rgba(55,213,232,0.55) !important;
+}}
+[data-testid="stDataFrame"] {{
+    border: 1px solid {HUD['border']} !important;
+    border-radius: 3px !important;
+    background: #050809 !important;
+}}
+[data-testid="stExpander"] {{
+    background: #07100E !important;
+    border: 1px solid {HUD['border']} !important;
+    border-radius: 3px !important;
+}}
+.ff-section-label {{
+    color: {HUD['text']};
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase;
+    border-top: 1px solid {HUD['border']};
+    border-bottom: 1px solid {HUD['border']};
+    padding: 8px 0;
+    margin: 12px 0 8px;
+}}
+.ff-action-strip {{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: {HUD['border']};
+    border: 1px solid {HUD['border']};
+    margin-bottom: 10px;
+}}
+.ff-action-cell {{
+    background: #07100E;
+    padding: 8px;
+}}
+.ff-chip-row {{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}}
+.ff-chip {{
+    display:inline-flex;
+    align-items:center;
+    border:1px solid {HUD['border']};
+    background:#091514;
+    color:{HUD['text']};
+    border-radius:3px;
+    padding:3px 7px;
+    font-size:0.68rem;
+    font-weight:800;
+    text-transform:uppercase;
+}}
+.ff-terminal-table {{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.74rem;
+    background: #050809;
+    border: 1px solid {HUD['border']};
+}}
+.ff-terminal-table th {{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #101A1A;
+    color: {HUD['text_dim']};
+    text-transform: uppercase;
+    letter-spacing: 0.08em !important;
+    font-size: 0.62rem;
+    padding: 6px 7px;
+    border-bottom: 1px solid {HUD['border']};
+    text-align: left;
+}}
+.ff-terminal-table td {{
+    color: {HUD['text']};
+    padding: 6px 7px;
+    border-bottom: 1px solid rgba(87,113,108,0.18);
+    font-variant-numeric: tabular-nums;
+    vertical-align: top;
+}}
+.ff-terminal-table tr:hover td {{
+    background: rgba(55,213,232,0.045);
+}}
 .ff-terminal-header {{
     display: grid;
     grid-template-columns: minmax(250px, 1.15fr) repeat(6, minmax(120px, 0.7fr));

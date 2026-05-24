@@ -33,7 +33,7 @@ st.caption("Gera o workbook completo com 9 abas a partir dos dados atuais em Par
 st.warning("Os arquivos `excel/FuloFilo_Report_*.xlsx` são artefatos somente leitura e não podem ser usados como fonte operacional.")
 
 # ── Sheet selector ─────────────────────────────────────────────────────────────
-st.subheader("📋 Selecionar abas")
+st.markdown('<div class="ff-section-label">Report Sheet Selection</div>', unsafe_allow_html=True)
 SHEETS = ["Dashboard","ABC Analysis","Margin Matrix","Inventory",
           "Daily Ops","Cashflow","Products Catalog","Product Categories","Pivot Cat×Month"]
 col1, col2 = st.columns(2)
@@ -45,7 +45,7 @@ for i, s in enumerate(SHEETS):
 st.divider()
 
 # ── Generate button ────────────────────────────────────────────────────────────
-if st.button("⚡ Gerar Relatório", type="primary", use_container_width=True):
+if st.button("Generate Report", type="primary", use_container_width=True):
     bar = st.progress(0, text="Inicializando...")
     try:
         bar.progress(10, "Carregando dados Parquet...")
@@ -56,7 +56,7 @@ if st.button("⚡ Gerar Relatório", type="primary", use_container_width=True):
         active_sheets = {name for name, checked in selected.items() if checked} or None
         out_path = build_report(selected_sheets=active_sheets)
         elapsed  = time.time() - t0
-        bar.progress(100, "✅ Concluído!")
+        bar.progress(100, "Concluído.")
 
         size_kb = out_path.stat().st_size // 1024
         st.success(f"Relatório gerado em {elapsed:.1f}s — {size_kb} KB — {out_path.name}")
@@ -67,7 +67,7 @@ if st.button("⚡ Gerar Relatório", type="primary", use_container_width=True):
         c3.metric("Tempo geração", f"{elapsed:.1f}s")
 
         st.download_button(
-            label="📥 Baixar Excel",
+            label="Download Excel",
             data=out_path.read_bytes(),
             file_name=out_path.name,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -80,16 +80,16 @@ if st.button("⚡ Gerar Relatório", type="primary", use_container_width=True):
 
 # ── History ────────────────────────────────────────────────────────────────────
 st.divider()
-st.subheader("🗂️ Relatórios anteriores")
+st.markdown('<div class="ff-section-label">Previous Reports</div>', unsafe_allow_html=True)
 excel_dir = ROOT / "excel"
 reports = sorted(excel_dir.glob("FuloFilo_Report_*.xlsx"), reverse=True)[:5]
 if reports:
     for rpt in reports:
         size_kb = rpt.stat().st_size // 1024
         c1, c2, c3 = st.columns([3, 1, 1])
-        c1.markdown(f"📄 `{rpt.name}`")
+        c1.markdown(f"`{rpt.name}`")
         c2.caption(f"{size_kb} KB")
-        c3.download_button("⬇", data=rpt.read_bytes(), file_name=rpt.name,
+        c3.download_button("DL", data=rpt.read_bytes(), file_name=rpt.name,
                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                            key=rpt.name)
 else:
