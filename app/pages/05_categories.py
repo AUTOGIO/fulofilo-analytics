@@ -21,21 +21,26 @@ sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn, get_data_mtime
 from app.components.sidebar import render_sidebar, render_page_header, LOGO_44
-from app.components.hud import inject_hud_css, render_hud_topbar, conf_badge, hud_plotly_layout
-from app.utils.category_ops import upsert_category_override
+from app.components.hud import inject_hud_css, conf_badge, hud_plotly_layout
+from app.components.terminal import page_command_header, render_terminal_css
 from app.utils.source_health import render_source_health_warning
 
 st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, layout="wide")
 inject_hud_css()
+render_terminal_css()
 render_sidebar()
 render_page_header(logo_path=LOGO_44)
-render_hud_topbar("Gerenciador de Categorias", "🏷️")
+page_command_header(
+    "Category Intelligence",
+    "CI / taxonomy control",
+    "category signal -> margin mix -> retail assortment intelligence",
+)
 render_source_health_warning()
 
-st.caption("Visualize categorias derivadas do sync canônico e grave overrides manuais no Excel master.")
+st.caption("Visualize as categorias derivadas do sync canônico.")
 st.warning(
-    "Mudanças manuais de categoria devem ser feitas na aba `CategoryOverrides` de "
-    "`data/excel/FuloFilo_Master.xlsx`."
+    "Para o fluxo atual, apenas `DailySales` deve ser atualizado manualmente. "
+    "Overrides de categoria nesta tela estão temporariamente desabilitados."
 )
 
 # ── Load data ──────────────────────────────────────────────────────────────────
@@ -122,6 +127,7 @@ st.divider()
 # ── Unmatched alert ────────────────────────────────────────────────────────────
 unmatched_df = df.filter(pl.col("CategoryConfidence") == "unmatched")
 with st.expander("✍️ Gravar override manual", expanded=not unmatched_df.is_empty()):
+    st.caption("Use a rotina automática na barra lateral para manter o restante do sistema atualizado.")
     if not unmatched_df.is_empty():
         st.caption(f"{unmatched_df.shape[0]} produto(s) sem categorização detectados no read model atual.")
     edit_source = unmatched_df if not unmatched_df.is_empty() else df
@@ -149,22 +155,7 @@ with st.expander("✍️ Gravar override manual", expanded=not unmatched_df.is_e
     with col_c:
         confidence = st.selectbox("Confiança", ["manual", "high", "medium"], index=0)
 
-    if st.button("💾 Salvar override manual"):
-        try:
-            result = upsert_category_override(
-                sku=str(selected_row["slug"]),
-                category=new_cat,
-                subcategory=new_sub,
-                confidence=confidence,
-            )
-        except Exception as exc:  # noqa: BLE001
-            st.error(f"❌ Falha ao gravar override no Excel master: {exc}")
-        else:
-            st.success(
-                f"✅ Override salvo para SKU **{result.sku}** em `CategoryOverrides` e sincronizado."
-            )
-            st.cache_data.clear()
-            st.rerun()
+    st.button("💾 Salvar override manual", disabled=True)
 
 # ── Main products table with confidence badges ─────────────────────────────────
 st.subheader(f"📋 Produtos ({view.shape[0]} de {total})")

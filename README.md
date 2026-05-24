@@ -1,46 +1,30 @@
-# FulôFiló AI
+# FulôFiló AI Retail Operations Terminal
 
-Local-first retail analytics for FulôFiló on macOS Apple Silicon.
+Official institutional retail-intelligence dashboard for FulôFiló, optimized for macOS on Apple Silicon.
 
-## Canonical Architecture
+The canonical daily operation in production is the terminal track: Excel master workbook → sync pipeline → Parquet/DuckDB read models → Streamlit retail operations terminal.
 
-```text
-data/excel/FuloFilo_Master.xlsx
-  -> bash scripts/sync_excel.sh
-  -> data/parquet/*.parquet
-  -> data/fulofilo.duckdb
-  -> Streamlit dashboard
-  -> .venv/bin/python3 excel/build_report.py
-```
+## Canonical Operating Model
 
-## Source of Truth
+- Source of truth: `data/excel/FuloFilo_Master.xlsx`
+- Editor: Excel (operator edits the workbook directly)
+- Sync command: `bash scripts/sync_excel.sh`
+- Read model: `data/parquet/*.parquet` and `data/fulofilo.duckdb`
+- Official dashboard: `app/app.py` — FulôFiló AI Retail Operations Terminal
+- Dashboard behavior: read-only for source-owned business datasets
 
-The only operational source of truth is:
+Excel master sheets (input):
+- `Catalog` — product definitions, costs, prices
+- `Inventory` — current stock levels
+- `DailySales` — transaction history
+- `Cashflow` — revenue and expense entries
+- `CategoryOverrides` — category assignments and confidence
+- `Meta` — schema version and workbook metadata
 
-- `data/excel/FuloFilo_Master.xlsx`
-
-Primary sheets:
-
-- `Catalog`
-- `Inventory`
-- `DailySales`
-- `Cashflow`
-- `CategoryOverrides`
-- `Meta`
-
-Do not treat these as source-of-truth:
-
-- `data/parquet/*.parquet` — generated read models
-- `data/fulofilo.duckdb` — generated query layer
-- `data/raw/product_catalog.csv` — generated catalog export
-- `excel/FuloFilo_Report_*.xlsx` — generated reports
-
-Historical raw CSV and JSON files remain in the repository as archived evidence only.
-
-## Quick Start
+## Quick Start (Official Dashboard)
 
 ```bash
-cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
 uv sync
 bash scripts/sync_excel.sh
 bash scripts/launch_app.sh
@@ -48,51 +32,117 @@ bash scripts/launch_app.sh
 
 App URL: `http://127.0.0.1:8501`
 
-## Daily Operation
+GUI launcher (canonical Finder path): double-click `FuloFilo.command`
 
-1. Open `data/excel/FuloFilo_Master.xlsx`.
-2. Update the relevant canonical sheet.
-3. Run `bash scripts/sync_excel.sh`.
-4. Launch or refresh the app with `bash scripts/launch_app.sh`.
-5. Optionally generate a report with `./.venv/bin/python3 excel/build_report.py`.
+## n8n External Orchestration Layer
 
-## Production Onboarding Checklist
+Use n8n only as control plane. Keep business logic in this repository.
 
-1. Back up the workbook first.
-   Backup convention: `data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`
-   If a backup already exists for that second, the system appends `_01`, `_02`, and so on.
-2. Prepare source data outside the repo and confirm the canonical sheet columns before pasting.
-3. Replace bootstrap rows in `Catalog` and `Inventory` with real business data.
-4. Load real history into `DailySales` and `Cashflow`.
-5. Add `CategoryOverrides` only where manual corrections are needed.
-6. Confirm `Meta` still contains at least `schema_version` and `workbook`.
-7. Run `bash scripts/sync_excel.sh`.
-8. Review `data/excel/source_sync_status.json`.
-9. Run `./.venv/bin/python3 -m pytest -q tests/test_pipeline.py`.
-10. Open the dashboard and confirm KPIs are no longer empty.
+### What n8n can orchestrate
 
-Manual backup example:
+- schedule and trigger automation runs
+- call local webhook/CLI entrypoints
+- coordinate retries and workflow order
+
+### What must stay in Python business logic
+
+- data integrity rules from `scripts/sync_excel.py`
+- inventory/reorder calculations from `app/utils/reorder_engine.py`
+- report generation from `excel/build_report.py` and `reports/weekly_report.py`
+
+### Automation entrypoints (n8n-safe)
 
 ```bash
-mkdir -p data/excel/backups
-cp data/excel/FuloFilo_Master.xlsx "data/excel/backups/FuloFilo_Master_$(date +%Y%m%d_%H%M%S).xlsx"
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+make automation-refresh-dashboard-data
+make automation-sync-excel-master
+make automation-generate-replenishment-alerts
+make automation-export-reports
+make automation-validate-data-integrity
 ```
 
-## Bootstrap Note
-
-`uv run python scripts/bootstrap_excel_master.py` creates a starter workbook with a placeholder SKU so the first sync can run. That workbook is not healthy production data until real catalog and sales rows replace the bootstrap content.
-
-## Validation
+Direct CLI equivalent:
 
 ```bash
-cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
-uv sync
-bash scripts/sync_excel.sh
-./.venv/bin/python3 -m pytest -q tests/test_pipeline.py
-./.venv/bin/python3 excel/build_report.py
+.venv/bin/python3 scripts/automation_cli.py refresh-dashboard-data
 ```
 
-## Legacy Paths
+### Start n8n locally (Docker)
 
-- `scripts/refresh_data.sh` is archived and intentionally disabled.
-- Deleted ETL paths such as `etl/build_catalog.py`, `etl/ingest_eleve.py`, and `scripts/sync_native_sources.sh` are not part of the active workflow.
+```bash
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+docker compose -f docker-compose.n8n.yml up -d
+```
+
+n8n UI: [http://localhost:5678](http://localhost:5678)
+
+### Trigger project automations from n8n
+
+For Dockerized n8n, run local webhook bridge on macOS host:
+
+```bash
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+export FULOFILO_AUTOMATION_TOKEN="change-this-token"
+make automation-webhook
+```
+
+Then use n8n HTTP Request nodes targeting:
+
+- `GET http://host.docker.internal:8787/health`
+- `POST http://host.docker.internal:8787/run`
+
+Sample body:
+
+```json
+{
+  "action": "refresh-dashboard-data",
+  "idempotency_key": "n8n-exec-123:refresh"
+}
+```
+
+Full sample workflow JSON:
+`docs/n8n/fulofilo_orchestration_workflow.json`
+
+## Daily Operations
+
+1. Register daily sales manually in page `04_daily_ops`.
+2. Run the automatic routine:
+   `make automation-run-daily`
+3. Open dashboard and review:
+   `bash scripts/launch_app.sh` or `FuloFilo.command`
+
+## Bootstrap (first time)
+
+If you don't have the Excel master yet, generate it from existing CSV data:
+
+```bash
+uv run python scripts/bootstrap_excel_master.py
+```
+
+## Validation Policies
+
+`scripts/sync_excel.py` enforces:
+- required columns for all master sheets
+- SKU uniqueness in Catalog
+- referential integrity (Inventory, DailySales, CategoryOverrides SKUs must exist in Catalog)
+- non-negativity for prices, costs, and quantities
+- Sales total reconciliation (Total vs Quantity * Unit_Price)
+- KPI-impact reporting for blank `sku` in daily sales
+
+Policy modes:
+- `balanced` (default): blank SKU is reported as warning with KPI-impact count
+- `strict`: KPI-impact rows with blank SKU become sync errors
+
+Strict mode example:
+```bash
+bash scripts/sync_excel.sh --sku-policy strict
+```
+
+## Legacy Notice
+
+Historical CSV/JSON files are retained for audit history only.
+They are not part of the active operational workflow.
+
+## Out of Scope for Dashboard Runbook
+
+- `cf-worker/` is deployment infrastructure and not required for local dashboard operations.

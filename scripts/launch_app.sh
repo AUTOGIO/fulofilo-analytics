@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# FulôFiló — Streamlit App Launcher
-# Optimized for iMac M3, macOS 26.4, dark theme
+# FulôFiló AI — Retail Operations Terminal Launcher
+# Official institutional dashboard for local Excel-first operations.
 # ============================================================
 # Usage: ./scripts/launch_app.sh
 # ============================================================
@@ -17,7 +17,7 @@ fi
 
 cd "$PROJECT"
 
-echo "🌺 Starting FulôFiló AI..."
+echo "Starting FulôFiló AI Retail Operations Terminal..."
 echo "   URL: http://127.0.0.1:8501"
 echo "   Press Ctrl+C to stop"
 echo ""
@@ -28,7 +28,7 @@ echo ""
     --server.headless false \
     --server.fileWatcherType auto \
     --theme.base dark \
-    --theme.primaryColor "#52B788" \
-    --theme.backgroundColor "#1A1A2E" \
-    --theme.secondaryBackgroundColor "#16213E" \
-    --theme.textColor "#E0E0E0"
+    --theme.primaryColor "#35D07F" \
+    --theme.backgroundColor "#050809" \
+    --theme.secondaryBackgroundColor "#0B1515" \
+    --theme.textColor "#DCE6E3"

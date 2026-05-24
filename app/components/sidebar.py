@@ -6,6 +6,7 @@ consistent logo + navigation across the entire app.
 """
 
 from pathlib import Path
+import json
 import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -59,14 +60,14 @@ LOGO_17     = ASSETS / "Logo-17.png"
 LOGO_44     = ASSETS / "Logo-44.jpg"
 
 _NAV = [
-    ("app.py",                   "🏠", "Visão Geral"),
-    ("pages/01_abc_analysis.py",  "📊", "Análise ABC"),
-    ("pages/02_margin_matrix.py", "💹", "Matriz de Margem"),
-    ("pages/03_inventory.py",     "📦", "Estoque"),
-    ("pages/04_daily_ops.py",     "⚡", "Operações Diárias"),
-    ("pages/05_categories.py",    "🏷️", "Categorias"),
-    ("pages/06_export_excel.py",  "📤", "Exportar Excel"),
-    ("pages/07_suppliers.py",     "🏭", "Fornecedores"),
+    ("app.py",                   "EX", "Executive Overview"),
+    ("pages/03_inventory.py",     "IN", "Inventory Intelligence"),
+    ("pages/04_daily_ops.py",     "DO", "Daily Operations"),
+    ("pages/01_abc_analysis.py",  "SA", "Sales Analytics"),
+    ("pages/02_margin_matrix.py", "CF", "Cashflow"),
+    ("pages/05_categories.py",    "CI", "Category Intelligence"),
+    ("pages/06_export_excel.py",  "RP", "Reports"),
+    ("pages/07_suppliers.py",     "AI", "AI Insights"),
 ]
 
 
@@ -105,6 +106,27 @@ def get_selected_period() -> str:
     return "ALL"
 
 
+def _run_local_automation(action: str, force: bool = False) -> tuple[bool, dict, str]:
+    import subprocess
+
+    root = Path(__file__).resolve().parent.parent.parent
+    runner = root / ".venv" / "bin" / "python3"
+    cmd = [str(runner), str(root / "scripts" / "automation_cli.py"), action]
+    if force:
+        cmd.append("--force")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(root))
+    payload = {}
+    stdout = (result.stdout or "").strip()
+    if stdout:
+        try:
+            json_start = stdout.find("{")
+            payload = json.loads(stdout[json_start:]) if json_start >= 0 else {}
+        except Exception:
+            payload = {}
+    return result.returncode == 0, payload, (result.stderr or "").strip()
+
+
 def render_sidebar(active_page: str = ""):
     """
     Render logo + full HUD-styled navigation sidebar.
@@ -118,21 +140,26 @@ def render_sidebar(active_page: str = ""):
 <style>
 [data-testid="stSidebar"] .stPageLink a {
     display: block;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.88rem;
-    letter-spacing: 0.03em;
-    transition: background 0.2s, box-shadow 0.2s;
+    padding: 5px 9px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    transition: background 0.12s, border-color 0.12s;
     text-decoration: none !important;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+}
+[data-testid="stSidebarNav"] {
+    display: none !important;
 }
 [data-testid="stSidebar"] .stPageLink a:hover {
-    background: rgba(0,212,255,0.10) !important;
-    box-shadow: 0 0 10px rgba(0,212,255,0.20);
+    background: rgba(55,213,232,0.08) !important;
+    border-color: rgba(55,213,232,0.22);
 }
 .sidebar-section-label {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.15em;
-    color: #4A5568;
+    color: #82908C;
     text-transform: uppercase;
     padding: 4px 12px 2px;
     margin-top: 8px;
@@ -148,8 +175,8 @@ def render_sidebar(active_page: str = ""):
     display: inline-block;
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: #00FF88;
-    box-shadow: 0 0 6px rgba(0,255,136,0.8);
+    background: #35D07F;
+    box-shadow: none;
     margin-right: 5px;
     vertical-align: middle;
 }
@@ -160,37 +187,37 @@ def render_sidebar(active_page: str = ""):
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:4px 0 10px;">', unsafe_allow_html=True)
 
         # ── Month filter ──────────────────────────────────────────────────────
-        st.markdown('<div class="sidebar-section-label">◈ Período</div>', unsafe_allow_html=True)
-        try:
-            from app.db import get_conn, get_available_months
-            _conn = get_conn()
-            _avail = get_available_months(_conn)
-            if _avail:
-                render_month_filter(_avail)
-                _sel = get_month_filter()
-                if _sel:
-                    st.caption(f"✅ {len(_sel)} mês(es) selecionado(s)")
-                else:
-                    st.caption("📅 Exibindo todos os meses")
-            else:
-                st.caption("Sem dados de vendas ainda.")
-        except Exception:
-            pass
+        st.markdown('<div class="sidebar-section-label">Command Window</div>', unsafe_allow_html=True)
+        st.text_input(
+            "Search / command palette",
+            placeholder="SYNC, SKU, ALERT, REPORT...",
+            label_visibility="collapsed",
+            key="ff_command_palette",
+        )
+
+        st.markdown('<div class="sidebar-section-label">Period Filter</div>', unsafe_allow_html=True)
+        st.caption("All synchronized months")
+        st.session_state.setdefault(MONTH_FILTER_KEY, [])
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:8px 0 10px;">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-section-label">◈ Navegação</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-section-label">Operational Navigation</div>', unsafe_allow_html=True)
 
         for page, icon, label in _NAV:
             st.page_link(page, label=f"{icon}  {label}")
 
+        st.markdown('<div style="padding:4px 12px 0;">', unsafe_allow_html=True)
+        st.caption("AL Alerts")
+        st.caption("SH System Health")
+        st.markdown('</div>', unsafe_allow_html=True)
+
         # ── Data contract label ────────────────────────────────────────────────
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-section-label">◈ Fonte ativa</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-section-label">Canonical Source</div>', unsafe_allow_html=True)
         st.markdown(
             '<div style="text-align:center;font-size:0.75rem;color:#00D4FF;'
             'letter-spacing:0.06em;padding:6px 0;opacity:0.9;">'
-            '📘 Excel master sincronizado<br>'
-            '<span style="font-size:0.68rem;color:#4A5568;">sem cortes por período</span>'
+            'EXCEL MASTER ONLINE<br>'
+            '<span style="font-size:0.68rem;color:#82908C;">data/excel/FuloFilo_Master.xlsx</span>'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -205,6 +232,30 @@ def render_sidebar(active_page: str = ""):
                 "Status: não pronto para produção. "
                 "Carregue dados reais no Excel master antes de confiar nos indicadores."
             )
+
+        st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-section-label">Automation Controls</div>', unsafe_allow_html=True)
+        st.caption("Use a rotina automática para todo o fluxo que não seja lançamento manual de vendas.")
+        if st.button("▶ Executar rotina automática", use_container_width=True, type="primary"):
+            with st.spinner("Executando sync, alertas e relatórios..."):
+                ok, payload, stderr = _run_local_automation("run-daily-automation")
+            if ok:
+                details = payload.get("details", {})
+                steps = details.get("automation_steps", [])
+                st.success(f"Rotina concluída. Etapas executadas: {len(steps)}.")
+                st.cache_data.clear()
+            else:
+                error = payload.get("error") or stderr or "Falha ao executar rotina automática."
+                st.error(error)
+
+        if st.button("✔ Validar dados", use_container_width=True):
+            with st.spinner("Executando validação estrita..."):
+                ok, payload, stderr = _run_local_automation("validate-data-integrity")
+            if ok:
+                st.success("Validação concluída com sucesso.")
+            else:
+                error = payload.get("error") or stderr or "Falha na validação."
+                st.error(error)
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
