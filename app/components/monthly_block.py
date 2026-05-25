@@ -59,7 +59,7 @@ def render_monthly_block(conn=None):
 
     # ── Section header ────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="font-size:0.68rem;letter-spacing:0.15em;color:#4A5568;'
+        '<div style="font-size:0.93rem;letter-spacing:0.15em;color:#4A5568;'
         'text-transform:uppercase;margin-bottom:10px;">◈ Vendas por Mês</div>',
         unsafe_allow_html=True,
     )
@@ -142,7 +142,7 @@ def render_monthly_block(conn=None):
             yaxis_title="Receita (R$)",
             showlegend=False,
             title=dict(
-                text=f"Receita por Mês  ·  <span style='color:{HUD['gold']};font-size:13px;'>"
+                text=f"Receita por Mês  ·  <span style='color:{HUD['gold']};font-size:17px;'>"
                      f"Total R$ {total_rev:,.2f}</span>",
                 font=dict(size=13, color=HUD["text"]),
                 x=0,
@@ -155,9 +155,9 @@ def render_monthly_block(conn=None):
         with st.expander("📋 Detalhamento por mês", expanded=False):
             # Table header
             st.markdown(
-                f'<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">'
+                f'<table style="width:100%;border-collapse:collapse;font-size:1.07rem;">'
                 f'<thead><tr style="color:{HUD["text_dim"]};text-transform:uppercase;'
-                f'font-size:0.68rem;letter-spacing:0.08em;">'
+                f'font-size:0.93rem;letter-spacing:0.08em;">'
                 f'<th style="text-align:left;padding:6px 10px;">Mês</th>'
                 f'<th style="text-align:right;padding:6px 10px;">Receita</th>'
                 f'<th style="text-align:right;padding:6px 10px;">Unidades</th>'
@@ -210,7 +210,7 @@ def render_monthly_block(conn=None):
             st.markdown(rows_html + "</tbody></table>", unsafe_allow_html=True)
 
     st.markdown(
-        f'<div style="font-size:0.7rem;color:#4A5568;text-align:right;margin-top:4px;">'
+        f'<div style="font-size:0.95rem;color:#4A5568;text-align:right;margin-top:4px;">'
         f'{subtitle}</div>',
         unsafe_allow_html=True,
     )

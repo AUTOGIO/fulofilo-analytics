@@ -11,6 +11,8 @@ import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
+from app.utils.rede_automation import launch_rede_sales_download
+from app.utils.supplier_desk import DEFAULT_CONFIG, load_supplier_desk
 
 # ── Month filter session-state key ────────────────────────────────────────────
 MONTH_FILTER_KEY = "ff_month_filter"
@@ -69,6 +71,20 @@ _NAV = [
     ("pages/06_export_excel.py",  "RP", "Reports"),
     ("pages/07_suppliers.py",     "AI", "AI Insights"),
 ]
+
+
+def _navigation_items() -> list[tuple[str, str, str]]:
+    items = list(_NAV)
+    try:
+        config = DEFAULT_CONFIG | load_supplier_desk().get("config", {})
+        items[-1] = (
+            "pages/07_suppliers.py",
+            str(config.get("nav_code") or "AI").upper(),
+            str(config.get("nav_label") or "AI Insights"),
+        )
+    except Exception:
+        pass
+    return items
 
 
 def inject_logo():
@@ -142,7 +158,7 @@ def render_sidebar(active_page: str = ""):
     display: block;
     padding: 5px 9px;
     border-radius: 3px;
-    font-size: 0.78rem;
+    font-size: 1.03rem;
     letter-spacing: 0.06em;
     transition: background 0.12s, border-color 0.12s;
     text-decoration: none !important;
@@ -157,7 +173,7 @@ def render_sidebar(active_page: str = ""):
     border-color: rgba(55,213,232,0.22);
 }
 .sidebar-section-label {
-    font-size: 0.62rem;
+    font-size: 0.87rem;
     letter-spacing: 0.15em;
     color: #82908C;
     text-transform: uppercase;
@@ -165,7 +181,7 @@ def render_sidebar(active_page: str = ""):
     margin-top: 8px;
 }
 .sidebar-footer {
-    font-size: 0.68rem;
+    font-size: 0.93rem;
     color: #4A5568;
     letter-spacing: 0.06em;
     text-align: center;
@@ -202,7 +218,7 @@ def render_sidebar(active_page: str = ""):
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:8px 0 10px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">Operational Navigation</div>', unsafe_allow_html=True)
 
-        for page, icon, label in _NAV:
+        for page, icon, label in _navigation_items():
             st.page_link(page, label=f"{icon}  {label}")
 
         st.markdown('<div style="padding:4px 12px 0;">', unsafe_allow_html=True)
@@ -214,10 +230,10 @@ def render_sidebar(active_page: str = ""):
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">Canonical Source</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div style="text-align:center;font-size:0.75rem;color:#00D4FF;'
+            '<div style="text-align:center;font-size:1rem;color:#00D4FF;'
             'letter-spacing:0.06em;padding:6px 0;opacity:0.9;">'
             'EXCEL MASTER ONLINE<br>'
-            '<span style="font-size:0.68rem;color:#82908C;">data/excel/FuloFilo_Master.xlsx</span>'
+            '<span style="font-size:0.93rem;color:#82908C;">data/excel/FuloFilo_Master.xlsx</span>'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -235,8 +251,8 @@ def render_sidebar(active_page: str = ""):
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">Automation Controls</div>', unsafe_allow_html=True)
-        st.caption("Use a rotina automática para todo o fluxo que não seja lançamento manual de vendas.")
-        if st.button("▶ Executar rotina automática", use_container_width=True, type="primary"):
+        st.caption("Use a rotina automática após atualizar vendas e dados operacionais na planilha Excel.")
+        if st.button("Executar rotina automática", use_container_width=True, type="primary"):
             with st.spinner("Executando sync, alertas e relatórios..."):
                 ok, payload, stderr = _run_local_automation("run-daily-automation")
             if ok:
@@ -257,6 +273,22 @@ def render_sidebar(active_page: str = ""):
                 error = payload.get("error") or stderr or "Falha na validação."
                 st.error(error)
 
+        st.markdown('<div class="sidebar-section-label">Rede Downloads</div>', unsafe_allow_html=True)
+        st.caption("Abre uma janela do Terminal para baixar relatórios Rede. Não altera dados canônicos.")
+        rede_target_date = st.date_input("Dia Rede", key="rede_download_target_date")
+        rede_formats = st.multiselect(
+            "Formato",
+            options=["csv", "excel", "pdf"],
+            default=["csv"],
+            key="rede_download_formats",
+        )
+        if st.button("Baixar vendas Rede", use_container_width=True):
+            result = launch_rede_sales_download("date", rede_target_date, rede_formats)
+            if result.ok:
+                st.success(result.message)
+            else:
+                st.error(result.message)
+
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(
             '<div class="sidebar-footer">'
@@ -273,8 +305,8 @@ def render_sidebar(active_page: str = ""):
                         os.environ.get("IS_STREAMLIT_CLOUD"))
         if not is_cloud:
             st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
-            st.markdown('<div class="sidebar-section-label">◈ Deploy</div>', unsafe_allow_html=True)
-            if st.button("🚀 Sync & Push", use_container_width=True, help="Rebuilds parquets e faz git push → Streamlit redeploys"):
+            st.markdown('<div class="sidebar-section-label">Deploy</div>', unsafe_allow_html=True)
+            if st.button("Sync & Push", use_container_width=True, help="Rebuilds parquets e faz git push → Streamlit redeploys"):
                 sync_script = Path(__file__).resolve().parent.parent.parent / "etl" / "sync_and_push.py"
                 with st.spinner("Sincronizando..."):
                     result = subprocess.run(
@@ -283,7 +315,7 @@ def render_sidebar(active_page: str = ""):
                         cwd=str(sync_script.parent.parent),
                     )
                 if result.returncode == 0:
-                    st.success("✅ Push realizado! App atualiza em ~60s")
+                    st.success("Push realizado. App atualiza em ~60s")
                 else:
                     st.error(f"❌ Erro:\n{result.stderr[-300:]}")
 

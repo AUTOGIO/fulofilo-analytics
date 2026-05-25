@@ -1,11 +1,11 @@
 # FulôFiló Docs
 
-This documentation set describes the current Excel-first operating model only.
+This docs set reflects the current Excel-first + n8n-orchestrated operating model.
 
-## Canonical Workflow
+## Canonical Runtime
 
 ```bash
-cd /Users/giovannini_nuovo/Documents/GitHub/FuloFilo
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
 uv sync
 bash scripts/sync_excel.sh
 bash scripts/launch_app.sh
@@ -15,23 +15,24 @@ Canonical source of truth:
 
 - `data/excel/FuloFilo_Master.xlsx`
 
-Generated artifacts:
+Generated artifacts (read models / reports):
 
 - `data/parquet/*.parquet`
 - `data/fulofilo.duckdb`
-- `data/raw/product_catalog.csv`
+- `data/raw/catalogs/product_catalog.csv`
 - `excel/FuloFilo_Report_*.xlsx`
 
-These generated artifacts are read models or reports, not operational sources.
+## External Orchestration (n8n)
+
+n8n is the external control plane only (scheduling, triggers, ordering, retries).
+Business logic remains in Python code inside this repository.
+
+Primary references:
+
+- `/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docs/n8n/README.md`
+- `/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docs/USER_GUIDE.md`
 
 ## Legacy Notice
 
-Historical CSV and JSON files are kept for audit and migration history only.
-They are not the active sync path.
-
-Archived paths:
-
-- `scripts/refresh_data.sh`
-- deleted `etl/build_catalog.py`
-- deleted `etl/ingest_eleve.py`
-- deleted `scripts/sync_native_sources.sh`
+Historical CSV/JSON files remain for audit traceability.
+They are not active operational write targets.

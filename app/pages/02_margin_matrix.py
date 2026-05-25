@@ -1,21 +1,13 @@
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
-"""
-FulôFiló — Matriz de Margem (HUD Edition)
-==========================================
-Scatter plot: X = Quantity Sold, Y = Margin %, Bubble = Revenue
-Quadrants: Stars (high vol + high margin), Cash Cows, Hidden Gems, Dogs
-"""
-
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import sys
 from pathlib import Path
 
+_FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn, get_margin_matrix, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
+from app.components.sidebar import render_sidebar, get_selected_period
 from app.components.hud import inject_hud_css, hud_plotly_layout
 from app.components.terminal import page_command_header, render_terminal_css
 from app.utils.source_health import render_source_health_warning
@@ -29,7 +21,6 @@ st.set_page_config(page_title="Matriz de Margem — FulôFiló", page_icon=_FAVI
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header()
 page_command_header(
     "Cashflow + Margin Matrix",
     "CF / profitability control",
@@ -115,16 +106,16 @@ fig.add_hline(
 # Quadrant annotations
 font_base = dict(family="Inter, sans-serif", size=13)
 fig.add_annotation(x=pdf["qty_sold"].max()*0.85, y=pdf["margin_pct"].max()*0.95,
-                   text="🌟 Stars", showarrow=False,
+                   text="Stars", showarrow=False,
                    font={**font_base, "color": "#00FF88"})
 fig.add_annotation(x=pdf["qty_sold"].max()*0.85, y=pdf["margin_pct"].min()*1.1,
-                   text="🐄 Cash Cows", showarrow=False,
+                   text="Cash Cows", showarrow=False,
                    font={**font_base, "color": "#FFD700"})
 fig.add_annotation(x=pdf["qty_sold"].min()*1.5, y=pdf["margin_pct"].max()*0.95,
-                   text="💎 Hidden Gems", showarrow=False,
+                   text="Hidden Gems", showarrow=False,
                    font={**font_base, "color": "#00D4FF"})
 fig.add_annotation(x=pdf["qty_sold"].min()*1.5, y=pdf["margin_pct"].min()*1.1,
-                   text="🐕 Dogs", showarrow=False,
+                   text="Dogs", showarrow=False,
                    font={**font_base, "color": "#FF4455"})
 
 fig.update_layout(coloraxis_showscale=True)
@@ -136,7 +127,7 @@ st.divider()
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🏆 Top 10 — Maior Margem")
+    st.subheader("Top 10 — Maior Margem")
     top_margin = df.sort("margin_pct", descending=True).head(10).to_pandas()
     top_margin = top_margin[["full_name", "category", "margin_pct", "revenue"]].copy()
     top_margin.columns = ["Produto", "Categoria", "Margem (%)", "Receita (R$)"]
@@ -145,7 +136,7 @@ with col1:
     st.dataframe(top_margin, use_container_width=True, hide_index=True)
 
 with col2:
-    st.subheader("⚠️ Bottom 10 — Menor Margem")
+    st.subheader("Bottom 10 — Menor Margem")
     bot_margin = df.sort("margin_pct").head(10).to_pandas()
     bot_margin = bot_margin[["full_name", "category", "margin_pct", "revenue"]].copy()
     bot_margin.columns = ["Produto", "Categoria", "Margem (%)", "Receita (R$)"]
@@ -157,15 +148,15 @@ with col2:
 # INTELLIGENCE LAYER — Classification + Recommendations + Alerts + Report
 # ══════════════════════════════════════════════════════════════════════════════
 st.divider()
-st.subheader("🧠 Inteligência Estratégica")
+st.subheader("Inteligência Estratégica")
 
 # ── Classification distribution KPIs ─────────────────────────────────────────
 dist = enriched_pdf["classification"].value_counts().to_dict()
 k1, k2, k3, k4 = st.columns(4)
-k1.metric("🌟 Stars",       dist.get("Star",       0))
-k2.metric("🐄 Cash Cows",   dist.get("Cash Cow",   0))
-k3.metric("💎 Hidden Gems", dist.get("Hidden Gem", 0))
-k4.metric("🐕 Dogs",        dist.get("Dog",        0))
+k1.metric("Stars",       dist.get("Star",       0))
+k2.metric("Cash Cows",   dist.get("Cash Cow",   0))
+k3.metric("Hidden Gems", dist.get("Hidden Gem", 0))
+k4.metric("Dogs",        dist.get("Dog",        0))
 
 # ── Enriched product table (filterable by current category selection) ─────────
 st.markdown("#### Classificação + Recomendação por Produto")
@@ -191,7 +182,7 @@ st.dataframe(show_enriched, use_container_width=True, hide_index=True)
 
 # ── Alerts panel ─────────────────────────────────────────────────────────────
 st.divider()
-st.markdown("#### ⚡ Alertas Operacionais")
+st.markdown("#### Alertas Operacionais")
 
 @st.cache_data
 def load_alerts(data_version: str):  # noqa: ARG001
@@ -207,19 +198,19 @@ summary      = alert_result.get("summary", {})
 
 if alerts:
     for a in alerts:
-        icon = "🔴" if a["severity"] == "high" else "🟡"
-        st.warning(f"{icon} {a['message']}")
+        severity = "HIGH" if a["severity"] == "high" else "MEDIUM"
+        st.warning(f"[{severity}] {a['message']}")
 else:
-    st.success("✅ Nenhum alerta ativo no momento.")
+    st.success("Nenhum alerta ativo no momento.")
 
 if skipped:
-    with st.expander(f"ℹ️ Regras ignoradas ({len(skipped)})", expanded=False):
+    with st.expander(f"Regras ignoradas ({len(skipped)})", expanded=False):
         for s in skipped:
             st.caption(f"**{s['rule']}**: {s['reason']}")
 
 # ── Category analytics ────────────────────────────────────────────────────────
 st.divider()
-st.markdown("#### 📊 Resumo por Categoria")
+st.markdown("#### Resumo por Categoria")
 cat_summary = aggregate_by_category(enriched_pdf)
 if not cat_summary.empty:
     cat_show = cat_summary.copy()
@@ -230,30 +221,30 @@ if not cat_summary.empty:
         "total_revenue": "Receita Total", "total_qty_sold": "Qtd Total",
         "product_count": "Produtos",
     }
-    if "star_count" in cat_show.columns: rename_cat["star_count"] = "⭐ Stars"
-    if "dog_count"  in cat_show.columns: rename_cat["dog_count"]  = "🐕 Dogs"
+    if "star_count" in cat_show.columns: rename_cat["star_count"] = "Stars"
+    if "dog_count"  in cat_show.columns: rename_cat["dog_count"]  = "Dogs"
     cat_show = cat_show.rename(columns=rename_cat)
     st.dataframe(cat_show, use_container_width=True, hide_index=True)
 
 # ── Weekly report generation ──────────────────────────────────────────────────
 st.divider()
-st.markdown("#### 📄 Relatório Semanal")
+st.markdown("#### Relatório Semanal")
 col_r1, col_r2 = st.columns([3, 1])
 with col_r1:
     st.caption("Gera JSON + Markdown em `data/outputs/weekly_report.json`")
 with col_r2:
-    if st.button("📥 Gerar Relatório", use_container_width=True):
+    if st.button("Gerar Relatório", use_container_width=True):
         with st.spinner("Gerando..."):
             report = generate_weekly_report(enriched_pdf)
         meta = report.get("metadata", {})
         st.success(
-            f"✅ Relatório gerado — {meta.get('total_products', 0)} produtos, "
+            f"Relatório gerado — {meta.get('total_products', 0)} produtos, "
             f"distribuição: {meta.get('distribution', {})}"
         )
         conc = report.get("revenue_concentration", {})
         if conc and "n_products" in conc:
             st.info(
-                f"📊 Concentração de receita: **{conc['n_products']} produtos** "
+                f"Concentração de receita: **{conc['n_products']} produtos** "
                 f"representam 80% da receita total "
                 f"({conc.get('pct_of_catalog', 0)*100:.1f}% do catálogo)"
             )

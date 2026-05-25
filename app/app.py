@@ -20,8 +20,9 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.components.hud import HUD, hud_plotly_layout, inject_hud_css
-from app.components.sidebar import get_month_filter, render_page_header, render_sidebar
+from app.components.sidebar import get_month_filter, render_sidebar
 from app.components.terminal import (
+    command_tape,
     dataframe_table,
     feed,
     kpi_grid,
@@ -63,7 +64,6 @@ st.set_page_config(
 inject_hud_css()
 render_terminal_css()
 render_sidebar(active_page="app.py")
-render_page_header()
 render_source_health_warning()
 
 
@@ -203,6 +203,16 @@ terminal_header(
         {"label": "Operational Health", "value": f"{ops_score}/100", "sub": readiness, "color": HUD["green"] if ops_score >= 80 else HUD["amber"]},
         {"label": "Sync Status", "value": "SYNCED" if data["health"].get("ok") else "CHECK", "sub": _last_sync_label(), "color": status_color("ready" if data["health"].get("ok") else "warning")},
         {"label": "AI Assistant", "value": "WATCH", "sub": "rules engine online", "color": HUD["cyan"]},
+    ]
+)
+command_tape(
+    [
+        "01) Inventory Matrix",
+        "02) Cashflow Ops",
+        "03) Sales Velocity",
+        "04) Reorder Actions",
+        "05) Risk Alerts",
+        "06) Export Desk",
     ]
 )
 
@@ -359,7 +369,7 @@ with ai_col:
     panel("Operational Anomalies", "risk warnings", feed(risk_rows))
 
     flow_body = f"""
-<div style="font-size:0.72rem;line-height:1.75;color:{HUD['text']};">
+<div style="font-size:0.97rem;line-height:1.75;color:{HUD['text']};">
   <div><strong style="color:{HUD['gold']};">CANONICAL WRITE:</strong> data/excel/FuloFilo_Master.xlsx</div>
   <div><strong style="color:{HUD['cyan']};">SYNC PATH:</strong> bash scripts/sync_excel.sh</div>
   <div><strong style="color:{HUD['text_dim']};">READ MODELS:</strong> parquet + DuckDB + reports</div>

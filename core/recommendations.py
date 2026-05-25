@@ -39,13 +39,13 @@ ACTION_MAP: dict[str, str] = {
     UNKNOWN:    "Insufficient data — review manually",
 }
 
-# Human-readable emoji prefix for dashboard display
+# Human-readable display strings for dashboard output.
 DISPLAY_MAP: dict[str, str] = {
-    STAR:       "🌟 Scale stock + ads + test price increase",
-    CASH_COW:   "🐄 Optimize cost + bundle",
-    HIDDEN_GEM: "💎 Increase visibility + test campaigns",
-    DOG:        "🐕 Fix or discontinue",
-    UNKNOWN:    "⚠️ Insufficient data — review manually",
+    STAR:       "Scale stock + ads + test price increase",
+    CASH_COW:   "Optimize cost + bundle",
+    HIDDEN_GEM: "Increase visibility + test campaigns",
+    DOG:        "Fix or discontinue",
+    UNKNOWN:    "Insufficient data — review manually",
 }
 
 

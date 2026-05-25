@@ -120,7 +120,7 @@ def _markdown_summary(report: dict) -> str:
         f"# FulôFiló — Weekly Decision Report",
         f"_Generated: {ts}_",
         "",
-        "## 🌟 Stars (Top 5)",
+        "## Stars (Top 5)",
     ]
     for p in report.get("stars", [])[:5]:
         lines.append(
@@ -129,14 +129,14 @@ def _markdown_summary(report: dict) -> str:
             f"Margin: {p.get('margin_pct', 0)*100:.1f}% | "
             f"{p.get('recommended_action', '')}"
         )
-    lines += ["", "## 💎 Hidden Gems (Top 5)"]
+    lines += ["", "## Hidden Gems (Top 5)"]
     for p in report.get("hidden_gems", [])[:5]:
         lines.append(
             f"- **{p.get('full_name', '?')}** | "
             f"Rev: R$ {p.get('revenue', 0):,.2f} | "
             f"Margin: {p.get('margin_pct', 0)*100:.1f}%"
         )
-    lines += ["", "## 🐕 Dogs (candidates for review)"]
+    lines += ["", "## Dogs (candidates for review)"]
     for p in report.get("dogs", [])[:5]:
         lines.append(
             f"- **{p.get('full_name', '?')}** | "
@@ -146,7 +146,7 @@ def _markdown_summary(report: dict) -> str:
     conc = report.get("revenue_concentration", {})
     lines += [
         "",
-        "## 📊 Revenue Concentration (Pareto 80%)",
+        "## Revenue Concentration (Pareto 80%)",
         f"- **{conc.get('n_products', '?')} products** drive "
         f"{conc.get('threshold_pct', 0.8)*100:.0f}% of revenue "
         f"({conc.get('pct_of_catalog', 0)*100:.1f}% of catalog)",

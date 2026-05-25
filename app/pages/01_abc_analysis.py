@@ -1,11 +1,3 @@
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
-"""
-FulôFiló — 📊 Análise ABC (HUD Edition)
-=========================================
-ABC Pareto with live filters, treemap, metric cards, and HUD aesthetic.
-"""
-
 import sys
 from pathlib import Path
 
@@ -14,9 +6,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+_FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_abc_analysis, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header, get_selected_period
+from app.components.sidebar import render_sidebar, get_selected_period
 from app.components.hud import (
     inject_hud_css, abc_badge, hud_plotly_layout,
     action_tag_badge, priority_badge,
@@ -28,7 +21,6 @@ st.set_page_config(page_title="Análise ABC — FulôFiló", page_icon=_FAVICON,
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header()
 page_command_header(
     "Sales Analytics",
     "SA / ABC revenue control",

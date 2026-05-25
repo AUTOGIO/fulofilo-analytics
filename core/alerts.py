@@ -149,7 +149,7 @@ def _rule_star_low_stock(
             severity   = "high",
             row        = row,
             message    = (
-                f"⭐ Star product '{row.get('full_name')}' has LOW STOCK "
+                f"Star product '{row.get('full_name')}' has LOW STOCK "
                 f"(current: {int(row['current_stock'])} ≤ min: {int(row['min_stock'])}). "
                 f"Replenish immediately."
             ),
@@ -172,7 +172,7 @@ def _rule_dog_high_stock(
             severity   = "medium",
             row        = row,
             message    = (
-                f"🐕 Dog product '{row.get('full_name')}' has HIGH STOCK "
+                f"Dog product '{row.get('full_name')}' has HIGH STOCK "
                 f"(current: {int(row['current_stock'])} > reorder: {int(row['reorder_qty'])}). "
                 f"Consider discounting or discontinuing."
             ),

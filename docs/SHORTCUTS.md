@@ -1,74 +1,56 @@
-# FulôFiló — macOS Shortcuts & Automation
+# FulôFiló — macOS Shortcuts Integration
 
-## Automated ETL via Folder Watch
+Use Shortcuts as an optional local trigger layer.  
+Do not embed business rules in Shortcuts.
 
-### Overview
-Drop a new Eleve Vendas JSON export into a watched inbox folder.
-macOS Shortcuts detects the new file and triggers the full ETL pipeline automatically.
+## Recommended pattern
 
-### Setup (macOS Sequoia / Tahoe)
+Shortcuts triggers the local automation webhook, which executes Python actions:
 
-#### 1. Create the Inbox Folder
-```bash
-mkdir -p ~/Documents/FuloFilo_Inbox/processed
-```
+- `refresh-dashboard-data`
+- `generate-replenishment-alerts`
+- `export-reports`
+- `validate-data-integrity`
 
-#### 2. Create the macOS Shortcut
-
-Open **Shortcuts.app** → New Shortcut → name it `FulôFiló Auto-Refresh`
-
-Add these actions in order:
-
-| Step | Action | Settings |
-|------|--------|---------|
-| 1 | **Get Contents of Folder** | `~/Documents/FuloFilo_Inbox` |
-| 2 | **Filter Files** | Name ends with `.json` |
-| 3 | **If** | File count > 0 |
-| 4 | **Run Shell Script** | See script below |
-| 5 | **Show Notification** | "FulôFiló dados atualizados ✅" |
-
-Shell Script content for Step 4:
-```bash
-/bin/bash /Users/eduardogiovannini/dev/products/FuloFilo/scripts/refresh_data.sh
-```
-
-#### 3. Set Up Folder Automation (Automator)
-
-As an alternative to Shortcuts, use **Automator**:
-1. Open Automator → New → Folder Action
-2. Watch folder: `~/Documents/FuloFilo_Inbox`
-3. Add action: **Run Shell Script**
-4. Script: `/bin/bash /Users/eduardogiovannini/dev/products/FuloFilo/scripts/refresh_data.sh`
-5. Save as `FuloFilo_Auto_Refresh`
-6. Right-click the Inbox folder → Services → Folder Actions Setup → enable
-
-#### 4. Test the Pipeline
+## 1. Start local webhook bridge
 
 ```bash
-# Manual test
-cp /path/to/new_eleve_export.json ~/Documents/FuloFilo_Inbox/
-# Wait ~5 seconds — Automator should trigger
-# Check logs:
-tail -f /Users/eduardogiovannini/dev/products/FuloFilo/logs/refresh.log
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+export FULOFILO_AUTOMATION_TOKEN="change-this-token"
+make automation-webhook
 ```
 
-## Manual Launch
+## 2. Create a Shortcut
+
+Open **Shortcuts.app** and create `Fulofilo Refresh`.
+
+Add these actions:
+
+1. **Text** (JSON body):
+```json
+{"action":"refresh-dashboard-data","idempotency_key":"shortcuts-refresh-001"}
+```
+2. **Get Contents of URL**
+   - URL: `http://127.0.0.1:8787/run`
+   - Method: `POST`
+   - Request Body: `JSON` using the Text output
+   - Header: `X-Automation-Token: change-this-token`
+3. **Show Notification**: `FulôFiló refresh finished`
+
+## 3. Optional schedule
+
+Use Personal Automation in Shortcuts (`Time of Day`) to run this Shortcut.
+
+## 4. Manual commands
 
 ```bash
-# Start the analytics dashboard
-./scripts/launch_app.sh
-
-# Run refresh manually
-./scripts/refresh_data.sh
-
-# Generate Excel report
-.venv/bin/python3 excel/build_report.py
+make automation-refresh-dashboard-data
+make automation-generate-replenishment-alerts
+make automation-export-reports
+make automation-validate-data-integrity
 ```
 
-## Keyboard Shortcuts in the App
+## Security note
 
-| Action | Shortcut |
-|--------|---------|
-| Refresh page | `R` |
-| Toggle sidebar | `S` |
-| Dark/light mode | In settings (☰) |
+Keep `FULOFILO_AUTOMATION_TOKEN` local and private.  
+Do not hardcode real tokens in committed files.

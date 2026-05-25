@@ -1,11 +1,3 @@
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
-"""
-FulôFiló — 📦 Gestão de Estoque (HUD Edition)
-===============================================
-Critical alert banner, reorder table with HUD alert pills, stacked value chart.
-"""
-
 import sys
 from pathlib import Path
 
@@ -13,9 +5,10 @@ import plotly.express as px
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+_FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
 sys.path.insert(0, str(ROOT))
 from app.db import get_conn, get_inventory_alerts, get_stock_turnover, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header
+from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, alert_badge, hud_plotly_layout
 from app.components.terminal import page_command_header, render_terminal_css
 from app.utils.inventory_ops import load_inventory
@@ -25,7 +18,6 @@ st.set_page_config(page_title="Estoque — FulôFiló", page_icon=_FAVICON, layo
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header()
 page_command_header(
     "Inventory Intelligence",
     "IN / stock control",
@@ -61,7 +53,7 @@ if not criticos.empty:
     padding: 12px 18px;
     margin-bottom: 16px;
     box-shadow: 0 0 16px rgba(255,68,85,0.25);
-    font-size: 0.9rem;
+    font-size: 1.15rem;
     color: #FF4455;
 ">
 🚨 <strong>{len(criticos)} ITEM(NS) CRÍTICO(S):</strong> {names}{extra} — estoque abaixo do mínimo!
@@ -97,7 +89,7 @@ if not giro_df.is_empty():
     st.markdown("""
 <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.20);
 border-radius:10px;padding:12px 18px;margin-bottom:12px;">
-<span style="font-size:0.7rem;letter-spacing:0.12em;color:#4A5568;text-transform:uppercase;">
+<span style="font-size:0.95rem;letter-spacing:0.12em;color:#4A5568;text-transform:uppercase;">
 🔄 Giro do Estoque — Vendas ÷ Estoque Atual
 </span></div>
 """, unsafe_allow_html=True)
@@ -231,8 +223,8 @@ with tab3:
 st.divider()
 st.subheader("🔧 Ajuste Manual de Estoque")
 st.warning(
-    "Para o fluxo atual, apenas `DailySales` deve ser lançado manualmente. "
-    "Ajustes manuais de estoque nesta tela estão temporariamente desabilitados."
+    "Atualize estoque e vendas na planilha Excel canônica. "
+    "Ajustes de estoque nesta tela estão temporariamente desabilitados."
 )
 st.caption(
     "Use a rotina automática na barra lateral para atualizar o restante do sistema."

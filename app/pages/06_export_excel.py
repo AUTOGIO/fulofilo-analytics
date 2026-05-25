@@ -1,18 +1,11 @@
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
-"""
-FulôFiló — 📤 Export Excel (Page 6)
-=====================================
-Generate and download the full Excel workbook on demand.
-"""
-
 import sys
 import time
 from pathlib import Path
 
 import streamlit as st
 
-from app.components.sidebar import render_sidebar, render_page_header
+_FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
+from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css
 from app.components.terminal import page_command_header, render_terminal_css
 
@@ -23,7 +16,6 @@ st.set_page_config(page_title="Exportar Excel — FulôFiló", page_icon=_FAVICO
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header()
 page_command_header(
     "Executive Reports",
     "RP / reporting desk",

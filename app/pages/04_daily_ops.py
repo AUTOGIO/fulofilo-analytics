@@ -1,9 +1,3 @@
-"""
-FulôFiló — Operações Diárias (HUD Edition)
-==========================================
-Manual DailySales entry plus read-only sales history over the canonical Excel-first sync outputs.
-"""
-
 import streamlit as st
 import plotly.express as px
 import pandas as pd
@@ -14,10 +8,9 @@ from datetime import date, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.db import get_conn
-from app.components.sidebar import render_sidebar, render_page_header
+from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, hud_plotly_layout
 from app.components.terminal import page_command_header, render_terminal_css
-from app.utils.sales_ops import append_sale_to_excel
 from app.utils.source_health import render_source_health_warning
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -39,20 +32,18 @@ st.set_page_config(page_title="Operações Diárias — FulôFiló", page_icon="
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header()
 page_command_header(
     "Daily Operations",
-    "DO / sales capture",
-    "DailySales canonical write -> sync pipeline -> operational read models",
-    status="CONTROLLED WRITE",
+    "DO / sales monitoring",
+    "Excel spreadsheet updates -> sync pipeline -> operational read models",
+    status="READ MODEL",
 )
 render_source_health_warning()
 
-st.caption(f"Trading day: {date.today().strftime('%d/%m/%Y')} · manual writes are restricted to DailySales.")
-
-# ── Manual sales entry ────────────────────────────────────────────────────────
-st.subheader("📝 Registrar Venda Manual")
-st.caption("Somente `DailySales` deve ser atualizado manualmente. O restante do fluxo roda pela rotina automática.")
+st.caption(
+    f"Trading day: {date.today().strftime('%d/%m/%Y')} · "
+    "sales data comes from Excel spreadsheet updates."
+)
 
 conn = get_conn()
 products_df = pd.DataFrame(columns=["sku", "full_name", "category", "unit_cost", "price", "margin_pct"])
@@ -66,62 +57,6 @@ try:
     """).pl().to_pandas()
 finally:
     conn.close()
-
-if products_df.empty:
-    st.info("Execute `bash scripts/sync_excel.sh` para habilitar o lançamento manual de vendas.")
-else:
-    product_options = [
-        f"{row.full_name} ({row.sku})"
-        for row in products_df.itertuples(index=False)
-    ]
-    option_map = dict(zip(product_options, products_df.to_dict(orient="records")))
-
-    with st.form("manual_sale_form", clear_on_submit=False):
-        fc1, fc2 = st.columns([3, 1])
-        with fc1:
-            selected_label = st.selectbox("Produto", product_options)
-        with fc2:
-            sale_date = st.date_input("Data", value=date.today())
-
-        selected_product = option_map[selected_label]
-        default_price = float(selected_product.get("price") or 0.0)
-
-        fc3, fc4, fc5, fc6 = st.columns([1, 1, 1, 1])
-        with fc3:
-            quantity = st.number_input("Quantidade", min_value=1, value=1, step=1)
-        with fc4:
-            unit_price = st.number_input("Preço unitário", min_value=0.0, value=default_price, step=1.0, format="%.2f")
-        with fc5:
-            payment_method = st.selectbox("Pagamento", ["Pix", "Cartão", "Dinheiro", "Transferência", "Outro"])
-        with fc6:
-            st.markdown("<br>", unsafe_allow_html=True)
-            total = float(quantity) * float(unit_price)
-            st.metric("Total", f"R$ {total:.2f}")
-
-        submitted_sale = st.form_submit_button("💾 Salvar venda", use_container_width=True)
-
-    if submitted_sale:
-        try:
-            result = append_sale_to_excel(
-                sale_date=sale_date,
-                sku=str(selected_product["sku"]),
-                product=str(selected_product["full_name"]),
-                quantity=int(quantity),
-                unit_price=float(unit_price),
-                payment_method=str(payment_method),
-                source="manual-app",
-            )
-        except Exception as exc:  # noqa: BLE001
-            st.error(f"Falha ao gravar venda no Excel master: {exc}")
-        else:
-            st.success(
-                f"Venda salva: {result.product} | {result.quantity} un. | "
-                f"R$ {result.total:.2f}. Sync executado automaticamente."
-            )
-            st.cache_data.clear()
-            st.rerun()
-
-st.divider()
 
 # ── Quick Product Lookup ───────────────────────────────────────────────────────
 st.subheader("🔍 Consulta Rápida de Produto")
@@ -156,7 +91,7 @@ with hdr_col2:
 history = load_sales_history()
 
 if history.empty:
-    st.info("Nenhuma venda registrada ainda. Use o formulário acima para começar.")
+    st.info("Nenhuma venda sincronizada ainda. Atualize a planilha Excel e rode o sync.")
 else:
     today_str = date.today().strftime("%Y-%m-%d")
     today_df  = history[history["Date"].dt.strftime("%Y-%m-%d") == today_str]
@@ -269,7 +204,3 @@ else:
         show["Total"]      = show["Total"].apply(lambda x: f"R$ {x:.2f}")
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
         st.dataframe(show, use_container_width=True, hide_index=True)
-
-st.divider()
-with st.expander("🗑️ Excluir Venda", expanded=False):
-    st.warning(DISABLED_WRITEBACK_MSG)

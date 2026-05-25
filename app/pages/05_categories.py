@@ -1,15 +1,3 @@
-from pathlib import Path as _Path
-_FAVICON = str(_Path(__file__).resolve().parent.parent / 'assets' / 'favicon.png')
-"""
-FulôFiló — 🏷️ Category Manager (HUD Edition)
-=============================================
-Interactive product category management:
-- View/filter all products with their Category/Subcategory
-- Inline reassignment via dropdowns
-- Unmatched products quick-assign section
-- Sync changes back to CSV and DuckDB
-"""
-
 import sys
 from pathlib import Path
 
@@ -17,10 +5,11 @@ import polars as pl
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+_FAVICON = str(Path(__file__).resolve().parent.parent / "assets" / "favicon.png")
 sys.path.insert(0, str(ROOT))
 
 from app.db import get_conn, get_data_mtime
-from app.components.sidebar import render_sidebar, render_page_header, LOGO_44
+from app.components.sidebar import render_sidebar
 from app.components.hud import inject_hud_css, conf_badge, hud_plotly_layout
 from app.components.terminal import page_command_header, render_terminal_css
 from app.utils.source_health import render_source_health_warning
@@ -29,7 +18,6 @@ st.set_page_config(page_title="Categorias — FulôFiló", page_icon=_FAVICON, l
 inject_hud_css()
 render_terminal_css()
 render_sidebar()
-render_page_header(logo_path=LOGO_44)
 page_command_header(
     "Category Intelligence",
     "CI / taxonomy control",
@@ -39,7 +27,7 @@ render_source_health_warning()
 
 st.caption("Visualize as categorias derivadas do sync canônico.")
 st.warning(
-    "Para o fluxo atual, apenas `DailySales` deve ser atualizado manualmente. "
+    "Atualize vendas e dados operacionais na planilha Excel canônica. "
     "Overrides de categoria nesta tela estão temporariamente desabilitados."
 )
 

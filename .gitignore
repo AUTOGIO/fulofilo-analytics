@@ -51,6 +51,7 @@ desktop.ini
 # ── Logs ───────────────────────────────
 logs/
 *.log
+.n8n/
 
 # ── Secrets / env ──────────────────────
 .env
@@ -88,6 +89,32 @@ data/manifests/catalog_manifest.csv
 data/manifests/catalog_manifest.json
 data/manifests/scene_manifest.csv
 data/manifests/split_manifest.csv
+data/automation/
 
 # NOTE: data/fulofilo.duckdb and data/parquet/ are intentionally tracked
 # so Streamlit Cloud can load them without a separate ETL step.
+
+# ── Codex / AI agent artifacts ─────────
+.codex-predeploy-untracked-*/
+.codex-*.png
+AGENTS*.md
+
+# ── App bundles ────────────────────────
+*.app/
+
+# ── Workspace files ────────────────────
+*.code-workspace
+
+# ── Excel backups (large, regenerable) ─
+data/excel/backups/
+data/excel/rehearsal/
+
+# ── Voice memo / catalog raw data ──────
+data/VoiceMemo_csv/
+data/catalog/
+
+# ── Docker compose (local tooling) ─────
+docker-compose*.yml
+
+# ── n8n docs ───────────────────────────
+docs/n8n/

@@ -1,93 +1,145 @@
-# FulôFiló AI — User Guide
+# FulôFiló Analytics — User Guide
 
-_Last updated: 2026-04-27_
+_Last updated: 2026-05-15_
 
-## 1. What the operator should treat as real data
+## 1. Source of truth and boundaries
 
-Use only:
+Operational source of truth:
 
 - `data/excel/FuloFilo_Master.xlsx`
 
-Do not use as operational sources:
+Read models and artifacts (not operational sources):
 
 - `data/parquet/*.parquet`
 - `data/fulofilo.duckdb`
-- `data/raw/product_catalog.csv`
+- `data/raw/catalogs/product_catalog.csv`
 - `excel/FuloFilo_Report_*.xlsx`
-- `data/raw/daily_sales_TEMPLATE.csv`
-- `data/raw/product_catalog_categorized.csv`
+- `data/outputs/*.json`
 
-## 2. Daily workflow
+Orchestration boundary:
 
-1. Open `data/excel/FuloFilo_Master.xlsx`.
-2. Update `Catalog`, `Inventory`, `DailySales`, `Cashflow`, or `CategoryOverrides`.
-3. Run `bash scripts/sync_excel.sh`.
-4. Open or refresh the dashboard with `bash scripts/launch_app.sh`.
-5. If needed, generate a report with `./.venv/bin/python3 excel/build_report.py`.
+- n8n is allowed to orchestrate triggers/schedules/webhooks/retries.
+- Business logic must stay in Python modules/scripts.
 
-## 3. What the dashboard now writes back
+## 2. Complete pipeline (Mermaid)
 
-- `Operações Diárias` appends new sales to `DailySales`
-- `Categorias` writes manual overrides to `CategoryOverrides`
-- `Estoque` updates `Inventory` and appends `data/logs/stock_audit.csv`
+```mermaid
+flowchart TD
+    A["Operator updates Excel Master<br/>data/excel/FuloFilo_Master.xlsx"] --> B["Canonical sync<br/>scripts/sync_excel.sh (scripts/sync_excel.py)"]
+    B --> C["Validation and contract checks<br/>schema, SKU integrity, totals, policy"]
+    C --> D["Read model generation<br/>data/parquet/*.parquet"]
+    D --> E["DuckDB views<br/>data/fulofilo.duckdb (app/db.py)"]
+    E --> F["Streamlit dashboard<br/>app/app.py + app/pages/*"]
 
-All of those write-backs target the Excel master first and then trigger canonical sync.
+    F --> G["Write-back operations<br/>Inventory, DailySales, CategoryOverrides"]
+    G --> A
+    F --> H["Stock audit trail<br/>data/logs/stock_audit.csv"]
 
-## 4. Safety warnings you may see
+    D --> I["Replenishment engine<br/>app/utils/reorder_engine.py"]
+    I --> J["alerts workbook<br/>data/outputs/alertas_reposicao.xlsx"]
+    I --> K["alerts json<br/>data/outputs/replenishment_alerts.json"]
 
-The app warns when:
+    D --> L["Report builders<br/>excel/build_report.py + reports/weekly_report.py"]
+    L --> M["Excel report<br/>excel/FuloFilo_Report_YYYY-MM-DD.xlsx"]
+    L --> N["ABC report outputs<br/>data/outputs/abc_weekly_report.json/.md"]
 
-- the workbook still contains only the bootstrap placeholder SKU
-- `Inventory` is empty or still only contains the placeholder row
-- `DailySales` has zero rows
-- `Cashflow` has zero rows
-- sync succeeded but the generated data is not healthy for production decisions
+    O["n8n (external control plane)<br/>schedule, trigger, webhook"] --> P["automation entrypoint<br/>scripts/automation_cli.py"]
+    P --> Q["Actions<br/>refresh/sync/alerts/export/validate"]
+    Q --> B
+    Q --> I
+    Q --> L
+    Q --> R["Validation tests<br/>tests/test_pipeline.py"]
 
-If you see those warnings, do not trust KPI totals yet. Load real business rows into the Excel master and sync again.
-
-## 5. Production onboarding checklist
-
-1. Back up the workbook first.
-   Backup convention: `data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`
-   If two backups happen in the same second, the system appends `_01`, `_02`, and so on.
-2. Prepare source data externally before touching the workbook.
-3. Confirm each destination sheet still has the canonical headers.
-4. Replace the bootstrap content sheet by sheet:
-   `Catalog`: paste real SKUs, names, categories, costs, prices, minimum stock, and reorder quantities.
-   `Inventory`: paste real stock rows for the same SKUs used in `Catalog`.
-   `DailySales`: paste real transaction history with `Date`, `sku`, `Product`, `Quantity`, `Unit_Price`, `Total`, `Payment_Method`, `Source`.
-   `Cashflow`: paste real revenue and expense rows.
-   `CategoryOverrides`: add only manual category corrections; this sheet may remain empty if not needed.
-   `Meta`: keep at least `schema_version` and `workbook`.
-5. Run `bash scripts/sync_excel.sh`.
-6. Review `data/excel/source_sync_status.json`.
-7. Run `./.venv/bin/python3 -m pytest -q tests/test_pipeline.py`.
-8. Open the dashboard with `bash scripts/launch_app.sh`.
-9. Confirm KPIs are populated and the sidebar no longer says the system is not production-ready.
-
-Manual backup example:
-
-```bash
-mkdir -p data/excel/backups
-cp data/excel/FuloFilo_Master.xlsx "data/excel/backups/FuloFilo_Master_$(date +%Y%m%d_%H%M%S).xlsx"
+    S["Optional local trigger<br/>macOS Shortcuts"] --> P
 ```
 
-## 6. Legacy files
+## 3. Daily workflow
 
-Historical raw CSV and JSON files remain in the repository for evidence and migration history. They are not the active workflow and should not be edited as part of normal operations.
+1. Register daily sales manually in the app on `Operações Diárias`.
+2. Click `Executar rotina automática` in the sidebar.
+3. Review the dashboard outputs.
+4. Use `Validar dados` in the sidebar when you need a stricter check.
 
-`scripts/refresh_data.sh` is archived and intentionally disabled.
+## 4. n8n orchestration workflow
 
-## 7. Real Migration Day Checklist
+### 4.1 Start n8n locally
 
-1. Back up `data/excel/FuloFilo_Master.xlsx` to `data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`.
-   If the timestamp already exists, keep the auto-appended suffix such as `_01`.
-2. Import real business data into `Catalog`, `Inventory`, `DailySales`, `Cashflow`, and optional `CategoryOverrides`.
-3. Preserve `Meta` keys `schema_version` and `workbook`.
-4. Run `bash scripts/sync_excel.sh`.
-5. Review `data/excel/source_sync_status.json` and confirm `healthy_production_data` is `true`.
-6. Run `./.venv/bin/python3 -m pytest -q tests/test_pipeline.py`.
-7. Run an operator smoke test in the dashboard:
-   confirm KPIs are populated, search products, register one sale if appropriate, and verify stock/cash views are populated.
-8. Generate a fresh report with `./.venv/bin/python3 excel/build_report.py`.
-9. If anything looks wrong, roll back by restoring the latest backup workbook and re-running `bash scripts/sync_excel.sh`.
+```bash
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+docker compose -f docker-compose.n8n.yml up -d
+```
+
+UI: [http://localhost:5678](http://localhost:5678)
+
+### 4.2 Start local webhook bridge
+
+```bash
+cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+export FULOFILO_AUTOMATION_TOKEN="change-this-token"
+make automation-webhook
+```
+
+Health endpoint:
+
+- `GET http://127.0.0.1:8787/health`
+
+Run endpoint:
+
+- `POST http://127.0.0.1:8787/run`
+- Auth header:
+  - `X-Automation-Token: <token>` or
+  - `Authorization: Bearer <token>`
+
+### 4.3 Import sample workflow
+
+Import this file in n8n:
+
+- `docs/n8n/fulofilo_orchestration_workflow.json`
+
+## 5. Automation commands (independent execution)
+
+```bash
+make automation-refresh-dashboard-data
+make automation-sync-excel-master
+make automation-generate-replenishment-alerts
+make automation-export-reports
+make automation-validate-data-integrity
+```
+
+Direct CLI example:
+
+```bash
+.venv/bin/python3 scripts/automation_cli.py refresh-dashboard-data
+```
+
+Main automatic routine:
+
+```bash
+make automation-run-daily
+```
+
+## 6. Idempotency, logs, and failure handling
+
+- Idempotency state:
+  - `data/automation/idempotency_state.json`
+- Action locks:
+  - `data/automation/locks/*.lock`
+- Automation logs:
+  - `logs/automation/*.log`
+- Sync health:
+  - `data/excel/source_sync_status.json`
+
+If a command fails, read the corresponding `logs/automation/<action>.log`.
+
+## 7. Production safety checklist
+
+1. Back up workbook before major edits.
+2. Keep `Meta` keys `schema_version` and `workbook`.
+3. Run `make automation-validate-data-integrity` before trusting KPIs.
+4. Confirm dashboard loads and KPIs are populated.
+5. Never commit credentials/secrets.
+
+## 8. Legacy notice
+
+Historical CSV/JSON files remain in the repo for audit history.
+They are not active write targets in the current pipeline.

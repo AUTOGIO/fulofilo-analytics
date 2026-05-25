@@ -51,144 +51,197 @@ def render_terminal_css() -> None:
 <style>
 .ff-terminal-header {{
     display: grid;
-    grid-template-columns: minmax(250px, 1.15fr) repeat(6, minmax(120px, 0.7fr));
+    grid-template-columns: minmax(270px, 1.12fr) repeat(6, minmax(118px, 0.68fr));
     gap: 1px;
-    background: {HUD['border']};
+    background: #3A3A3A;
     border: 1px solid {HUD['border']};
-    margin: 0 0 10px;
+    margin: 0 0 7px;
+    box-shadow: 0 0 0 1px #000;
 }}
 .ff-terminal-brand,
 .ff-terminal-cell {{
-    background: linear-gradient(180deg, rgba(13,24,23,0.98), rgba(6,10,11,0.98));
-    padding: 8px 10px;
-    min-height: 58px;
+    background: linear-gradient(180deg, #191919 0%, #080808 100%);
+    padding: 6px 8px;
+    min-height: 52px;
 }}
 .ff-terminal-brand .kicker,
 .ff-terminal-cell .label,
 .ff-panel-title .meta,
 .ff-status-label {{
     color: {HUD['text_dim']};
-    font-size: 0.62rem;
-    letter-spacing: 0.13em;
+    font-size: 0.83rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+}}
+.ff-terminal-brand .kicker,
+.ff-terminal-cell .label {{
+    background: #C06E00;
+    color: #060606;
+    display: inline-block;
+    font-weight: 900;
+    line-height: 1;
+    padding: 2px 5px;
 }}
 .ff-terminal-brand .name {{
     color: {HUD['text']};
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
+    margin-top: 5px;
 }}
 .ff-terminal-brand .flow {{
     color: {HUD['gold']};
-    font-size: 0.66rem;
-    letter-spacing: 0.08em;
-    margin-top: 3px;
+    font-size: 0.87rem;
+    letter-spacing: 0;
+    margin-top: 2px;
 }}
 .ff-terminal-cell .value {{
     color: {HUD['text']};
-    font-size: 1.02rem;
+    font-size: 1.25rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
     margin-top: 5px;
 }}
 .ff-terminal-cell .sub {{
     color: {HUD['text_dim']};
-    font-size: 0.66rem;
-    margin-top: 2px;
+    font-size: 0.86rem;
+    margin-top: 1px;
 }}
 .ff-panel {{
-    background: linear-gradient(180deg, rgba(12,22,22,0.98), rgba(7,11,12,0.98));
+    background: #050505;
     border: 1px solid {HUD['border']};
-    border-radius: 4px;
-    margin-bottom: 10px;
+    border-radius: 0;
+    margin-bottom: 7px;
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
 }}
 .ff-panel-title {{
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 7px 9px;
-    background: rgba(255,255,255,0.025);
+    padding: 4px 7px;
+    background: linear-gradient(90deg, #A90E24 0%, #7E0B1B 72%, #111 100%);
     border-bottom: 1px solid {HUD['border']};
 }}
 .ff-panel-title .title {{
-    color: {HUD['text']};
-    font-size: 0.76rem;
+    color: #F4EFE2;
+    font-size: 0.95rem;
     font-weight: 800;
-    letter-spacing: 0.10em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
 }}
 .ff-panel-body {{
-    padding: 9px;
+    padding: 6px;
 }}
 .ff-kpi-grid {{
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1px;
-    background: {HUD['border']};
+    background: #343434;
     border: 1px solid {HUD['border']};
 }}
 .ff-kpi {{
-    background: #091010;
-    padding: 9px;
-    min-height: 72px;
+    --accent: {HUD['cyan']};
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, #090909), #060606 58%);
+    border-top: 3px solid var(--accent);
+    padding: 7px 8px;
+    min-height: 66px;
 }}
 .ff-kpi .label {{
-    color: {HUD['text_dim']};
-    font-size: 0.60rem;
-    letter-spacing: 0.13em;
+    color: #C8C0AC;
+    font-size: 0.81rem;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
 }}
 .ff-kpi .value {{
     color: {HUD['text']};
-    font-size: 1.08rem;
+    font-size: 1.3rem;
     font-weight: 850;
     font-variant-numeric: tabular-nums;
-    margin-top: 6px;
+    margin-top: 5px;
 }}
 .ff-kpi .delta {{
-    font-size: 0.66rem;
-    margin-top: 2px;
+    font-size: 0.85rem;
+    margin-top: 1px;
 }}
 .ff-feed-row {{
     display: grid;
     grid-template-columns: 42px 62px minmax(0, 1fr);
-    gap: 7px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(87,113,108,0.18);
-    font-size: 0.72rem;
+    gap: 6px;
+    padding: 4px 6px;
+    border-bottom: 1px solid rgba(114,114,114,0.26);
+    font-size: 0.93rem;
+    background: #070707;
 }}
+.ff-feed-row:nth-child(even) {{ background: #101010; }}
 .ff-feed-row:last-child {{ border-bottom: 0; }}
 .ff-feed-time {{ color: {HUD['text_dim']}; font-variant-numeric: tabular-nums; }}
 .ff-feed-type {{ font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }}
-.ff-feed-msg {{ color: {HUD['text']}; }}
+.ff-feed-msg {{ color: {HUD['gold']}; }}
 .ff-status-grid {{
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 1px;
-    background: {HUD['border']};
+    background: #343434;
     border: 1px solid {HUD['border']};
     position: sticky;
     bottom: 0;
     z-index: 2;
 }}
 .ff-status-cell {{
-    background: #060A0B;
-    padding: 7px 9px;
+    background: #060606;
+    padding: 5px 8px;
 }}
 .ff-status-value {{
     color: {HUD['text']};
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
-    margin-top: 3px;
+    margin-top: 2px;
+}}
+.ff-command-tape {{
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1px;
+    background: #383838;
+    border: 1px solid {HUD['border']};
+    margin: -1px 0 7px;
+}}
+.ff-command-tape span {{
+    background: #0A0A0A;
+    color: {HUD['gold']};
+    display: block;
+    font-size: 0.89rem;
+    font-weight: 800;
+    overflow: hidden;
+    padding: 4px 7px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}}
+.ff-command-tape span:nth-child(1),
+.ff-command-tape span:nth-child(4) {{
+    background: #C06E00;
+    color: #060606;
+}}
+.ff-command-tape span:nth-child(2),
+.ff-command-tape span:nth-child(5) {{
+    background: #A90E24;
+    color: #F4EFE2;
+}}
+.ff-command-tape span:nth-child(3),
+.ff-command-tape span:nth-child(6) {{
+    background: #063B7A;
+    color: #EAF5FF;
 }}
 @media (max-width: 1200px) {{
     .ff-terminal-header {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
     .ff-kpi-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
     .ff-status-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+    .ff-command-tape {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -215,7 +268,7 @@ def kpi_grid(items: Iterable[dict[str, str]]) -> str:
         color = item.get("color", HUD["cyan"])
         cells.append(
             f"""
-<div class="ff-kpi">
+<div class="ff-kpi" style="--accent:{color};">
   <div class="label">{_fmt(item.get('label'))}</div>
   <div class="value" style="color:{color};">{_fmt(item.get('value'))}</div>
   <div class="delta" style="color:{_fmt(item.get('delta_color', HUD['text_dim']))};">{_fmt(item.get('delta', ''))}</div>
@@ -249,6 +302,11 @@ def terminal_header(cells: Iterable[dict[str, str]]) -> None:
     st.markdown(f'<div class="ff-terminal-header">{"".join(parts)}</div>', unsafe_allow_html=True)
 
 
+def command_tape(items: Iterable[str]) -> None:
+    cells = "".join(f"<span>{_fmt(item)}</span>" for item in items)
+    st.markdown(f'<div class="ff-command-tape">{cells}</div>', unsafe_allow_html=True)
+
+
 def page_command_header(title: str, section: str, contract: str, status: str = "READ MODEL") -> None:
     st.markdown(
         f"""
@@ -265,12 +323,22 @@ def page_command_header(title: str, section: str, contract: str, status: str = "
   </div>
   <div class="ff-terminal-cell">
     <div class="label">Canonical Source</div>
-    <div class="value" style="color:{HUD['gold']};font-size:0.78rem;">data/excel/FuloFilo_Master.xlsx</div>
+    <div class="value" style="color:{HUD['gold']};font-size:1.03rem;">data/excel/FuloFilo_Master.xlsx</div>
     <div class="sub">generated parquet / DuckDB layers are read-only intelligence models</div>
   </div>
 </div>
 """,
         unsafe_allow_html=True,
+    )
+    command_tape(
+        [
+            f"01) {section.split('/')[0].strip()} monitor",
+            "02) Filters",
+            "03) Analytics",
+            "04) Watchlist",
+            "05) Actions",
+            f"06) {status}",
+        ]
     )
 
 
@@ -292,7 +360,7 @@ def feed(rows: Iterable[dict[str, str]]) -> str:
 
 def dataframe_table(df: pd.DataFrame, max_rows: int = 8) -> str:
     if df.empty:
-        return f'<div style="color:{HUD["text_dim"]};font-size:0.76rem;">No rows available.</div>'
+        return f'<div style="color:{HUD["text_dim"]};font-size:1.01rem;">No rows available.</div>'
     return df.head(max_rows).to_html(index=False, escape=True)
 
 
