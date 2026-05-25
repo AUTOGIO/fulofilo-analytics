@@ -1,5 +1,5 @@
 """
-FulôFiló Analytics Pro — Excel Report Builder
+FulôFiló AI — Excel Report Builder
 ==============================================
 Generates a professional 9-sheet .xlsx workbook from parquet data.
 Target: Microsoft 365 Universal Binary on macOS M3.
@@ -202,7 +202,7 @@ def build_dashboard(ws, data: dict[str, pl.DataFrame]):
     ws.row_dimensions[1].height = 40
     ws.merge_cells("A1:N1")
     hdr = ws["A1"]
-    hdr.value     = "🌺  FulôFiló Analytics Pro — Dashboard Executivo"
+    hdr.value     = "🌺  FulôFiló AI — Dashboard Executivo"
     hdr.font      = _font(bold=True, size=18, color=C_WHITE)
     hdr.fill      = _fill(C_GREEN_DARK)
     hdr.alignment = _align(h="center", v="center")

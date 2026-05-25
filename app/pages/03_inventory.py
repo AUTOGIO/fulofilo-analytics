@@ -35,7 +35,7 @@ def load(data_version: str):  # noqa: ARG001
 df = load(get_data_mtime())
 
 if df.is_empty():
-    st.info("⚙️ Estoque não carregado. Execute `bash scripts/sync_excel.sh` para sincronizar o Excel master.")
+    st.info("Estoque não carregado. Execute `bash scripts/sync_excel.sh` para sincronizar o Excel master.")
     st.stop()
 
 pdf = df.to_pandas()
@@ -56,7 +56,7 @@ if not criticos.empty:
     font-size: 1.15rem;
     color: #FF4455;
 ">
-🚨 <strong>{len(criticos)} ITEM(NS) CRÍTICO(S):</strong> {names}{extra} — estoque abaixo do mínimo!
+<strong>{len(criticos)} ITEM(NS) CRÍTICO(S):</strong> {names}{extra} — estoque abaixo do mínimo!
 </div>
 """, unsafe_allow_html=True)
 
@@ -67,10 +67,10 @@ n_baixo = len(pdf[pdf["alert"] == "🟡 Baixo"])
 n_ok    = len(pdf[pdf["alert"] == "🟢 OK"])
 
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("📦 Total SKUs",  total)
-c2.metric("🔴 Crítico",     n_crit,  delta=f"-{n_crit}" if n_crit > 0 else "0",   delta_color="inverse")
-c3.metric("🟡 Baixo",       n_baixo, delta=f"-{n_baixo}" if n_baixo > 0 else "0", delta_color="inverse")
-c4.metric("🟢 OK",          n_ok)
+c1.metric("Total SKUs",  total)
+c2.metric("Critical",     n_crit,  delta=f"-{n_crit}" if n_crit > 0 else "0",   delta_color="inverse")
+c3.metric("Low",       n_baixo, delta=f"-{n_baixo}" if n_baixo > 0 else "0", delta_color="inverse")
+c4.metric("OK",          n_ok)
 # ── Giro do Estoque (Stock Turnover) KPIs ─────────────────────────────────────
 @st.cache_data
 def load_turnover(data_version: str):  # noqa: ARG001
@@ -95,13 +95,13 @@ border-radius:10px;padding:12px 18px;margin-bottom:12px;">
 """, unsafe_allow_html=True)
 
     g1, g2, g3, g4, g5 = st.columns(5)
-    g1.metric("📊 Giro Médio",     f"{avg_giro:.2f}x")
-    g2.metric("🔥 Giro Alto",      f"{n_alto}",   delta="≥ 3×", delta_color="normal")
-    g3.metric("✅ Giro Normal",    f"{n_normal}", delta="1–3×", delta_color="off")
-    g4.metric("🐢 Giro Baixo",    f"{n_baixo}",  delta="< 1×", delta_color="inverse")
-    g5.metric("⚠️ Sem Estoque",   f"{n_zerado}", delta_color="inverse")
+    g1.metric("Average Turnover",     f"{avg_giro:.2f}x")
+    g2.metric("High Turnover",      f"{n_alto}",   delta=">= 3x", delta_color="normal")
+    g3.metric("Normal Turnover",    f"{n_normal}", delta="1-3x", delta_color="off")
+    g4.metric("Low Turnover",    f"{n_baixo}",  delta="< 1x", delta_color="inverse")
+    g5.metric("Out of Stock",   f"{n_zerado}", delta_color="inverse")
 
-    with st.expander("📋 Tabela completa de Giro por Produto", expanded=False):
+    with st.expander("Full turnover table by product", expanded=False):
         giro_show = giro_pd[["product","category","qty_sold","current_stock","giro","giro_class"]].copy()
         giro_show.columns = ["Produto","Categoria","Qtd Vendida","Estoque Atual","Giro (x)","Classe"]
         giro_show = giro_show.sort_values("Giro (x)", ascending=False)
@@ -110,7 +110,7 @@ border-radius:10px;padding:12px 18px;margin-bottom:12px;">
 st.divider()
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs(["📊 Níveis", "🔄 Reposição", "💰 Valor em Estoque"])
+tab1, tab2, tab3 = st.tabs(["Levels", "Reorder", "Inventory Value"])
 
 COLOR_MAP = {
     "🔴 Crítico": "#FF4455",
@@ -153,7 +153,7 @@ with tab1:
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    st.subheader("🔄 Itens abaixo do ponto de reposição")
+    st.markdown('<div class="ff-section-label">Items Below Reorder Point</div>', unsafe_allow_html=True)
     reorder = pdf[pdf["alert"].isin(["🔴 Crítico","🟡 Baixo"])].copy()
     if not reorder.empty:
         import polars as pl
@@ -173,21 +173,21 @@ with tab2:
         st.markdown(display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("📥 Exportar lista de reposição (Excel)"):
+        if st.button("Export Reorder List"):
             from excel.build_report import build_report
             import tempfile, datetime
             with tempfile.TemporaryDirectory() as tmp:
                 out = Path(tmp) / f"FuloFilo_Reposicao_{datetime.date.today()}.xlsx"
                 build_report(output_path=out, selected_sheets={"Inventory"})
                 st.download_button(
-                    "⬇ Baixar Excel", data=out.read_bytes(), file_name=out.name,
+                    "Download Excel", data=out.read_bytes(), file_name=out.name,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 )
     else:
-        st.success("✅ Todos os produtos estão com estoque adequado!")
+        st.success("Todos os produtos estão com estoque adequado.")
 
 with tab3:
-    st.subheader("💰 Valor total em estoque por categoria")
+    st.markdown('<div class="ff-section-label">Inventory Value by Category</div>', unsafe_allow_html=True)
     inv_path  = ROOT / "data" / "parquet" / "inventory.parquet"
     prod_path = ROOT / "data" / "parquet" / "products.parquet"
     if inv_path.exists() and prod_path.exists():
@@ -215,7 +215,7 @@ with tab3:
         hud_plotly_layout(fig3, height=400)
         st.plotly_chart(fig3, use_container_width=True)
         total_val = cat_val["total_value"].sum()
-        st.metric("💰 Valor Total em Estoque", f"R$ {total_val:,.2f}")
+        st.metric("Total Inventory Value", f"R$ {total_val:,.2f}")
     else:
         st.info("Dados de custo não disponíveis. Execute `bash scripts/sync_excel.sh` primeiro.")
 
@@ -260,10 +260,10 @@ if not inv_full.is_empty():
             try:
                 result = adjust_stock(str(slug_vals[0]), int(new_qty))
             except Exception as exc:  # noqa: BLE001
-                st.error(f"❌ Falha ao gravar ajuste no Excel master: {exc}")
+                st.error(f"Falha ao gravar ajuste no Excel master: {exc}")
             else:
                 st.success(
-                    f"✅ **{result.product}**: {result.old_stock} → **{result.new_stock}** un. "
+                    f"**{result.product}**: {result.old_stock} -> **{result.new_stock}** un. "
                     f"Excel, auditoria e read model atualizados."
                 )
                 st.cache_data.clear()
@@ -271,4 +271,4 @@ if not inv_full.is_empty():
 
     with adj_col2:
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        st.button("🔄 Sync automático", use_container_width=True, type="primary", disabled=True)
+        st.button("Auto Sync", use_container_width=True, type="primary", disabled=True)

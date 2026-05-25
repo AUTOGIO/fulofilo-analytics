@@ -84,10 +84,10 @@ st.divider()
 # ── Daily Summary ─────────────────────────────────────────────────────────────
 hdr_col1, hdr_col2 = st.columns([4, 1])
 with hdr_col1:
-    st.subheader("📊 Histórico de Vendas")
+    st.markdown('<div class="ff-section-label">Sales History</div>', unsafe_allow_html=True)
 with hdr_col2:
     st.markdown("<br>", unsafe_allow_html=True)
-    st.button("🔄 Sync já aplicado", use_container_width=True, type="primary", disabled=True)
+    st.button("Sync Applied", use_container_width=True, type="primary", disabled=True)
 history = load_sales_history()
 
 if history.empty:
@@ -97,9 +97,9 @@ else:
     today_df  = history[history["Date"].dt.strftime("%Y-%m-%d") == today_str]
 
     k1, k2, k3 = st.columns(3)
-    k1.metric("Vendas Hoje",       f"{len(today_df)}")
-    k2.metric("Receita Hoje",      f"R$ {today_df['Total'].sum():.2f}")
-    k3.metric("Ticket Médio Hoje", f"R$ {today_df['Total'].mean():.2f}" if len(today_df) else "R$ 0,00")
+    k1.metric("Today Transactions",       f"{len(today_df)}")
+    k2.metric("Today Revenue",      f"R$ {today_df['Total'].sum():.2f}")
+    k3.metric("Today Avg Ticket", f"R$ {today_df['Total'].mean():.2f}" if len(today_df) else "R$ 0,00")
 
     st.divider()
 
@@ -110,16 +110,16 @@ else:
 
     col_range_a, col_range_b, col_range_c = st.columns([2, 2, 1])
     with col_range_a:
-        range_start = st.date_input("📅 De", value=default_start,
+        range_start = st.date_input("From", value=default_start,
                                     min_value=min_date, max_value=max_date,
                                     key="range_start")
     with col_range_b:
-        range_end = st.date_input("📅 Até", value=max_date,
+        range_end = st.date_input("To", value=max_date,
                                   min_value=min_date, max_value=max_date,
                                   key="range_end")
     with col_range_c:
         st.markdown("<br>", unsafe_allow_html=True)
-        quick_30 = st.button("⚡ Últimos 30d")
+        quick_30 = st.button("Last 30D")
         if quick_30:
             range_start = max(min_date, max_date - timedelta(days=29))
             range_end   = max_date
@@ -135,10 +135,10 @@ else:
     avg_daily = filtered_history["Total"].sum() / n_days if n_days else 0
 
     f1, f2, f3, f4 = st.columns(4)
-    f1.metric("📦 Transações",      f"{len(filtered_history)}")
-    f2.metric("💰 Receita Período", f"R$ {filtered_history['Total'].sum():,.2f}")
-    f3.metric("📊 Média Diária",    f"R$ {avg_daily:,.2f}")
-    f4.metric("🗓️ Dias",            f"{n_days}")
+    f1.metric("Transactions",      f"{len(filtered_history)}")
+    f2.metric("Period Revenue", f"R$ {filtered_history['Total'].sum():,.2f}")
+    f3.metric("Daily Average",    f"R$ {avg_daily:,.2f}")
+    f4.metric("Days",            f"{n_days}")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -197,7 +197,7 @@ else:
             pay_agg["Receita (R$)"] = pay_agg["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
             st.dataframe(pay_agg, use_container_width=True, hide_index=True)
 
-    with st.expander("📋 Todas as vendas no período", expanded=False):
+    with st.expander("All sales in selected period", expanded=False):
         show = filtered_history.sort_values("Date", ascending=False).copy()
         show["Date"]       = show["Date"].dt.strftime("%d/%m/%Y")
         show["Unit_Price"] = show["Unit_Price"].apply(lambda x: f"R$ {x:.2f}")

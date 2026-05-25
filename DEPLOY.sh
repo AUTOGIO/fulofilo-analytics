@@ -8,7 +8,7 @@ set -euo pipefail
 
 GITHUB_USER="autogio"
 REPO_NAME="fulofilo-analytics"
-DOMAIN="giovannini.us"
+DOMAIN="fulofilo.com"
 SUBDOMAIN="dashboard"
 
 echo ""

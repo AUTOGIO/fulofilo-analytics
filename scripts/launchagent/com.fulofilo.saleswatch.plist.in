@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  FulôFiló — Sales Drop Watcher (LaunchAgent, daemon mode)
+  Template: run scripts/launchagent/install_saleswatch.sh to substitute
+  @REPO_ROOT@, @PYTHON_BIN@, @HOME@, @PATH_VALUE@ and install to ~/Library/LaunchAgents/.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fulofilo.saleswatch</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>@PYTHON_BIN@</string>
+        <string>@REPO_ROOT@/scripts/sales_watcher.py</string>
+        <string>--daemon</string>
+        <string>--interval</string>
+        <string>30</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>@REPO_ROOT@</string>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>@REPO_ROOT@/logs/saleswatch.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>@REPO_ROOT@/logs/saleswatch.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>@PATH_VALUE@</string>
+        <key>HOME</key>
+        <string>@HOME@</string>
+        <key>PYTHONPATH</key>
+        <string>@REPO_ROOT@</string>
+    </dict>
+</dict>
+</plist>

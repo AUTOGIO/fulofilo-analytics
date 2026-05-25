@@ -63,7 +63,7 @@ if cat_filter != "Todas":
     pdf = pdf[pdf["category"] == cat_filter]
 
 # ── Scatter Plot ──────────────────────────────────────────────────────────────
-st.subheader("Scatter: Volume × Margem")
+st.markdown('<div class="ff-section-label">Margin Matrix Scatter</div>', unsafe_allow_html=True)
 fig = px.scatter(
     pdf,
     x="qty_sold",
@@ -159,7 +159,7 @@ k3.metric("Hidden Gems", dist.get("Hidden Gem", 0))
 k4.metric("Dogs",        dist.get("Dog",        0))
 
 # ── Enriched product table (filterable by current category selection) ─────────
-st.markdown("#### Classificação + Recomendação por Produto")
+st.markdown('<div class="ff-section-label">Product Classification and Recommendation</div>', unsafe_allow_html=True)
 display_enriched = enriched_pdf.copy()
 if cat_filter != "Todas":
     display_enriched = display_enriched[display_enriched["category"] == cat_filter]
@@ -174,7 +174,7 @@ show_enriched = show_enriched.rename(columns={
     "classification": "Classificação", "recommended_action": "Ação Recomendada",
 })
 if "Margem" in show_enriched.columns:
-    show_enriched["Margem"] = show_enriched["Margem"].apply(lambda x: f"{x*100:.1f}%")
+    show_enriched["Margem"] = show_enriched["Margem"].apply(lambda x: f"{x:.1f}%")
 if "Receita (R$)" in show_enriched.columns:
     show_enriched["Receita (R$)"] = show_enriched["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
 
@@ -214,7 +214,7 @@ st.markdown("#### Resumo por Categoria")
 cat_summary = aggregate_by_category(enriched_pdf)
 if not cat_summary.empty:
     cat_show = cat_summary.copy()
-    cat_show["avg_margin_pct"] = cat_show["avg_margin_pct"].apply(lambda x: f"{x*100:.1f}%")
+    cat_show["avg_margin_pct"] = cat_show["avg_margin_pct"].apply(lambda x: f"{x:.1f}%")
     cat_show["total_revenue"]  = cat_show["total_revenue"].apply(lambda x: f"R$ {x:,.2f}")
     rename_cat = {
         "category": "Categoria", "avg_margin_pct": "Margem Média",

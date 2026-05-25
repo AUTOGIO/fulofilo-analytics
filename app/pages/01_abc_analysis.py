@@ -45,7 +45,7 @@ COLORS = {"A": "#00FF88", "B": "#FFD700", "C": "#FF4455"}
 
 # ── Sidebar filters ────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🔍 Filtros")
+    st.markdown("### Filters")
     cats = ["Todas"] + sorted(pdf["category"].unique().tolist())
     cat_filter = st.selectbox("Categoria", cats)
     abc_filter = st.multiselect("Classe ABC", ["A","B","C"], default=["A","B","C"])
@@ -86,14 +86,14 @@ b_df = filtered[filtered["abc_live"]=="B"]
 c_df = filtered[filtered["abc_live"]=="C"]
 c1,c2,c3,c4,c5 = st.columns(5)
 c1.metric("Total produtos",    len(filtered))
-c2.metric("🟢 Classe A",  f"{len(a_df)} produtos",  f"R$ {a_df['revenue'].sum():,.0f}")
-c3.metric("🟡 Classe B",  f"{len(b_df)} produtos",  f"R$ {b_df['revenue'].sum():,.0f}")
-c4.metric("🔴 Classe C",  f"{len(c_df)} produtos",  f"R$ {c_df['revenue'].sum():,.0f}")
+c2.metric("Class A",  f"{len(a_df)} produtos",  f"R$ {a_df['revenue'].sum():,.0f}")
+c3.metric("Class B",  f"{len(b_df)} produtos",  f"R$ {b_df['revenue'].sum():,.0f}")
+c4.metric("Class C",  f"{len(c_df)} produtos",  f"R$ {c_df['revenue'].sum():,.0f}")
 c5.metric("Receita filtrada",  f"R$ {filtered['revenue'].sum():,.0f}")
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs(["📊 Pareto", "🌳 Treemap", "📋 Tabela"])
+tab1, tab2, tab3 = st.tabs(["Pareto", "Treemap", "Table"])
 
 with tab1:
     fig = go.Figure()
@@ -146,7 +146,7 @@ with tab3:
     # ── Priority filter (table-only, does not affect charts) ──────────────────
     prio_opts = ["HIGH", "MEDIUM", "LOW"]
     prio_filter = st.multiselect(
-        "🎯 Filtrar por Prioridade",
+        "Priority Filter",
         prio_opts,
         default=prio_opts,
         key="prio_filter_tab3",

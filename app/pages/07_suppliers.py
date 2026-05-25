@@ -2,6 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -37,15 +38,12 @@ page_command_header(
     desk_config["header_flow"],
 )
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
-_ROOT          = Path(__file__).resolve().parent.parent.parent
-_HTML_FILE     = _ROOT / "data" / "suppliers" / "suppliers_dashboard.html"
+_ROOT = Path(__file__).resolve().parent.parent.parent
 _SUPPLIERS_DIR = _ROOT / "data" / "suppliers"
-_SUPPLIERS_DB  = _SUPPLIERS_DIR / "SUPPLIERS_DB.xlsx"
+_SUPPLIERS_DB = _SUPPLIERS_DIR / "SUPPLIERS_DB.xlsx"
 _SUPPLIERS_PDF = _SUPPLIERS_DIR / "ALL_SUPPLIERS_COMPLETE.pdf"
+_SUPPLIERS_MD = _SUPPLIERS_DIR / "ALL_SUPPLIERS_COMPLETE.md"
 
-# ── Action buttons ────────────────────────────────────────────────────────────
-col_open, col_xlsx, col_pdf, col_folder, _ = st.columns([1.4, 1, 1, 1, 2])
 
 with col_open:
     if st.button("Abrir no Browser", use_container_width=True,
@@ -77,7 +75,7 @@ with col_folder:
                  help="Abre data/suppliers/ no Finder"):
         subprocess.run(["open", str(_SUPPLIERS_DIR)])
 
-st.divider()
+    return full, quick
 
 def _supplier_options(suppliers: list[dict]) -> list[str]:
     return [f"{item['id']} — {item['name']}" for item in suppliers]

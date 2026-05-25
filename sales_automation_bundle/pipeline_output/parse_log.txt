@@ -1,0 +1,7 @@
+PDF to sales pipeline log
+==============================
+Parsed PDFs: 1
+Entries extracted: 2
+
+Files:
+- /mnt/data/test_input/2025-01-01_regionais.pdf

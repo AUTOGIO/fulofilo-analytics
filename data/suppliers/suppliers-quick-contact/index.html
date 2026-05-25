@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Suppliers Quick Contact",
+  "schemaVersion": 1,
+  "description": "Interactive supplier contact dashboard for FuloFilo — 9 suppliers with one-tap WhatsApp links, filter by state/product category, and delivery time badge."
+}
+</script>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FuloFilo – Fornecedores</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4fb; color: #1a1a2e; min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    color: #fff; padding: 14px 20px 10px;
+  }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: .5px; }
+  .badge { background: rgba(255,255,255,.2); border-radius: 20px; padding: 3px 12px; font-size: .8rem; }
+
+  .file-bar { display: flex; flex-wrap: wrap; gap: 7px; }
+  .flink {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    text-decoration: none; cursor: pointer; transition: opacity .15s; border: none;
+    white-space: nowrap;
+  }
+  .flink:hover { opacity: .82; }
+  .flink-excel  { background: #217346; color: #fff; }
+  .flink-pdf    { background: #cc2200; color: #fff; }
+  .flink-folder { background: rgba(255,255,255,.18); color: #fff; border: 1.5px solid rgba(255,255,255,.35); }
+  .flink-alert  { background: #e65100; color: #fff; }
+
+  .controls {
+    padding: 12px 20px; background: #fff; border-bottom: 1px solid #dde3f0;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .controls input {
+    flex: 1; min-width: 180px; padding: 7px 13px; border: 1.5px solid #c5d0e8;
+    border-radius: 8px; font-size: .9rem; outline: none;
+  }
+  .controls input:focus { border-color: #2E75B6; }
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    padding: 4px 13px; border-radius: 20px; border: 1.5px solid #c5d0e8;
+    background: #fff; font-size: .78rem; cursor: pointer; transition: all .15s;
+    color: #444; font-weight: 500;
+  }
+  .chip:hover { border-color: #2E75B6; color: #2E75B6; }
+  .chip.active { background: #2E75B6; border-color: #2E75B6; color: #fff; }
+  .count { font-size: .8rem; color: #888; padding: 10px 20px 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px; padding: 16px 20px 30px;
+  }
+
+  .card {
+    background: #fff; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07); border: 1.5px solid #e4eaf5;
+    transition: transform .15s, box-shadow .15s; display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(30,60,120,.13); }
+
+  .card-header { padding: 12px 15px 8px; display: flex; align-items: flex-start; gap: 10px; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .95rem; color: #fff;
+  }
+  .card-name { font-weight: 700; font-size: .92rem; color: #1F3864; line-height: 1.3; }
+  .card-contact { font-size: .78rem; color: #666; margin-top: 2px; }
+
+  .card-body { padding: 0 15px 6px; flex: 1; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 7px; }
+  .tag { padding: 2px 9px; border-radius: 12px; font-size: .7rem; font-weight: 600; }
+  .tag-state    { background: #eef3fd; color: #2E75B6; }
+  .tag-delivery { background: #e8f5e9; color: #2e7d32; }
+  .tag-delivery.slow { background: #fff8e1; color: #f57f17; }
+  .tag-delivery.none { background: #f5f5f5; color: #757575; }
+
+  .products {
+    font-size: .78rem; color: #444; line-height: 1.5;
+    border-top: 1px solid #f0f4fb; padding-top: 7px; margin-top: 4px;
+  }
+  .products strong { color: #1F3864; font-size: .7rem; text-transform: uppercase;
+    letter-spacing: .4px; display: block; margin-bottom: 2px; }
+
+  .card-files {
+    padding: 8px 15px; border-top: 1px solid #f0f4fb;
+    background: #fafbfe; display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  .card-files-label {
+    font-size: .68rem; font-weight: 700; color: #999; text-transform: uppercase;
+    letter-spacing: .4px; width: 100%; margin-bottom: 2px;
+  }
+  .cf {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 14px; font-size: .73rem; font-weight: 600;
+    text-decoration: none; cursor: pointer; transition: opacity .15s; white-space: nowrap;
+  }
+  .cf:hover { opacity: .8; }
+  .cf-img    { background: #e8f0fe; color: #1a56db; }
+  .cf-xls    { background: #e6f4ea; color: #1e7e34; }
+  .cf-csv    { background: #fff3e0; color: #b45309; }
+  .cf-folder { background: #f3e8ff; color: #7c3aed; }
+  .cf-fiscal { background: #fce8e6; color: #c0392b; }
+
+  .card-footer { padding: 8px 15px; display: flex; gap: 7px; border-top: 1px solid #f0f4fb; }
+  .btn {
+    flex: 1; padding: 7px 6px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: .8rem; font-weight: 600; text-decoration: none;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-wa   { background: #25D366; color: #fff; }
+  .btn-call { background: #2E75B6; color: #fff; }
+  .btn-na   { background: #e9e9e9; color: #aaa; cursor: default; }
+
+  .empty { text-align: center; padding: 60px 20px; color: #999; grid-column: 1/-1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>📦 FuloFilo – Fornecedores</h1>
+    <span class="badge">13 fornecedores</span>
+  </div>
+  <div class="file-bar">
+    <a class="flink flink-excel"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/FuloFilo_Master.xlsx"
+       title="data/excel/FuloFilo_Master.xlsx — master de produtos e vendas">📊 Master Excel</a>
+    <a class="flink flink-excel"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/suppliers/SUPPLIERS_DB.xlsx"
+       title="data/suppliers/SUPPLIERS_DB.xlsx — banco de dados de fornecedores">📦 Suppliers DB</a>
+    <a class="flink flink-pdf"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/suppliers/ALL_SUPPLIERS_COMPLETE.pdf"
+       title="data/suppliers/ALL_SUPPLIERS_COMPLETE.pdf — PDF original dos fornecedores">📄 Suppliers PDF</a>
+    <a class="flink flink-alert"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/outputs/alertas_reposicao.xlsx"
+       title="data/outputs/alertas_reposicao.xlsx — alertas de reposição de estoque">⚠️ Restock Alerts</a>
+    <a class="flink flink-folder"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/suppliers/"
+       title="Pasta data/suppliers/ — todos os arquivos de fornecedores">📂 Pasta Fornecedores</a>
+    <a class="flink flink-folder"
+       href="file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo/FF_imagens_produtos/"
+       title="Pasta FF_imagens_produtos/ — todas as fotos de produtos">🖼 Todas as Imagens</a>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="🔍  Buscar fornecedor, produto, estado…">
+  <div class="filter-group" id="state-filters">
+    <button class="chip active" data-state="all">Todos</button>
+    <button class="chip" data-state="CE">CE</button>
+    <button class="chip" data-state="PE">PE</button>
+    <button class="chip" data-state="PB">PB</button>
+    <button class="chip" data-state="BA">BA</button>
+    <button class="chip" data-state="AL">AL</button>
+    <button class="chip" data-state="RS">RS</button>
+  </div>
+  <div class="filter-group" id="cat-filters">
+    <button class="chip active" data-cat="all">Tudo</button>
+    <button class="chip" data-cat="chaveiro">Chaveiros</button>
+    <button class="chip" data-cat="roupa">Roupas</button>
+    <button class="chip" data-cat="bolsa">Bolsas/Nécessaire</button>
+    <button class="chip" data-cat="canga">Cangas</button>
+    <button class="chip" data-cat="caneca">Canecas</button>
+    <button class="chip" data-cat="ima">Imãs</button>
+  </div>
+</div>
+<div class="count" id="count-label"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+const BASE = "file:///Users/giovannini_nuovo/Documents/GitHub/FuloFilo";
+
+const LINKS = {
+  chaveiro_imgs:   { label:"🖼 Chaveiros",          cls:"cf-img",    href:BASE+"/FF_imagens_produtos/chaveiros_individuais/",  title:"FF_imagens_produtos/chaveiros_individuais/ — fotos de chaveiros" },
+  necessaire_imgs: { label:"🖼 Nécessaires",         cls:"cf-img",    href:BASE+"/FF_imagens_produtos/necessaires_individuais/",title:"FF_imagens_produtos/necessaires_individuais/ — fotos de nécessaires" },
+  carteira_imgs:   { label:"🖼 Carteiras",           cls:"cf-img",    href:BASE+"/FF_imagens_produtos/carteiras_individuais/",  title:"FF_imagens_produtos/carteiras_individuais/ — fotos de carteiras" },
+  vestuario_imgs:  { label:"🖼 Vestuário",           cls:"cf-img",    href:BASE+"/FF_imagens_produtos/vestuario_e_diversos/",   title:"FF_imagens_produtos/vestuario_e_diversos/ — camisas, vestidos, regatas" },
+  body_imgs:       { label:"🖼 Bodys",               cls:"cf-img",    href:BASE+"/FF_imagens_produtos/bodys_individuais/",      title:"FF_imagens_produtos/bodys_individuais/ — fotos de bodys bebê" },
+  mercadorias_imgs:{ label:"🖼 Mercadorias",         cls:"cf-img",    href:BASE+"/FF_imagens_produtos/mercadorias/",            title:"FF_imagens_produtos/mercadorias/ — fotos gerais de mercadorias" },
+  keychain_ctrl:   { label:"📋 Controle Chaveiros",  cls:"cf-xls",    href:BASE+"/data/raw/keychain_sales_control.xlsx",        title:"data/raw/keychain_sales_control.xlsx — controle de vendas chaveiros" },
+  female_keychain: { label:"📋 Chaveiros Femininos", cls:"cf-xls",    href:BASE+"/data/raw/female_keychain_sales_control.xlsx", title:"data/raw/female_keychain_sales_control.xlsx — chaveiros nomes femininos" },
+  master:          { label:"📊 Master Excel",        cls:"cf-xls",    href:BASE+"/data/excel/FuloFilo_Master.xlsx",             title:"data/excel/FuloFilo_Master.xlsx — master produtos + vendas" },
+  keychain_catalog:{ label:"📋 Catálogo Nomes",      cls:"cf-csv",    href:BASE+"/data/raw/keychain_names_catalog.csv",         title:"data/raw/keychain_names_catalog.csv — catálogo de nomes em chaveiros" },
+  female_catalog:  { label:"📋 Catálogo Feminino",   cls:"cf-csv",    href:BASE+"/data/raw/female_keychain_names_catalog.csv",  title:"data/raw/female_keychain_names_catalog.csv — nomes femininos" },
+  product_catalog: { label:"📋 Catálogo Produtos",   cls:"cf-csv",    href:BASE+"/data/raw/product_catalog.csv",                title:"data/raw/product_catalog.csv — catálogo completo de produtos" },
+  suppliers_folder:{ label:"📂 Pasta Fornecedores",  cls:"cf-folder", href:BASE+"/data/suppliers/",                             title:"data/suppliers/ — todos os arquivos de fornecedores" },
+  fiscal_folder:   { label:"🏛 Dados Fiscais",       cls:"cf-fiscal", href:BASE+"/FF_Dados_Fiscais/",                           title:"FF_Dados_Fiscais/ — notas fiscais de saída (CNPJ/IE registrado)" },
+};
+
+const SUPPLIERS = [
+  { id:1,  name:"BRINDES E SOUVENIRS CEARÁ",      contact:null,              phone:"(85) 2180-7491",    whatsapp:null,            state:"CE", delivery:"—",        deliveryClass:"none", products:"Chaveiros de nome, Chaveiros premium, Chaveiros signos",                   categories:["chaveiro"],       color:"#1F3864", files:["chaveiro_imgs","keychain_ctrl","female_keychain","keychain_catalog","female_catalog","fiscal_folder"] },
+  { id:2,  name:"ALGODOEIRO ECO FASHION",          contact:null,              phone:"(81) 3724-5546",    whatsapp:null,            state:"PE", delivery:"—",        deliveryClass:"none", products:"Camisas regionais, Bodys, Vestidos, Conjuntos, Cam Silk AC",              categories:["roupa"],          color:"#7B3F00", files:["vestuario_imgs","body_imgs","master","product_catalog"] },
+  { id:3,  name:"DISTRIBUIDOR (Genérico)",         contact:null,              phone:null,                whatsapp:null,            state:"—",  delivery:"—",        deliveryClass:"none", products:"Nec. Styllos, Carteirinha c/Alça, Sacola Copa, Cangas, Porta Calçinha",  categories:["bolsa","canga"],  color:"#546E7A", files:["necessaire_imgs","carteira_imgs","mercadorias_imgs","master","suppliers_folder"] },
+  { id:4,  name:"ALAN BOLSAS",                     contact:"Alan",            phone:"+55 74 98131-4420", whatsapp:"5574981314420", state:"BA", delivery:"1–3 meses", deliveryClass:"slow", products:"Bolsa 55, Nécessaire, Carteira alça, Canga elastano, Kit bolsas 125",   categories:["bolsa","canga"],  color:"#2E75B6", files:["necessaire_imgs","carteira_imgs","master","product_catalog"] },
+  { id:5,  name:"Souvenir Ceará",                  contact:"Cleberson Lima",  phone:"+55 84 99983-2590", whatsapp:"5584999832590", state:"CE", delivery:"1 mês",    deliveryClass:"slow", products:"Chaveiros de nome, Chaveiros diversos",                                  categories:["chaveiro"],       color:"#1B5E20", files:["chaveiro_imgs","keychain_ctrl","keychain_catalog"] },
+  { id:6,  name:"OFICINA DE ARTE – Ecobags",       contact:null,              phone:"+55 83 98832-9998", whatsapp:"5583988329998", state:"PB", delivery:"1 semana", deliveryClass:"fast", products:"Camisas regionais adulto, Baby look, Regata, Cropped, Infantil",         categories:["roupa"],          color:"#4A148C", files:["vestuario_imgs","body_imgs","master","product_catalog"] },
+  { id:7,  name:"Vanda Colorido",                  contact:"Ivaneide (Vanda)",phone:"+55 83 98744-1466", whatsapp:"5583987441466", state:"PB", delivery:"—",        deliveryClass:"none", products:"Body, Vestido, Macaquinho",                                              categories:["roupa"],          color:"#AD1457", files:["body_imgs","vestuario_imgs","master","product_catalog"] },
+  { id:8,  name:"JUNIOR CHAVEIRO",                 contact:"Junior",          phone:"+55 84 99869-1997", whatsapp:"5584998691997", state:"CE", delivery:"—",        deliveryClass:"none", products:"Chaveiro de letras",                                                     categories:["chaveiro"],       color:"#E65100", files:["chaveiro_imgs","keychain_ctrl","female_keychain","keychain_catalog","female_catalog"] },
+  { id:9,  name:"GIRISH INDIANA",                  contact:"Girish",          phone:"+55 82 99938-1151", whatsapp:"5582999381151", state:"AL", delivery:"—",        deliveryClass:"none", products:"Cangas",                                                                 categories:["canga"],          color:"#006064", files:["mercadorias_imgs","master","suppliers_folder"] },
+  { id:10, name:"PATRICIA CAMISAS",                contact:"Patricia",        phone:"+55 81 3551-1208",  whatsapp:"5581135511208", state:"PE", delivery:"—",        deliveryClass:"none", products:"Camisa color",                                                           categories:["roupa"],          color:"#C62828", files:["vestuario_imgs","master","product_catalog"] },
+  { id:11, name:"MAURÍCIO FRIZZO",                 contact:"Maurício Frizzo", phone:"+55 84 99688-4538", whatsapp:"5584996884538", state:"CE", delivery:"—",        deliveryClass:"none", products:"Caneca ágata pintura esmaltada automotivo, caneca ágata pequena e grande",categories:["caneca"],         color:"#37474F", files:["mercadorias_imgs","master","suppliers_folder"] },
+  { id:12, name:"EXCLUSIVART – Sarah Canecas",     contact:"Sarah",           phone:"+55 83 99853-8103", whatsapp:"5583998538103", state:"PB", delivery:"—",        deliveryClass:"none", products:"Caneca de louça",                                                        categories:["caneca"],         color:"#6A1B9A", files:["mercadorias_imgs","master","suppliers_folder"] },
+  { id:13, name:"TIAGO MANIA – Chaveiros Mania",   contact:"Tiago Otto",      phone:"+55 51 99728-7440", whatsapp:"5551997287440", state:"RS", delivery:"—",        deliveryClass:"none", products:"Imã Romero Brito, Chaveiros Mania",                                      categories:["chaveiro","ima"], color:"#00695C", files:["chaveiro_imgs","keychain_ctrl","master","suppliers_folder"] },
+];
+
+let activeState="all", activeCat="all", searchTerm="";
+
+function initials(n){ return n.split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase(); }
+
+function fileLinks(keys){
+  if(!keys||!keys.length) return "";
+  const items = keys.map(k=>{
+    const l=LINKS[k]; if(!l) return "";
+    return `<a class="cf ${l.cls}" href="${l.href}" title="${l.title}">${l.label}</a>`;
+  }).join("");
+  return `<div class="card-files"><div class="card-files-label">📁 Arquivos relacionados</div>${items}</div>`;
+}
+
+function render(){
+  const q=searchTerm.toLowerCase();
+  const filtered=SUPPLIERS.filter(s=>{
+    const mState = activeState==="all"||s.state===activeState;
+    const mCat   = activeCat==="all"||s.categories.includes(activeCat);
+    const mQ     = !q||s.name.toLowerCase().includes(q)||s.products.toLowerCase().includes(q)||(s.contact||"").toLowerCase().includes(q)||s.state.toLowerCase().includes(q);
+    return mState&&mCat&&mQ;
+  });
+
+  document.getElementById("count-label").textContent=
+    filtered.length+" fornecedor"+(filtered.length!==1?"es":"")+" encontrado"+(filtered.length!==1?"s":"");
+
+  const grid=document.getElementById("grid");
+  if(!filtered.length){ grid.innerHTML='<div class="empty">😕 Nenhum fornecedor encontrado.</div>'; return; }
+
+  grid.innerHTML=filtered.map(s=>{
+    const pn=s.phone?s.phone.replace(/\D/g,""):null;
+    const waBtn  =s.whatsapp?`<a class="btn btn-wa"   href="https://wa.me/${s.whatsapp}" target="_blank">💬 WhatsApp</a>`:`<span class="btn btn-na">💬 N/D</span>`;
+    const callBtn=s.phone?`<a class="btn btn-call" href="tel:+${pn}">📞 Ligar</a>`:`<span class="btn btn-na">📞 N/D</span>`;
+    const sb=s.state!=="—"?`<span class="tag tag-state">${s.state}</span>`:"";
+    const db=`<span class="tag tag-delivery ${s.deliveryClass}">⏱ ${s.delivery}</span>`;
+    const cl=s.contact?`<div class="card-contact">👤 ${s.contact}</div>`:"";
+    return `
+      <div class="card">
+        <div class="card-header">
+          <div class="avatar" style="background:${s.color}">${initials(s.name)}</div>
+          <div><div class="card-name">${s.name}</div>${cl}</div>
+        </div>
+        <div class="card-body">
+          <div class="tag-row">${sb}${db}</div>
+          <div class="products"><strong>Produtos</strong>${s.products}</div>
+        </div>
+        ${fileLinks(s.files)}
+        <div class="card-footer">${waBtn}${callBtn}</div>
+      </div>`;
+  }).join("");
+}
+
+document.getElementById("state-filters").addEventListener("click",e=>{
+  if(!e.target.dataset.state)return;
+  document.querySelectorAll("[data-state]").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active"); activeState=e.target.dataset.state; render();
+});
+document.getElementById("cat-filters").addEventListener("click",e=>{
+  if(!e.target.dataset.cat)return;
+  document.querySelectorAll("[data-cat]").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active"); activeCat=e.target.dataset.cat; render();
+});
+document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; render(); });
+
+render();
+</script>
+</body>
+</html>

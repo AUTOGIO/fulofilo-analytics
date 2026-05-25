@@ -58,6 +58,7 @@ logs/
 .env.*
 !.env.example
 !.env.*.example
+scripts/launchagent/saleswatch.local.env
 secrets/
 *.pem
 *.key

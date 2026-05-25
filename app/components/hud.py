@@ -360,6 +360,33 @@ h2, h3 {{
 .stMarkdown tr:hover td {{
     background: rgba(255,159,26,0.10);
 }}
+.stMarkdown table {{
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(7,12,13,0.74);
+    border: 1px solid {HUD['border']};
+    font-size: 0.78rem;
+}}
+.stMarkdown th {{
+    position: sticky;
+    top: 0;
+    background: #101A1A;
+    color: {HUD['text_dim']};
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.65rem;
+    padding: 6px 8px;
+    border-bottom: 1px solid {HUD['border']};
+}}
+.stMarkdown td {{
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(87,113,108,0.18);
+    color: {HUD['text']};
+    font-variant-numeric: tabular-nums;
+}}
+.stMarkdown tr:hover td {{
+    background: rgba(55,213,232,0.045);
+}}
 </style>
 """, unsafe_allow_html=True)
 

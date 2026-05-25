@@ -1,0 +1,159 @@
+{
+  "workbook": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/FuloFilo_Rehearsal_NON_PRODUCTION.xlsx",
+  "report": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/excel/FuloFilo_Rehearsal_Report_2026-04-27.xlsx",
+  "steps": {
+    "initial_sync": {
+      "ok": true,
+      "output": "[sync_excel] OK — Parquet written to /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/parquet"
+    },
+    "dashboard_launch": {
+      "started": true,
+      "url": "http://127.0.0.1:8510",
+      "error": ""
+    },
+    "report_export": {
+      "ok": true,
+      "path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/excel/FuloFilo_Rehearsal_Report_2026-04-27.xlsx"
+    }
+  },
+  "warnings": [],
+  "issues": [],
+  "workbook_created": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/FuloFilo_Rehearsal_NON_PRODUCTION.xlsx",
+  "initial_status": {
+    "ok": true,
+    "timestamp": "2026-04-27T05:45:54.641313+00:00",
+    "warnings": [],
+    "errors": [],
+    "health": {
+      "healthy_production_data": true,
+      "readiness_state": "ready",
+      "placeholder_only": false,
+      "catalog_rows": 6,
+      "catalog_real_rows": 6,
+      "inventory_rows": 6,
+      "inventory_placeholder_only": false,
+      "daily_sales_rows": 5,
+      "cashflow_rows": 4,
+      "category_override_rows": 1,
+      "category_overrides_empty": false,
+      "meta_present_keys": [
+        "data_label",
+        "environment",
+        "schema_version",
+        "workbook"
+      ],
+      "meta_missing_keys": []
+    },
+    "healthy_production_data": true,
+    "readiness_state": "ready",
+    "placeholder_only": false,
+    "catalog_rows": 6,
+    "catalog_real_rows": 6,
+    "inventory_rows": 6,
+    "inventory_placeholder_only": false,
+    "daily_sales_rows": 5,
+    "cashflow_rows": 4,
+    "category_override_rows": 1,
+    "category_overrides_empty": false,
+    "meta_present_keys": [
+      "data_label",
+      "environment",
+      "schema_version",
+      "workbook"
+    ],
+    "meta_missing_keys": []
+  },
+  "dashboard_snapshot_before": {
+    "summary": [
+      624.3,
+      12.0,
+      367.3,
+      52.03
+    ],
+    "abc_rows": 6,
+    "margin_rows": 5
+  },
+  "sale_writeback": {
+    "sku": "10004",
+    "product": "Chaveiro Mar Bordado",
+    "quantity": 3,
+    "unit_price": 14.9,
+    "total": 44.7,
+    "workbook_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/FuloFilo_Rehearsal_NON_PRODUCTION.xlsx",
+    "backup_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/backups/FuloFilo_Rehearsal_NON_PRODUCTION_20260427_024555.xlsx",
+    "sync_output": "[sync_excel] OK — Parquet written to /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/parquet"
+  },
+  "inventory_adjustment": {
+    "sku": "10002",
+    "product": "Canga Sol do Nordeste",
+    "old_stock": 11,
+    "new_stock": 18,
+    "delta": 7,
+    "workbook_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/FuloFilo_Rehearsal_NON_PRODUCTION.xlsx",
+    "backup_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/backups/FuloFilo_Rehearsal_NON_PRODUCTION_20260427_024556.xlsx",
+    "sync_output": "[sync_excel] OK — Parquet written to /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/parquet"
+  },
+  "category_override": {
+    "sku": "10003",
+    "category": "Presentes",
+    "subcategory": "Canecas",
+    "confidence": "manual",
+    "workbook_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/FuloFilo_Rehearsal_NON_PRODUCTION.xlsx",
+    "backup_path": "/Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/excel/rehearsal/backups/FuloFilo_Rehearsal_NON_PRODUCTION_20260427_024556_01.xlsx",
+    "sync_output": "[sync_excel] OK — Parquet written to /Users/giovannini_nuovo/Documents/GitHub/FuloFilo/data/parquet"
+  },
+  "final_status": {
+    "ok": true,
+    "timestamp": "2026-04-27T05:45:57.080425+00:00",
+    "warnings": [],
+    "errors": [],
+    "health": {
+      "healthy_production_data": true,
+      "readiness_state": "ready",
+      "placeholder_only": false,
+      "catalog_rows": 6,
+      "catalog_real_rows": 6,
+      "inventory_rows": 6,
+      "inventory_placeholder_only": false,
+      "daily_sales_rows": 6,
+      "cashflow_rows": 4,
+      "category_override_rows": 2,
+      "category_overrides_empty": false,
+      "meta_present_keys": [
+        "data_label",
+        "environment",
+        "schema_version",
+        "workbook"
+      ],
+      "meta_missing_keys": []
+    },
+    "healthy_production_data": true,
+    "readiness_state": "ready",
+    "placeholder_only": false,
+    "catalog_rows": 6,
+    "catalog_real_rows": 6,
+    "inventory_rows": 6,
+    "inventory_placeholder_only": false,
+    "daily_sales_rows": 6,
+    "cashflow_rows": 4,
+    "category_override_rows": 2,
+    "category_overrides_empty": false,
+    "meta_present_keys": [
+      "data_label",
+      "environment",
+      "schema_version",
+      "workbook"
+    ],
+    "meta_missing_keys": []
+  },
+  "dashboard_snapshot_after": {
+    "summary": [
+      669.0,
+      15,
+      397.0,
+      44.6
+    ],
+    "abc_rows": 6,
+    "margin_rows": 6
+  }
+}

@@ -7,6 +7,7 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 
 from app.utils.excel_sync import MASTER_PATH, backup_workbook, run_canonical_sync
+from app.utils.workbook_lock import locked_workbook
 
 SHEET_CATALOG = "Catalog"
 SHEET_OVERRIDES = "CategoryOverrides"
@@ -70,27 +71,29 @@ def upsert_category_override(
     if not workbook_path.exists():
         raise FileNotFoundError(f"Workbook not found: {workbook_path}")
 
-    backup_path = backup_workbook(workbook_path) if create_backup else None
-    wb = openpyxl.load_workbook(workbook_path)
-    catalog_ws = _require_sheet(wb, SHEET_CATALOG)
-    overrides_ws = _require_sheet(wb, SHEET_OVERRIDES)
+    backup_path = None
+    with locked_workbook(workbook_path, owner="streamlit_category_ops"):
+        backup_path = backup_workbook(workbook_path) if create_backup else None
+        wb = openpyxl.load_workbook(workbook_path)
+        catalog_ws = _require_sheet(wb, SHEET_CATALOG)
+        overrides_ws = _require_sheet(wb, SHEET_OVERRIDES)
 
-    if sku_norm not in _catalog_skus(catalog_ws):
-        raise ValueError(f"SKU not found in Catalog: {sku_norm}")
+        if sku_norm not in _catalog_skus(catalog_ws):
+            raise ValueError(f"SKU not found in Catalog: {sku_norm}")
 
-    target_row = None
-    for row_idx in range(2, overrides_ws.max_row + 1):
-        if _norm_sku(overrides_ws.cell(row_idx, 1).value) == sku_norm:
-            target_row = row_idx
-            break
-    if target_row is None:
-        target_row = overrides_ws.max_row + 1
+        target_row = None
+        for row_idx in range(2, overrides_ws.max_row + 1):
+            if _norm_sku(overrides_ws.cell(row_idx, 1).value) == sku_norm:
+                target_row = row_idx
+                break
+        if target_row is None:
+            target_row = overrides_ws.max_row + 1
 
-    overrides_ws.cell(target_row, 1, sku_norm)
-    overrides_ws.cell(target_row, 2, str(category).strip())
-    overrides_ws.cell(target_row, 3, str(subcategory).strip())
-    overrides_ws.cell(target_row, 4, str(confidence).strip() or "manual")
-    wb.save(workbook_path)
+        overrides_ws.cell(target_row, 1, sku_norm)
+        overrides_ws.cell(target_row, 2, str(category).strip())
+        overrides_ws.cell(target_row, 3, str(subcategory).strip())
+        overrides_ws.cell(target_row, 4, str(confidence).strip() or "manual")
+        wb.save(workbook_path)
 
     sync_output = ""
     if run_sync:
