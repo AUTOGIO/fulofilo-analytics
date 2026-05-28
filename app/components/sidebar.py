@@ -7,6 +7,7 @@ consistent logo + navigation across the entire app.
 
 from pathlib import Path
 import json
+import os
 import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -122,11 +123,19 @@ def get_selected_period() -> str:
     return "ALL"
 
 
+def _is_streamlit_cloud() -> bool:
+    return bool(os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("IS_STREAMLIT_CLOUD"))
+
+
 def _run_local_automation(action: str, force: bool = False, extra_args: list[str] | None = None) -> tuple[bool, dict, str]:
     import subprocess
 
     root = Path(__file__).resolve().parent.parent.parent
-    runner = root / ".venv" / "bin" / "python3"
+    if _is_streamlit_cloud():
+        return False, {}, "Local automations are disabled on Streamlit Cloud. Use FF Terminal on macOS."
+
+    venv_runner = root / ".venv" / "bin" / "python3"
+    runner = venv_runner if venv_runner.exists() else Path(sys.executable)
     cmd = [str(runner), str(root / "scripts" / "automation_cli.py"), action]
     if extra_args:
         cmd.extend(extra_args)
@@ -152,6 +161,7 @@ def render_sidebar(active_page: str = ""):
         active_page: filename of the current page (e.g. 'app.py')
     """
     inject_logo()
+    is_cloud = _is_streamlit_cloud()
 
     # HUD sidebar extra CSS (supplements hud.py global styles)
     st.markdown("""
@@ -253,8 +263,11 @@ def render_sidebar(active_page: str = ""):
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">Automation Controls</div>', unsafe_allow_html=True)
-        st.caption("Use a rotina automática após atualizar vendas e dados operacionais na planilha Excel.")
-        if st.button("Executar rotina automática", use_container_width=True, type="primary"):
+        if is_cloud:
+            st.caption("Automações locais ficam no FF Terminal em macOS. A nuvem exibe os dados já sincronizados.")
+        else:
+            st.caption("Use a rotina automática após atualizar vendas e dados operacionais na planilha Excel.")
+        if st.button("Executar rotina automática", use_container_width=True, type="primary", disabled=is_cloud):
             with st.spinner("Executando sync, alertas e relatórios..."):
                 ok, payload, stderr = _run_local_automation("run-daily-automation")
             if ok:
@@ -266,7 +279,7 @@ def render_sidebar(active_page: str = ""):
                 error = payload.get("error") or stderr or "Falha ao executar rotina automática."
                 st.error(error)
 
-        if st.button("✔ Validar dados", use_container_width=True):
+        if st.button("✔ Validar dados", use_container_width=True, disabled=is_cloud):
             with st.spinner("Executando validação estrita..."):
                 ok, payload, stderr = _run_local_automation("validate-data-integrity")
             if ok:
@@ -276,7 +289,7 @@ def render_sidebar(active_page: str = ""):
                 st.error(error)
 
         st.markdown('<div class="sidebar-section-label">Rede Downloads</div>', unsafe_allow_html=True)
-        st.caption("Baixa relatórios Rede. Não altera o Excel master nem os dados Loyverse.")
+        st.caption("Baixa relatórios Rede. Local-only; não altera o Excel master nem os dados Loyverse.")
         rede_target_date = st.date_input("Dia Rede", key="rede_download_target_date")
         rede_formats = st.multiselect(
             "Formato",
@@ -286,7 +299,7 @@ def render_sidebar(active_page: str = ""):
         )
         st.session_state.setdefault("rede_download_status", "idle")
         st.caption(f"Status: {st.session_state['rede_download_status']}")
-        if st.button("Baixar vendas Rede", use_container_width=True):
+        if st.button("Baixar vendas Rede", use_container_width=True, disabled=is_cloud):
             st.session_state["rede_download_status"] = "running"
             result = launch_rede_sales_download("date", rede_target_date, rede_formats)
             st.session_state["rede_download_status"] = "downloaded" if result.ok else "failed"
@@ -296,7 +309,7 @@ def render_sidebar(active_page: str = ""):
                 st.error(result.message)
 
         st.markdown('<div class="sidebar-section-label">Loyverse Sales</div>', unsafe_allow_html=True)
-        st.caption("Baixa vendas Loyverse, importa no Excel master e atualiza dashboard/app.")
+        st.caption("Baixa vendas Loyverse, importa no Excel master e atualiza dashboard/app. Local-only.")
         loyverse_mode = st.radio(
             "Período Loyverse",
             options=["um dia", "intervalo"],
@@ -318,7 +331,7 @@ def render_sidebar(active_page: str = ""):
         loyverse_force = st.checkbox("Forçar novo download Loyverse", value=False, key="loyverse_download_force")
         st.session_state.setdefault("loyverse_download_status", "idle")
         st.caption(f"Status: {st.session_state['loyverse_download_status']}")
-        if st.button("Baixar + importar Loyverse", use_container_width=True):
+        if st.button("Baixar + importar Loyverse", use_container_width=True, disabled=is_cloud):
             st.session_state["loyverse_download_status"] = "running"
             with st.spinner("Baixando Loyverse e atualizando pipeline..."):
                 if loyverse_mode == "intervalo":
@@ -363,9 +376,7 @@ def render_sidebar(active_page: str = ""):
         )
 
         # ── Sync & Deploy button (local only — no-op on Streamlit Cloud) ─────────
-        import os, subprocess
-        is_cloud = bool(os.environ.get("STREAMLIT_SHARING_MODE") or
-                        os.environ.get("IS_STREAMLIT_CLOUD"))
+        import subprocess
         if not is_cloud:
             st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-section-label">Deploy</div>', unsafe_allow_html=True)
