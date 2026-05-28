@@ -59,6 +59,7 @@ struct SidebarView: View {
             AutomationControls()
 
             RedeDownloads()
+            LoyverseDownloads()
 
             Spacer(minLength: 0)
 
@@ -266,6 +267,73 @@ private struct AutomationControls: View {
 private struct RedeDownloads: View {
     @Environment(TerminalStore.self) private var store
     @State private var targetDate: Date = Date()
+    @State private var formats: Set<String> = ["csv"]
+    @State private var force: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("REDE DOWNLOADS")
+                .font(TerminalType.label(10, weight: .bold))
+                .foregroundStyle(TerminalColors.muted)
+            Text("Baixa relatórios Rede. Não altera o Excel master nem dados Loyverse.".uppercased())
+                .font(TerminalType.mono(9, weight: .regular))
+                .foregroundStyle(TerminalColors.dim)
+                .lineLimit(3)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("DIA REDE")
+                    .font(TerminalType.label(10, weight: .bold))
+                    .foregroundStyle(TerminalColors.muted)
+                DatePicker("", selection: $targetDate, displayedComponents: [.date])
+                    .labelsHidden()
+                    .datePickerStyle(.field)
+                    .font(TerminalType.mono(12, weight: .semibold))
+                    .tint(TerminalColors.cyan)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("FORMATO")
+                    .font(TerminalType.label(10, weight: .bold))
+                    .foregroundStyle(TerminalColors.muted)
+                RedeFormatChips(selection: $formats)
+            }
+
+            Toggle("FORÇAR NOVO DOWNLOAD", isOn: $force)
+                .font(TerminalType.mono(9, weight: .semibold))
+                .foregroundStyle(TerminalColors.muted)
+                .toggleStyle(.checkbox)
+
+            if let message = store.lastActionMessage, !message.isEmpty {
+                Text(message.uppercased())
+                    .font(TerminalType.mono(9, weight: .regular))
+                    .foregroundStyle(TerminalColors.green)
+                    .lineLimit(4)
+            }
+
+            Button {
+                Task { await store.launchRedeDownload(targetDate: targetDate, formats: Array(formats).sorted(), force: force) }
+            } label: {
+                Text("BAIXAR VENDAS REDE")
+                    .font(TerminalType.mono(11, weight: .bold))
+                    .foregroundStyle(TerminalColors.text)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(TerminalColors.panel2.opacity(0.65))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(TerminalColors.border, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+        .terminalPanel()
+    }
+}
+
+private struct LoyverseDownloads: View {
+    @Environment(TerminalStore.self) private var store
+    @State private var targetDate: Date = Date()
     @State private var endDate: Date = Date()
     @State private var mode: String = "day"
     @State private var format: String = "csv"
@@ -273,7 +341,7 @@ private struct RedeDownloads: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("REDE DOWNLOADS")
+            Text("LOYVERSE SALES")
                 .font(TerminalType.label(10, weight: .bold))
                 .foregroundStyle(TerminalColors.muted)
             Text("Baixa Loyverse, importa no Excel master e atualiza dashboard/app.".uppercased())
@@ -289,7 +357,7 @@ private struct RedeDownloads: View {
             .tint(TerminalColors.cyan)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(mode == "day" ? "DIA REDE" : "DE")
+                Text(mode == "day" ? "DIA LOYVERSE" : "DE")
                     .font(TerminalType.label(10, weight: .bold))
                     .foregroundStyle(TerminalColors.muted)
                 DatePicker("", selection: $targetDate, displayedComponents: [.date])
@@ -324,17 +392,10 @@ private struct RedeDownloads: View {
                 .foregroundStyle(TerminalColors.muted)
                 .toggleStyle(.checkbox)
 
-            if let message = store.lastActionMessage, !message.isEmpty {
-                Text(message.uppercased())
-                    .font(TerminalType.mono(9, weight: .regular))
-                    .foregroundStyle(TerminalColors.green)
-                    .lineLimit(4)
-            }
-
             Button {
-                Task { await store.launchRedeDownload(mode: mode, targetDate: targetDate, endDate: endDate, format: format, force: force) }
+                Task { await store.launchLoyverseDownload(mode: mode, targetDate: targetDate, endDate: endDate, format: format, force: force) }
             } label: {
-                Text("BAIXAR + IMPORTAR VENDAS")
+                Text("BAIXAR + IMPORTAR LOYVERSE")
                     .font(TerminalType.mono(11, weight: .bold))
                     .foregroundStyle(TerminalColors.text)
                     .frame(maxWidth: .infinity)
@@ -376,6 +437,43 @@ private struct FormatChips: View {
                             .stroke(TerminalColors.border.opacity(selected ? 0.0 : 0.7), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+}
+
+private struct RedeFormatChips: View {
+    @Binding var selection: Set<String>
+    private let all = ["csv", "excel", "pdf"]
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(all, id: \.self) { fmt in
+                let selected = selection.contains(fmt)
+                Button {
+                    if selected {
+                        selection.remove(fmt)
+                    } else {
+                        selection.insert(fmt)
+                    }
+                    if selection.isEmpty {
+                        selection.insert("csv")
+                    }
+                } label: {
+                    Text(fmt.uppercased())
+                        .font(TerminalType.mono(10, weight: .bold))
+                        .foregroundStyle(selected ? Color.black.opacity(0.85) : TerminalColors.text)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(selected ? TerminalColors.green : TerminalColors.panel.opacity(0.35))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(TerminalColors.border.opacity(selected ? 0.0 : 0.7), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)
             }

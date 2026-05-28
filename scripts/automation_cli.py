@@ -329,6 +329,27 @@ def _download_loyverse_sales_period(logger: logging.Logger, start_date: str, end
     }
 
 
+def _launch_rede_sales_download(logger: logging.Logger, target_date: str, formats: str) -> dict[str, Any]:
+    from datetime import date
+
+    from app.utils.rede_automation import launch_rede_sales_download
+
+    clean_formats = [item.strip().lower() for item in formats.split(",") if item.strip()]
+    parsed_date = date.fromisoformat(target_date)
+    result = launch_rede_sales_download("date", parsed_date, clean_formats)
+    logger.info("Rede download launch result: ok=%s message=%s", result.ok, result.message)
+    if not result.ok:
+        raise RuntimeError(result.message)
+    return {
+        "ok": True,
+        "date": parsed_date.isoformat(),
+        "formats": clean_formats or ["csv"],
+        "status": "downloaded",
+        "launcher_path": str(result.launcher_path) if result.launcher_path else None,
+        "message": result.message,
+    }
+
+
 def _load_idempotency_state() -> dict[str, Any]:
     return _json_load(
         IDEMPOTENCY_FILE,
@@ -375,7 +396,7 @@ def execute_action(
                 }
 
         if (
-            action not in {"download-loyverse-daily-sales", "download-loyverse-sales-period"}
+            action not in {"download-loyverse-daily-sales", "download-loyverse-sales-period", "launch-rede-sales-download"}
             and
             not force
             and command_state.get("last_status") == "success"
@@ -414,6 +435,10 @@ def execute_action(
                     raise ValueError("Missing required period as target_date=start:end for download-loyverse-sales-period.")
                 start_date, end_date = target_date.split(":", 1)
                 details = _download_loyverse_sales_period(logger, start_date=start_date, end_date=end_date, fmt=fmt, force=force)
+            elif action == "launch-rede-sales-download":
+                if not target_date:
+                    raise ValueError("Missing required target_date for launch-rede-sales-download.")
+                details = _launch_rede_sales_download(logger, target_date=target_date, formats=fmt)
             else:
                 raise ValueError(f"Unsupported action: {action}")
 
@@ -517,6 +542,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p_loyverse_period.add_argument("--format", choices=("csv", "xlsx", "excel", "pdf"), default="csv")
     _add_common_flags(p_loyverse_period)
 
+    p_rede = sub.add_parser("launch-rede-sales-download", help="Launch the separate Rede sales download automation.")
+    p_rede.add_argument("--date", required=True, dest="target_date", help="Report date as YYYY-MM-DD.")
+    p_rede.add_argument("--formats", default="csv", help="Comma-separated Rede formats: csv,excel,pdf.")
+    _add_common_flags(p_rede)
+
     p_server = sub.add_parser("serve-webhook", help="Run local webhook server for n8n HTTP Request nodes.")
     p_server.add_argument("--host", default="127.0.0.1")
     p_server.add_argument("--port", type=int, default=8787)
@@ -592,7 +622,7 @@ def _make_handler(token: str):
                     if action == "download-loyverse-sales-period" and params.get("from") and params.get("to")
                     else params.get("date") or params.get("target_date")
                 ),
-                fmt=str(params.get("format", "csv")),
+                fmt=str(params.get("formats") or params.get("format", "csv")),
             )
             status = 200 if result.get("ok", False) else 500
             self._json_response(result, status=status)
@@ -638,7 +668,7 @@ def main() -> None:
             if hasattr(args, "period_from") and hasattr(args, "period_to")
             else getattr(args, "target_date", None)
         ),
-        "fmt": getattr(args, "format", "csv"),
+        "fmt": getattr(args, "formats", getattr(args, "format", "csv")),
     }
     result = execute_action(**kwargs)
     print(json.dumps(result, ensure_ascii=False, indent=2))

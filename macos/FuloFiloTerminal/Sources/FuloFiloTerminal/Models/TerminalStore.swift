@@ -249,7 +249,47 @@ final class TerminalStore {
         }
     }
 
-    func launchRedeDownload(mode: String, targetDate: Date, endDate: Date, format: String, force: Bool) async {
+    func launchRedeDownload(targetDate: Date, formats: [String], force: Bool) async {
+        syncState = .running
+        lastSyncError = nil
+        lastActionMessage = nil
+        syncTimestamp = timestampNow()
+
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        let dateString = f.string(from: targetDate)
+        let cleanFormats = formats.isEmpty ? "csv" : formats.joined(separator: ",")
+
+        do {
+            var args = [
+                "scripts/automation_cli.py",
+                "launch-rede-sales-download",
+                "--date",
+                dateString,
+                "--formats",
+                cleanFormats
+            ]
+            if force {
+                args.append("--force")
+            }
+            let out = try await ProcessRunner.run(
+                executable: pythonPath(),
+                arguments: args,
+                environment: ["FULO_REPO_ROOT": repoRoot()],
+                currentDirectory: repoRoot()
+            )
+            syncState = .idle
+            syncTimestamp = timestampNow()
+            let raw = (String(data: out, encoding: .utf8) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            lastActionMessage = raw.contains("\"status\": \"downloaded\"") ? "Rede download launched." : raw
+        } catch {
+            syncState = .failed
+            syncTimestamp = timestampNow()
+            lastSyncError = "\(error)"
+        }
+    }
+
+    func launchLoyverseDownload(mode: String, targetDate: Date, endDate: Date, format: String, force: Bool) async {
         syncState = .running
         lastSyncError = nil
         lastActionMessage = nil

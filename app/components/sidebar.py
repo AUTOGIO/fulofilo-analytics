@@ -11,6 +11,7 @@ import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
+from app.utils.rede_automation import launch_rede_sales_download
 from app.utils.supplier_desk import DEFAULT_CONFIG, load_supplier_desk
 
 # ── Month filter session-state key ────────────────────────────────────────────
@@ -275,51 +276,71 @@ def render_sidebar(active_page: str = ""):
                 st.error(error)
 
         st.markdown('<div class="sidebar-section-label">Rede Downloads</div>', unsafe_allow_html=True)
-        st.caption("Baixa vendas diárias do Loyverse e importa CSV/Excel no pipeline local.")
-        rede_mode = st.radio(
-            "Período",
-            options=["um dia", "intervalo"],
-            index=0,
-            horizontal=True,
-            key="rede_download_mode",
-        )
+        st.caption("Baixa relatórios Rede. Não altera o Excel master nem os dados Loyverse.")
         rede_target_date = st.date_input("Dia Rede", key="rede_download_target_date")
-        rede_end_date = None
-        if rede_mode == "intervalo":
-            rede_end_date = st.date_input("Até", value=rede_target_date, key="rede_download_end_date")
-        rede_format = st.radio(
+        rede_formats = st.multiselect(
             "Formato",
-            options=["csv", "xlsx", "pdf"],
-            index=0,
-            horizontal=True,
-            key="rede_download_format",
+            options=["csv", "excel", "pdf"],
+            default=["csv"],
+            key="rede_download_formats",
         )
-        rede_force = st.checkbox("Forçar novo download", value=False, key="rede_download_force")
         st.session_state.setdefault("rede_download_status", "idle")
         st.caption(f"Status: {st.session_state['rede_download_status']}")
         if st.button("Baixar vendas Rede", use_container_width=True):
             st.session_state["rede_download_status"] = "running"
+            result = launch_rede_sales_download("date", rede_target_date, rede_formats)
+            st.session_state["rede_download_status"] = "downloaded" if result.ok else "failed"
+            if result.ok:
+                st.success(result.message)
+            else:
+                st.error(result.message)
+
+        st.markdown('<div class="sidebar-section-label">Loyverse Sales</div>', unsafe_allow_html=True)
+        st.caption("Baixa vendas Loyverse, importa no Excel master e atualiza dashboard/app.")
+        loyverse_mode = st.radio(
+            "Período Loyverse",
+            options=["um dia", "intervalo"],
+            index=0,
+            horizontal=True,
+            key="loyverse_download_mode",
+        )
+        loyverse_target_date = st.date_input("Dia Loyverse", key="loyverse_download_target_date")
+        loyverse_end_date = None
+        if loyverse_mode == "intervalo":
+            loyverse_end_date = st.date_input("Até", value=loyverse_target_date, key="loyverse_download_end_date")
+        loyverse_format = st.radio(
+            "Formato Loyverse",
+            options=["csv", "xlsx", "pdf"],
+            index=0,
+            horizontal=True,
+            key="loyverse_download_format",
+        )
+        loyverse_force = st.checkbox("Forçar novo download Loyverse", value=False, key="loyverse_download_force")
+        st.session_state.setdefault("loyverse_download_status", "idle")
+        st.caption(f"Status: {st.session_state['loyverse_download_status']}")
+        if st.button("Baixar + importar Loyverse", use_container_width=True):
+            st.session_state["loyverse_download_status"] = "running"
             with st.spinner("Baixando Loyverse e atualizando pipeline..."):
-                if rede_mode == "intervalo":
+                if loyverse_mode == "intervalo":
                     action = "download-loyverse-sales-period"
                     extra_args = [
                         "--from",
-                        rede_target_date.isoformat(),
+                        loyverse_target_date.isoformat(),
                         "--to",
-                        (rede_end_date or rede_target_date).isoformat(),
+                        (loyverse_end_date or loyverse_target_date).isoformat(),
                         "--format",
-                        rede_format,
+                        loyverse_format,
                     ]
                 else:
                     action = "download-loyverse-daily-sales"
-                    extra_args = ["--date", rede_target_date.isoformat(), "--format", rede_format]
+                    extra_args = ["--date", loyverse_target_date.isoformat(), "--format", loyverse_format]
                 ok, payload, stderr = _run_local_automation(
                     action,
-                    force=rede_force,
+                    force=loyverse_force,
                     extra_args=extra_args,
                 )
             details = payload.get("details", {})
-            st.session_state["rede_download_status"] = details.get("status", "failed" if not ok else "validated")
+            st.session_state["loyverse_download_status"] = details.get("status", "failed" if not ok else "validated")
             if ok:
                 st.success(details.get("message") or "Download concluído.")
                 if details.get("raw_path"):
