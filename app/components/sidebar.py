@@ -11,7 +11,6 @@ import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
-from app.utils.rede_automation import launch_rede_sales_download
 from app.utils.supplier_desk import DEFAULT_CONFIG, load_supplier_desk
 
 # ── Month filter session-state key ────────────────────────────────────────────
@@ -122,12 +121,14 @@ def get_selected_period() -> str:
     return "ALL"
 
 
-def _run_local_automation(action: str, force: bool = False) -> tuple[bool, dict, str]:
+def _run_local_automation(action: str, force: bool = False, extra_args: list[str] | None = None) -> tuple[bool, dict, str]:
     import subprocess
 
     root = Path(__file__).resolve().parent.parent.parent
     runner = root / ".venv" / "bin" / "python3"
     cmd = [str(runner), str(root / "scripts" / "automation_cli.py"), action]
+    if extra_args:
+        cmd.extend(extra_args)
     if force:
         cmd.append("--force")
 
@@ -274,20 +275,61 @@ def render_sidebar(active_page: str = ""):
                 st.error(error)
 
         st.markdown('<div class="sidebar-section-label">Rede Downloads</div>', unsafe_allow_html=True)
-        st.caption("Abre uma janela do Terminal para baixar relatórios Rede. Não altera dados canônicos.")
-        rede_target_date = st.date_input("Dia Rede", key="rede_download_target_date")
-        rede_formats = st.multiselect(
-            "Formato",
-            options=["csv", "excel", "pdf"],
-            default=["csv"],
-            key="rede_download_formats",
+        st.caption("Baixa vendas diárias do Loyverse e importa CSV/Excel no pipeline local.")
+        rede_mode = st.radio(
+            "Período",
+            options=["um dia", "intervalo"],
+            index=0,
+            horizontal=True,
+            key="rede_download_mode",
         )
+        rede_target_date = st.date_input("Dia Rede", key="rede_download_target_date")
+        rede_end_date = None
+        if rede_mode == "intervalo":
+            rede_end_date = st.date_input("Até", value=rede_target_date, key="rede_download_end_date")
+        rede_format = st.radio(
+            "Formato",
+            options=["csv", "xlsx", "pdf"],
+            index=0,
+            horizontal=True,
+            key="rede_download_format",
+        )
+        rede_force = st.checkbox("Forçar novo download", value=False, key="rede_download_force")
+        st.session_state.setdefault("rede_download_status", "idle")
+        st.caption(f"Status: {st.session_state['rede_download_status']}")
         if st.button("Baixar vendas Rede", use_container_width=True):
-            result = launch_rede_sales_download("date", rede_target_date, rede_formats)
-            if result.ok:
-                st.success(result.message)
+            st.session_state["rede_download_status"] = "running"
+            with st.spinner("Baixando Loyverse e atualizando pipeline..."):
+                if rede_mode == "intervalo":
+                    action = "download-loyverse-sales-period"
+                    extra_args = [
+                        "--from",
+                        rede_target_date.isoformat(),
+                        "--to",
+                        (rede_end_date or rede_target_date).isoformat(),
+                        "--format",
+                        rede_format,
+                    ]
+                else:
+                    action = "download-loyverse-daily-sales"
+                    extra_args = ["--date", rede_target_date.isoformat(), "--format", rede_format]
+                ok, payload, stderr = _run_local_automation(
+                    action,
+                    force=rede_force,
+                    extra_args=extra_args,
+                )
+            details = payload.get("details", {})
+            st.session_state["rede_download_status"] = details.get("status", "failed" if not ok else "validated")
+            if ok:
+                st.success(details.get("message") or "Download concluído.")
+                if details.get("raw_path"):
+                    st.caption(f"Raw: {details['raw_path']}")
+                if details.get("processed_path"):
+                    st.caption(f"Processed: {details['processed_path']}")
+                st.cache_data.clear()
             else:
-                st.error(result.message)
+                error = details.get("message") or payload.get("error") or stderr or "Falha no download Loyverse."
+                st.error(error)
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown(

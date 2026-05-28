@@ -102,6 +102,8 @@ AGENTS*.md
 
 # ── App bundles ────────────────────────
 *.app/
+macos/**/.build/
+macos/**/.swiftpm/
 
 # ── Workspace files ────────────────────
 *.code-workspace

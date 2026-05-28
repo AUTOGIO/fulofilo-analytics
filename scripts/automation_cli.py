@@ -287,6 +287,48 @@ def _run_daily_automation(logger: logging.Logger, sku_policy: str) -> dict[str, 
     return {"automation_steps": steps}
 
 
+def _download_loyverse_daily_sales(logger: logging.Logger, target_date: str, fmt: str, force: bool) -> dict[str, Any]:
+    from app.utils.loyverse_automation import run_loyverse_daily_sales_import
+
+    logger.info("Running Loyverse daily sales download: date=%s format=%s force=%s", target_date, fmt, force)
+    result = run_loyverse_daily_sales_import(target_date, fmt=fmt, force=force).to_dict()
+    if not result.get("ok", False):
+        raise RuntimeError(result.get("message") or "Loyverse daily sales download failed.")
+    return result
+
+
+def _download_loyverse_sales_period(logger: logging.Logger, start_date: str, end_date: str, fmt: str, force: bool) -> dict[str, Any]:
+    from datetime import date, timedelta
+
+    start = date.fromisoformat(start_date)
+    end = date.fromisoformat(end_date)
+    if end < start:
+        raise ValueError("Period end date must be on or after start date.")
+
+    days = []
+    cursor = start
+    while cursor <= end:
+        day = cursor.isoformat()
+        try:
+            details = _download_loyverse_daily_sales(logger, target_date=day, fmt=fmt, force=force)
+            days.append({"date": day, "ok": True, "status": details.get("status"), "details": details})
+        except Exception as exc:
+            logger.exception("Loyverse period day failed: %s", day)
+            days.append({"date": day, "ok": False, "status": "failed", "error": str(exc)})
+            raise
+        cursor += timedelta(days=1)
+
+    return {
+        "ok": True,
+        "start_date": start.isoformat(),
+        "end_date": end.isoformat(),
+        "format": fmt,
+        "status": "validated",
+        "days": days,
+        "message": f"Loyverse period imported and validated: {start.isoformat()} -> {end.isoformat()}",
+    }
+
+
 def _load_idempotency_state() -> dict[str, Any]:
     return _json_load(
         IDEMPOTENCY_FILE,
@@ -305,6 +347,8 @@ def execute_action(
     force: bool = False,
     idempotency_key: str | None = None,
     run_tests: bool = True,
+    target_date: str | None = None,
+    fmt: str = "csv",
 ) -> dict[str, Any]:
     _ensure_dirs()
     run_id = datetime.now().strftime("%Y%m%dT%H%M%S")
@@ -331,6 +375,8 @@ def execute_action(
                 }
 
         if (
+            action not in {"download-loyverse-daily-sales", "download-loyverse-sales-period"}
+            and
             not force
             and command_state.get("last_status") == "success"
             and command_state.get("last_fingerprint") == fingerprint
@@ -359,6 +405,15 @@ def execute_action(
                 details = _validate_data_integrity(logger, run_tests=run_tests)
             elif action == "run-daily-automation":
                 details = _run_daily_automation(logger, sku_policy=sku_policy)
+            elif action == "download-loyverse-daily-sales":
+                if not target_date:
+                    raise ValueError("Missing required target_date for download-loyverse-daily-sales.")
+                details = _download_loyverse_daily_sales(logger, target_date=target_date, fmt=fmt, force=force)
+            elif action == "download-loyverse-sales-period":
+                if not target_date or ":" not in target_date:
+                    raise ValueError("Missing required period as target_date=start:end for download-loyverse-sales-period.")
+                start_date, end_date = target_date.split(":", 1)
+                details = _download_loyverse_sales_period(logger, start_date=start_date, end_date=end_date, fmt=fmt, force=force)
             else:
                 raise ValueError(f"Unsupported action: {action}")
 
@@ -451,6 +506,17 @@ def _build_parser() -> argparse.ArgumentParser:
     p_daily.add_argument("--sku-policy", choices=("balanced", "strict"), default="balanced")
     _add_common_flags(p_daily)
 
+    p_loyverse = sub.add_parser("download-loyverse-daily-sales", help="Download and import Loyverse item sales for one day.")
+    p_loyverse.add_argument("--date", required=True, dest="target_date", help="Report date as YYYY-MM-DD.")
+    p_loyverse.add_argument("--format", choices=("csv", "xlsx", "excel", "pdf"), default="csv")
+    _add_common_flags(p_loyverse)
+
+    p_loyverse_period = sub.add_parser("download-loyverse-sales-period", help="Download and import Loyverse item sales day-by-day for a period.")
+    p_loyverse_period.add_argument("--from", required=True, dest="period_from", help="Start date as YYYY-MM-DD.")
+    p_loyverse_period.add_argument("--to", required=True, dest="period_to", help="End date as YYYY-MM-DD.")
+    p_loyverse_period.add_argument("--format", choices=("csv", "xlsx", "excel", "pdf"), default="csv")
+    _add_common_flags(p_loyverse_period)
+
     p_server = sub.add_parser("serve-webhook", help="Run local webhook server for n8n HTTP Request nodes.")
     p_server.add_argument("--host", default="127.0.0.1")
     p_server.add_argument("--port", type=int, default=8787)
@@ -521,6 +587,12 @@ def _make_handler(token: str):
                 force=bool(params.get("force", False)),
                 idempotency_key=payload.get("idempotency_key") or self.headers.get("X-Idempotency-Key"),
                 run_tests=not bool(params.get("skip_tests", False)),
+                target_date=(
+                    f"{params.get('from')}:{params.get('to')}"
+                    if action == "download-loyverse-sales-period" and params.get("from") and params.get("to")
+                    else params.get("date") or params.get("target_date")
+                ),
+                fmt=str(params.get("format", "csv")),
             )
             status = 200 if result.get("ok", False) else 500
             self._json_response(result, status=status)
@@ -561,6 +633,12 @@ def main() -> None:
         "force": getattr(args, "force", False),
         "idempotency_key": getattr(args, "idempotency_key", None),
         "run_tests": not getattr(args, "skip_tests", False),
+        "target_date": (
+            f"{args.period_from}:{args.period_to}"
+            if hasattr(args, "period_from") and hasattr(args, "period_to")
+            else getattr(args, "target_date", None)
+        ),
+        "fmt": getattr(args, "format", "csv"),
     }
     result = execute_action(**kwargs)
     print(json.dumps(result, ensure_ascii=False, indent=2))
