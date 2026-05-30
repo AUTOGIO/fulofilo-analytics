@@ -131,8 +131,11 @@ def main() -> int:
 
     cf_pd = cashflow_df.to_pandas() if hasattr(cashflow_df, "to_pandas") and not cashflow_df.is_empty() else None
     if cf_pd is not None and not cf_pd.empty:
-        cash_in = float(cf_pd.loc[cf_pd["Type"] == "Entrada", "total"].sum())
-        cash_out = float(cf_pd.loc[cf_pd["Type"] == "Saída", "total"].sum())
+        # Accept both naming conventions: Receita/Entrada = income, Saída/Despesa = outflow
+        income_mask = cf_pd["Type"].isin(["Entrada", "Receita"])
+        outflow_mask = cf_pd["Type"].isin(["Saída", "Despesa"])
+        cash_in = float(cf_pd.loc[income_mask, "total"].sum())
+        cash_out = float(cf_pd.loc[outflow_mask, "total"].sum())
     else:
         cash_in = cash_out = 0.0
     cash_net = cash_in - cash_out
