@@ -62,7 +62,7 @@ struct RootDashboardView: View {
             TerminalPlaceholderScreen(title: "DAILY OPERATIONS", subtitle: "OPERATOR CONSOLE", accent: TerminalColors.blue, bodyText: "USE COMMAND WINDOW: SYNC • SKU • ALERT.")
                 .environment(store)
         case .category:
-            TerminalPlaceholderScreen(title: "CATEGORY INTELLIGENCE", subtitle: "MIX + PERFORMANCE", accent: TerminalColors.amber, bodyText: "CATEGORY LENSES CAN BE BUILT ON products.parquet + inventory.parquet.")
+            CategoryIntelligenceScreen()
                 .environment(store)
         case .executive:
             ExecutiveOverviewView(selectedTab: $tabSelection)

@@ -1,5 +1,45 @@
 import SwiftUI
 
+// MARK: - Font Scale Singleton
+// @Observable so any SwiftUI view that reads FontScale.shared.base
+// inside body() is automatically re-rendered when the scale changes —
+// no call-site changes required in TerminalType users.
+@Observable
+final class FontScale {
+    static let shared = FontScale()
+    var base: CGFloat = 10          // default base, synced from SettingsStore
+
+    private init() {}
+
+    /// Additive offset: every TerminalType size shifts by (base − 10).
+    func scaled(_ size: CGFloat) -> CGFloat {
+        max(7, size + (base - 10))
+    }
+}
+
+// MARK: - Preset sizes available in the sidebar
+enum FontPreset: CGFloat, CaseIterable {
+    case xs    = 10
+    case sm    = 13
+    case md    = 15
+    case lg    = 18
+    case xl    = 22
+    case xxl   = 24
+
+    var label: String {
+        switch self {
+        case .xs:  return "10"
+        case .sm:  return "13"
+        case .md:  return "15"
+        case .lg:  return "18"
+        case .xl:  return "22"
+        case .xxl: return "24"
+        }
+    }
+}
+
+// MARK: -
+
 enum TerminalColors {
     static let bg = Color(red: 0.03, green: 0.06, blue: 0.10)            // deep navy
     static let panel = Color(red: 0.06, green: 0.10, blue: 0.16)         // lighter navy
@@ -28,16 +68,19 @@ enum TerminalSpacing {
 }
 
 enum TerminalType {
-    static func label(_ size: CGFloat = 10, weight: Font.Weight = .semibold) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+    static func label(_ size: CGFloat? = nil, weight: Font.Weight = .semibold) -> Font {
+        let fontSize = FontScale.shared.scaled(size ?? 10)
+        return .system(size: fontSize, weight: weight, design: .rounded)
     }
 
-    static func mono(_ size: CGFloat = 11, weight: Font.Weight = .medium) -> Font {
-        .system(size: size, weight: weight, design: .monospaced)
+    static func mono(_ size: CGFloat? = nil, weight: Font.Weight = .medium) -> Font {
+        let fontSize = FontScale.shared.scaled(size ?? 11)
+        return .system(size: fontSize, weight: weight, design: .monospaced)
     }
 
-    static func value(_ size: CGFloat = 18, weight: Font.Weight = .bold) -> Font {
-        .system(size: size, weight: weight, design: .monospaced)
+    static func value(_ size: CGFloat? = nil, weight: Font.Weight = .bold) -> Font {
+        let fontSize = FontScale.shared.scaled(size ?? 18)
+        return .system(size: fontSize, weight: weight, design: .monospaced)
     }
 }
 

@@ -6,7 +6,8 @@ struct SidebarView: View {
     @State private var hoverItem: NavItem?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: TerminalSpacing.sm) {
+        VStack(alignment: .leading, spacing: 0) {
+            // ── Pinned header (never scrolls) ─────────────────────────────
             HStack(spacing: TerminalSpacing.sm) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -32,63 +33,74 @@ struct SidebarView: View {
                 Spacer(minLength: 0)
             }
             .padding(.top, TerminalSpacing.xs)
+            .padding(.horizontal, TerminalSpacing.sm)
+            .padding(.bottom, TerminalSpacing.sm)
 
-            CommandField()
+            Divider().overlay(TerminalColors.border.opacity(0.5))
 
-            PeriodFilterBlock()
+            // ── Scrollable body ──────────────────────────────────────────
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: TerminalSpacing.sm) {
+                    CommandField()
 
-            VStack(alignment: .leading, spacing: TerminalSpacing.xs) {
-                Text("OPERATIONAL NAVIGATION")
-                    .font(TerminalType.label(10, weight: .bold))
-                    .foregroundStyle(TerminalColors.amber)
-                    .padding(.top, TerminalSpacing.xs)
+                    PeriodFilterBlock()
 
-                ForEach(NavItem.allCases) { item in
-                    NavRow(
-                        item: item,
-                        isSelected: item == selection,
-                        isHover: hoverItem == item
-                    )
-                    .onTapGesture { selection = item }
-                    .onHover { isHovering in
-                        hoverItem = isHovering ? item : nil
+                    VStack(alignment: .leading, spacing: TerminalSpacing.xs) {
+                        Text("OPERATIONAL NAVIGATION")
+                            .font(TerminalType.label(10, weight: .bold))
+                            .foregroundStyle(TerminalColors.amber)
+                            .padding(.top, TerminalSpacing.xs)
+
+                        ForEach(NavItem.allCases) { item in
+                            NavRow(
+                                item: item,
+                                isSelected: item == selection,
+                                isHover: hoverItem == item
+                            )
+                            .onTapGesture { selection = item }
+                            .onHover { isHovering in
+                                hoverItem = isHovering ? item : nil
+                            }
+                        }
                     }
+
+                    FontScaleBlock()
+
+                    AutomationControls()
+
+                    RedeDownloads()
+                    LoyverseDownloads()
+
+                    // ── Runtime status (bottom of scroll) ─────────────
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("RUNTIME")
+                            .font(TerminalType.label(10, weight: .bold))
+                            .foregroundStyle(TerminalColors.muted)
+                        HStack(spacing: 8) {
+                            Circle().fill(TerminalColors.green).frame(width: 7, height: 7)
+                            Text(store.readModelState.uppercased())
+                                .font(TerminalType.mono(10))
+                                .foregroundStyle(TerminalColors.dim)
+                        }
+                        if let msg = store.lastActionMessage, !msg.isEmpty {
+                            Text(msg.uppercased())
+                                .font(TerminalType.mono(9, weight: .regular))
+                                .foregroundStyle(TerminalColors.muted)
+                                .lineLimit(3)
+                        }
+                        if let err = store.lastSyncError, !err.isEmpty {
+                            Text("LAST ERROR: \(err)".uppercased())
+                                .font(TerminalType.mono(9, weight: .regular))
+                                .foregroundStyle(TerminalColors.red.opacity(0.9))
+                                .lineLimit(3)
+                        }
+                    }
+                    .terminalPanel()
                 }
+                .padding(TerminalSpacing.sm)
             }
-
-            AutomationControls()
-
-            RedeDownloads()
-            LoyverseDownloads()
-
-            Spacer(minLength: 0)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("RUNTIME")
-                    .font(TerminalType.label(10, weight: .bold))
-                    .foregroundStyle(TerminalColors.muted)
-                HStack(spacing: 8) {
-                    Circle().fill(TerminalColors.green).frame(width: 7, height: 7)
-                    Text(store.readModelState.uppercased())
-                        .font(TerminalType.mono(10))
-                        .foregroundStyle(TerminalColors.dim)
-                }
-                if let msg = store.lastActionMessage, !msg.isEmpty {
-                    Text(msg.uppercased())
-                        .font(TerminalType.mono(9, weight: .regular))
-                        .foregroundStyle(TerminalColors.muted)
-                        .lineLimit(3)
-                }
-                if let err = store.lastSyncError, !err.isEmpty {
-                    Text("LAST ERROR: \(err)".uppercased())
-                        .font(TerminalType.mono(9, weight: .regular))
-                        .foregroundStyle(TerminalColors.red.opacity(0.9))
-                        .lineLimit(3)
-                }
-            }
-            .terminalPanel()
+            .scrollIndicators(.visible)
         }
-        .padding(TerminalSpacing.sm)
         .frame(minWidth: 292, maxWidth: 292, maxHeight: .infinity, alignment: .topLeading)
         .background(TerminalColors.bg)
         .overlay(
@@ -199,6 +211,75 @@ private struct NavRow: View {
         return Color.clear
     }
 }
+
+// MARK: - Font Scale Block
+
+private struct FontScaleBlock: View {
+    @Environment(SettingsStore.self) private var settings
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("FONT SIZE")
+                    .font(TerminalType.label(10, weight: .bold))
+                    .foregroundStyle(TerminalColors.muted)
+                Spacer(minLength: 0)
+                // Stepper: − value +
+                HStack(spacing: 6) {
+                    Button { settings.decreaseFontSize() } label: {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(TerminalColors.muted)
+                    }
+                    .buttonStyle(.plain)
+
+                    Text("\(Int(settings.baseFontSize))pt")
+                        .font(TerminalType.mono(11, weight: .bold))
+                        .foregroundStyle(TerminalColors.cyan)
+                        .frame(minWidth: 32, alignment: .center)
+
+                    Button { settings.increaseFontSize() } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(TerminalColors.green)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            // Preset chips: 10 · 13 · 15 · 18 · 22 · 24
+            HStack(spacing: 5) {
+                ForEach(FontPreset.allCases, id: \.rawValue) { preset in
+                    let active = Int(settings.baseFontSize) == Int(preset.rawValue)
+                    Button {
+                        settings.baseFontSize = preset.rawValue
+                    } label: {
+                        Text(preset.label)
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(active ? Color.black.opacity(0.85) : TerminalColors.text)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 5)
+                            .background(active ? TerminalColors.cyan : TerminalColors.panel.opacity(0.5))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .stroke(TerminalColors.border.opacity(active ? 0 : 0.7), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+                Spacer(minLength: 0)
+            }
+
+            // Fine-grained slider
+            Slider(value: Bindable(settings).baseFontSize, in: 8...24, step: 1)
+                .tint(TerminalColors.cyan)
+        }
+        .terminalPanel()
+    }
+}
+
+// MARK: -
 
 private struct AutomationControls: View {
     @Environment(TerminalStore.self) private var store

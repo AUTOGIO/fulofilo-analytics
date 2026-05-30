@@ -86,7 +86,7 @@ def main() -> int:
     turnover_df = get_stock_turnover(conn)
     cashflow_df = get_cashflow_summary(conn)
     sales_trend_df = get_daily_sales_trend(conn, top_n=8)
-    _ = get_abc_analysis(conn)  # parity: keep warm (not used in Swift UI yet)
+    abc_df = get_abc_analysis(conn)
     _ = get_available_months(conn)
     _ = get_monthly_breakdown(conn, [])
 
@@ -188,6 +188,27 @@ def main() -> int:
     except Exception:
         bubbles = []
 
+    abc_summary: dict = {}
+    try:
+        abc_pd = abc_df.to_pandas() if hasattr(abc_df, "to_pandas") and not abc_df.is_empty() else None
+        if abc_pd is not None and not abc_pd.empty:
+            total_rev = float(abc_pd["revenue"].sum()) or 1.0
+            for cls in ["A", "B", "C"]:
+                sub = abc_pd[abc_pd["abc_class"] == cls]
+                top = sub.head(5)
+                abc_summary[f"{cls.lower()}_count"] = int(len(sub))
+                abc_summary[f"{cls.lower()}_revenue_pct"] = float(sub["revenue"].sum() / total_rev * 100)
+                abc_summary[f"top_{cls.lower()}"] = [
+                    {
+                        "name": str(r["full_name"]),
+                        "revenue": float(r["revenue"]),
+                        "margin_pct": float(r["margin_pct"]),
+                    }
+                    for _, r in top.iterrows()
+                ]
+    except Exception:
+        abc_summary = {}
+
     insights = []
     try:
         if inv_pd is not None and not inv_pd.empty:
@@ -254,6 +275,7 @@ def main() -> int:
         "inventory_matrix": inventory_matrix,
         "sales_series": sales_series,
         "bubbles": bubbles,
+        "abc_summary": abc_summary if abc_summary else None,
         "insights": insights,
         "anomalies": anomalies,
         "contract": contract_rows,

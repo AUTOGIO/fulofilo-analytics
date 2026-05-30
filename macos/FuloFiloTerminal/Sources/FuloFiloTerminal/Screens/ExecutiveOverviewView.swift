@@ -61,13 +61,22 @@ struct ExecutiveOverviewView: View {
         return [
             KPI(title: "REVENUE", value: snap.executive.revenue_fmt, subtitle: "gross sales intelligence", accent: TerminalColors.green),
             KPI(title: "MARGIN", value: String(format: "%.1f%%", snap.executive.margin_pct), subtitle: snap.executive.profit_fmt, accent: TerminalColors.amber),
-            KPI(title: "INVENTORY TURNOVER", value: "0.89x", subtitle: "sales / live stock", accent: TerminalColors.cyan),
-            KPI(title: "SELL-THROUGH", value: "41.9%", subtitle: "units sold vs available", accent: TerminalColors.blue),
+            KPI(title: "INVENTORY TURNOVER", value: String(format: "%.2fx", snap.executive.avg_turnover), subtitle: "sales / live stock", accent: TerminalColors.cyan),
+            KPI(title: "SELL-THROUGH", value: String(format: "%.1f%%", snap.executive.sell_through), subtitle: "units sold vs available", accent: TerminalColors.blue),
             KPI(title: "AVG TICKET", value: snap.executive.avg_ticket_fmt, subtitle: "\(Int(snap.executive.units)) units", accent: TerminalColors.green),
             KPI(title: "LOW STOCK ALERTS", value: "\(lowCrit)", subtitle: lowSubtitle, accent: lowCrit > 0 ? TerminalColors.red : TerminalColors.green),
-            KPI(title: "OPS EFFICIENCY", value: "93/100", subtitle: "ready", accent: TerminalColors.cyan),
-            KPI(title: "FIXED BURN", value: "7.3%", subtitle: "R$ 12,950", accent: TerminalColors.orange)
+            KPI(title: "OPS EFFICIENCY", value: "\(snap.executive.ops_score)/100", subtitle: snap.executive.readiness.lowercased(), accent: snap.executive.ops_score >= 80 ? TerminalColors.cyan : TerminalColors.amber),
+            KPI(title: "FIXED BURN", value: String(format: "%.1f%%", snap.executive.burn_ratio), subtitle: moneyBR(snap.executive.fixed_total), accent: TerminalColors.orange)
         ]
+    }
+
+    private func moneyBR(_ v: Double) -> String {
+        let iv = Int(v.rounded())
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.groupingSeparator = "."
+        nf.decimalSeparator = ","
+        return "R$ \(nf.string(from: NSNumber(value: iv)) ?? "\(iv)")"
     }
 
     private func inventoryMatrixForReadModel() -> [InventoryCategory] {
@@ -182,9 +191,10 @@ private struct ExecutiveCashOpsPanel: View {
 }
 
 private struct ExecutiveReorderPanel: View {
+    @Environment(TerminalStore.self) private var store
     var body: some View {
         HStack(alignment: .top, spacing: TerminalSpacing.sm) {
-            InsightPanel(title: "REORDER ACTIONS", subtitle: "RESTOCK CANDIDATES", rows: MockData.insights)
+            InsightPanel(title: "REORDER ACTIONS", subtitle: "RESTOCK CANDIDATES", rows: store.insightRows)
             ExecutiveRightColumn()
                 .frame(width: 440)
         }
@@ -192,10 +202,11 @@ private struct ExecutiveReorderPanel: View {
 }
 
 private struct ExecutiveRiskPanel: View {
+    @Environment(TerminalStore.self) private var store
     var body: some View {
         HStack(alignment: .top, spacing: TerminalSpacing.sm) {
-            AnomalyPanel(title: "RISK ALERTS", subtitle: "OPERATIONAL WARNINGS", rows: MockData.anomalies)
-            SystemContractPanel(title: "SYSTEM CONTRACT", subtitle: "GOVERNANCE", rows: MockData.contractRows)
+            AnomalyPanel(title: "RISK ALERTS", subtitle: "OPERATIONAL WARNINGS", rows: store.anomalyRows)
+            SystemContractPanel(title: "SYSTEM CONTRACT", subtitle: "GOVERNANCE", rows: store.contractRows)
                 .frame(width: 440)
         }
     }

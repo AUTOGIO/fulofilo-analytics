@@ -73,11 +73,30 @@ final class TerminalStore {
             let v: String
         }
 
+        struct ABCItem: Decodable {
+            let name: String
+            let revenue: Double
+            let margin_pct: Double
+        }
+
+        struct ABCSummary: Decodable {
+            let a_count: Int
+            let a_revenue_pct: Double
+            let b_count: Int
+            let b_revenue_pct: Double
+            let c_count: Int
+            let c_revenue_pct: Double
+            let top_a: [ABCItem]
+            let top_b: [ABCItem]
+            let top_c: [ABCItem]
+        }
+
         let meta: Meta
         let executive: Executive
         let inventory_matrix: [InventoryMatrixRow]
         let sales_series: [SalesSeriesPoint]
         let bubbles: [BubbleRow]
+        let abc_summary: ABCSummary?
         let insights: [InsightRow]
         let anomalies: [AnomalyRow]
         let contract: [ContractRow]
@@ -100,8 +119,8 @@ final class TerminalStore {
     var lastActionMessage: String?
 
     var headerStatus: [StatusMetric] {
-        let revenue = snapshot?.executive.revenue_fmt ?? "R$ 178,079"
-        let cashNet = snapshot?.executive.cash_net_fmt ?? "R$ -25,900"
+        let revenue = snapshot?.executive.revenue_fmt ?? "R,079"
+        let cashNet = snapshot?.executive.cash_net_fmt ?? "R025,900"
         let cashIn = snapshot?.executive.cash_in ?? 0
         let cashOut = snapshot?.executive.cash_out ?? 25_900
         let inv = snapshot?.executive.inv_value_fmt ?? "R$ 185,407"
@@ -137,6 +156,10 @@ final class TerminalStore {
     var contractRows: [(String, String)] {
         guard let snap = snapshot, !snap.contract.isEmpty else { return MockData.contractRows }
         return snap.contract.map { ($0.k, $0.v) }
+    }
+
+    var abcSummary: ReadModelSnapshot.ABCSummary? {
+        snapshot?.abc_summary
     }
 
     func refreshReadModel() async {
@@ -346,11 +369,64 @@ final class TerminalStore {
     }
 
     private func repoRoot() -> String {
+        // 1. Check environment variable (highest priority)
         if let env = ProcessInfo.processInfo.environment["FULO_REPO_ROOT"], !env.isEmpty {
             return env
         }
-        // Repo-local default for this workspace.
-        return "/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics"
+        
+        // 2. Search up directory tree from current working directory for repo markers
+        var searchPath = FileManager.default.currentDirectoryPath
+        let fm = FileManager.default
+        
+        // Search up to 10 levels for Package.swift or .git directory
+        for _ in 0..<10 {
+            // Check for macos/FuloFiloTerminal/Package.swift (indicates this is inside the repo)
+            let packagePath = (searchPath as NSString).appendingPathComponent("macos/FuloFiloTerminal/Package.swift")
+            if fm.fileExists(atPath: packagePath) {
+                return searchPath
+            }
+            
+            // Check for .git directory (repo root marker)
+            let gitPath = (searchPath as NSString).appendingPathComponent(".git")
+            if fm.fileExists(atPath: gitPath) {
+                return searchPath
+            }
+            
+            // Check for distinctive repo files (DOCUMENTATION.md, pyproject.toml)
+            let docPath = (searchPath as NSString).appendingPathComponent("DOCUMENTATION.md")
+            let pyPath = (searchPath as NSString).appendingPathComponent("pyproject.toml")
+            if fm.fileExists(atPath: docPath) || fm.fileExists(atPath: pyPath) {
+                return searchPath
+            }
+            
+            // Move up one directory
+            let parent = (searchPath as NSString).deletingLastPathComponent
+            if parent == searchPath {
+                // Reached filesystem root, stop searching
+                break
+            }
+            searchPath = parent
+        }
+        
+        // 3. Fallback: try common clone locations
+        let homePath = NSHomeDirectory()
+        let commonPaths = [
+            (homePath as NSString).appendingPathComponent("Documents/GitHub/fulofilo-analytics"),
+            (homePath as NSString).appendingPathComponent("Documents/fulofilo-analytics"),
+            (homePath as NSString).appendingPathComponent("code/fulofilo-analytics"),
+            (homePath as NSString).appendingPathComponent("fulofilo-analytics"),
+            "/opt/fulofilo-analytics"
+        ]
+        
+        for path in commonPaths {
+            let packagePath = (path as NSString).appendingPathComponent("macos/FuloFiloTerminal/Package.swift")
+            if fm.fileExists(atPath: packagePath) {
+                return path
+            }
+        }
+        
+        // 4. Last resort: return current directory (will fail gracefully with clear error)
+        return FileManager.default.currentDirectoryPath
     }
 
     private func repoPath(_ relative: String) -> String {
