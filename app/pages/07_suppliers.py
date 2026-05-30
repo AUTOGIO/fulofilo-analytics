@@ -43,7 +43,9 @@ _SUPPLIERS_DIR = _ROOT / "data" / "suppliers"
 _SUPPLIERS_DB = _SUPPLIERS_DIR / "SUPPLIERS_DB.xlsx"
 _SUPPLIERS_PDF = _SUPPLIERS_DIR / "ALL_SUPPLIERS_COMPLETE.pdf"
 _SUPPLIERS_MD = _SUPPLIERS_DIR / "ALL_SUPPLIERS_COMPLETE.md"
+_HTML_FILE = _SUPPLIERS_DIR / "suppliers_dashboard.html"
 
+col_open, col_xlsx, col_pdf, col_folder = st.columns(4)
 
 with col_open:
     if st.button("Abrir no Browser", use_container_width=True,
@@ -74,8 +76,6 @@ with col_folder:
     if st.button("Abrir Pasta", use_container_width=True,
                  help="Abre data/suppliers/ no Finder"):
         subprocess.run(["open", str(_SUPPLIERS_DIR)])
-
-    return full, quick
 
 def _supplier_options(suppliers: list[dict]) -> list[str]:
     return [f"{item['id']} — {item['name']}" for item in suppliers]
