@@ -138,6 +138,9 @@ Strict mode example:
 bash scripts/sync_excel.sh --sku-policy strict
 ```
 
+Workbook backups must use this operator-visible convention:
+`data/excel/backups/FuloFilo_Master_YYYYMMDD_HHMMSS.xlsx`
+
 ## Legacy Notice
 
 Historical CSV/JSON files are retained for audit history only.
