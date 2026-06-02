@@ -70,6 +70,44 @@ On **Executive Overview** (Streamlit `app/app.py` and macOS FF Terminal), the ei
 
 The macOS app loads this table from `tools/terminal_read_model.py` (`executive_periods` in the JSON read model).
 
+For **real** month/week charts, use **one Loyverse item-sales-summary CSV per day** (not multi-month cumulative exports spread across calendar days).
+
+### Loyverse automation (local)
+
+Bundled data root (default after clone): `automations/loyverse-data/`. First-time setup: `bash scripts/setup_automations.sh`.
+
+Optional override:
+
+```bash
+export LOYVERSE_DATA_ROOT="$(pwd)/automations/loyverse-data"
+```
+
+Start Chrome with Loyverse logged in (leave this window open during downloads):
+
+```bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --remote-debugging-port=9222 \
+  --user-data-dir="${LOYVERSE_DATA_ROOT:-$(pwd)/automations/loyverse-data}/chrome-profile"
+```
+
+Backfill all missing working days (Mon–Sat) in a range:
+
+```bash
+cd fulofilo-analytics
+.venv/bin/python3 scripts/automation_cli.py backfill-missing-loyverse-sales \
+  --from 2026-03-01 --to 2026-06-01 --format csv --continue-on-error
+bash scripts/sync_excel.sh
+```
+
+Rede portal downloads are bundled under `automations/rede-automation/` — see [`automations/README.md`](../automations/README.md).
+
+Single day (Streamlit sidebar **Baixar + importar Loyverse** uses the same pipeline):
+
+```bash
+.venv/bin/python3 scripts/automation_cli.py download-loyverse-daily-sales \
+  --date 2026-06-02 --format csv
+```
+
 ## 4. n8n orchestration workflow
 
 ### 4.1 Start n8n locally

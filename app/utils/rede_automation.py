@@ -6,11 +6,11 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
+from app.utils.automation_paths import rede_automation_root, rede_download_dir
 
-REDE_AUTOMATION_ROOT = Path("/Users/eduardofgiovannini/Developer/rede-automation")
-REDE_SCRIPT = REDE_AUTOMATION_ROOT / "scripts" / "rede-vendas.mjs"
-REDE_DOWNLOAD_DIR = Path("/Users/eduardofgiovannini/Downloads/Rede")
-LAUNCHER_DIR = Path("/Users/eduardofgiovannini/Developer/rede-automation/.dashboard-launchers")
+
+REDE_SCRIPT = rede_automation_root() / "scripts" / "rede-vendas.mjs"
+LAUNCHER_DIR = rede_automation_root() / ".dashboard-launchers"
 SUPPORTED_FORMATS = {"csv", "excel", "pdf"}
 
 
@@ -28,10 +28,14 @@ def launch_rede_sales_download(date_mode: str, target_date: date | None, formats
     or 2FA prompts. This function only triggers the downloader; it does not
     import Rede files into the Fulofilo canonical data pipeline.
     """
-    if not REDE_AUTOMATION_ROOT.exists() or not REDE_SCRIPT.exists():
+    rede_root = rede_automation_root()
+    if not rede_root.exists() or not REDE_SCRIPT.exists():
         return RedeLaunchResult(
             ok=False,
-            message=f"Rede automation project not found at {REDE_AUTOMATION_ROOT}",
+            message=(
+                f"Rede automation not found at {rede_root}. "
+                "Run: bash scripts/setup_automations.sh"
+            ),
         )
 
     clean_formats = sorted({fmt.strip().lower() for fmt in formats if fmt.strip()})
@@ -42,15 +46,18 @@ def launch_rede_sales_download(date_mode: str, target_date: date | None, formats
         return RedeLaunchResult(ok=False, message=f"Unsupported Rede format(s): {', '.join(invalid)}")
 
     date_args = _date_args(date_mode, target_date)
+    download_dir = rede_download_dir()
     command = [
-        "cd /Users/eduardofgiovannini/Developer/rede-automation",
+        f"cd {sh_quote(str(rede_root))}",
+        f"export REDE_AUTOMATION_ROOT={sh_quote(str(rede_root))}",
+        f"export REDE_DOWNLOAD_DIR={sh_quote(str(download_dir))}",
         f"npm run rede:vendas -- {' '.join(date_args)} --formats {','.join(clean_formats)}",
         'echo ""',
         'echo "Rede automation finished. Press ENTER to close this window."',
         "read -r _",
     ]
 
-    REDE_DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    download_dir.mkdir(parents=True, exist_ok=True)
     LAUNCHER_DIR.mkdir(parents=True, exist_ok=True)
     launcher_path = LAUNCHER_DIR / f"rede-vendas-{date.today().isoformat()}-{_safe_suffix(date_args)}.command"
     launcher_path.write_text("#!/usr/bin/env bash\nset -euo pipefail\n" + "\n".join(command) + "\n", encoding="utf-8")
@@ -63,7 +70,7 @@ def launch_rede_sales_download(date_mode: str, target_date: date | None, formats
 
     return RedeLaunchResult(
         ok=True,
-        message=f"Rede automation launched in Terminal. Downloads will go to {REDE_DOWNLOAD_DIR}",
+        message=f"Rede automation launched in Terminal. Downloads will go to {download_dir}",
         launcher_path=launcher_path,
     )
 
@@ -80,3 +87,7 @@ def _date_args(date_mode: str, target_date: date | None) -> list[str]:
 
 def _safe_suffix(parts: list[str]) -> str:
     return re.sub(r"[^a-zA-Z0-9-]+", "-", "-".join(parts)).strip("-").lower()
+
+
+def sh_quote(value: str) -> str:
+    return "'" + value.replace("'", "'\"'\"'") + "'"

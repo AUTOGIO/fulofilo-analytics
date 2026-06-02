@@ -1,0 +1,13 @@
+{
+  "name": "rede-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Playwright automation for downloading Rede sales reports.",
+  "scripts": {
+    "rede:vendas": "node scripts/rede-vendas.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}

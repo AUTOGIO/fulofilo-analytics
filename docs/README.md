@@ -5,11 +5,17 @@ This docs set reflects the current Excel-first + n8n-orchestrated operating mode
 ## Canonical Runtime
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+git clone https://github.com/AUTOGIO/fulofilo-analytics.git
+cd fulofilo-analytics
 uv sync
+bash scripts/setup_automations.sh
 bash scripts/sync_excel.sh
 bash scripts/launch_app.sh
 ```
+
+Bundled Loyverse/Rede automations live under [`automations/`](../automations/README.md) (no separate repos required).
+
+Loyverse backfill and daily downloads require Chrome on port 9222 — see [USER_GUIDE.md](USER_GUIDE.md#loyverse-automation-local).
 
 Canonical source of truth:
 

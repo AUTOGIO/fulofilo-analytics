@@ -29,6 +29,18 @@ cf-worker/node_modules/
 cf-worker/.wrangler/
 node_modules/
 
+# ── Bundled automations (local runtime) ─
+automations/rede-automation/node_modules/
+automations/rede-automation/.browser-profile/
+automations/rede-automation/logs/
+automations/rede-automation/.dashboard-launchers/
+automations/loyverse-data/chrome-profile/
+automations/loyverse-data/logs/
+automations/loyverse-data/raw/*
+!automations/loyverse-data/raw/.gitkeep
+automations/loyverse-data/processed/*
+!automations/loyverse-data/processed/.gitkeep
+
 # ── Editors / IDEs ─────────────────────
 .vscode/
 .idea/

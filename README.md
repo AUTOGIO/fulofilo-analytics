@@ -24,11 +24,15 @@ Excel master sheets (input):
 ## Quick Start (Official Dashboard)
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+git clone https://github.com/AUTOGIO/fulofilo-analytics.git
+cd fulofilo-analytics
 uv sync
+bash scripts/setup_automations.sh   # Loyverse + Rede (first time)
 bash scripts/sync_excel.sh
 bash scripts/launch_app.sh
 ```
+
+Local sales automations (Loyverse exports, Rede portal downloads) are bundled under [`automations/`](automations/README.md).
 
 App URL: `http://127.0.0.1:8501`
 
@@ -53,7 +57,7 @@ Use n8n only as control plane. Keep business logic in this repository.
 ### Automation entrypoints (n8n-safe)
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd fulofilo-analytics
 make automation-refresh-dashboard-data
 make automation-sync-excel-master
 make automation-generate-replenishment-alerts
@@ -70,7 +74,7 @@ Direct CLI equivalent:
 ### Start n8n locally (Docker)
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd fulofilo-analytics
 docker compose -f docker-compose.n8n.yml up -d
 ```
 
@@ -81,7 +85,7 @@ n8n UI: [http://localhost:5678](http://localhost:5678)
 For Dockerized n8n, run local webhook bridge on macOS host:
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd fulofilo-analytics
 export FULOFILO_AUTOMATION_TOKEN="change-this-token"
 make automation-webhook
 ```

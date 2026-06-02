@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import csv
 import json
 import logging
@@ -9,22 +10,49 @@ import subprocess
 import sys
 import tempfile
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import pandas as pd
 
+from app.utils.automation_paths import loyverse_data_root as _loyverse_data_root
+from app.utils.automation_paths import repo_root
 
-ROOT = Path(__file__).resolve().parent.parent.parent
+
+ROOT = repo_root()
 VENV_PYTHON = ROOT / ".venv" / "bin" / "python3"
 IMPORT_SCRIPT = ROOT / "scripts" / "import_sales_summary_to_excel.py"
 SYNC_SCRIPT = ROOT / "scripts" / "sync_excel.sh"
+FULOFILO_RAW_DIR = ROOT / "data" / "raw"
 
-LOYVERSE_DATA_ROOT = Path("/Users/eduardofgiovannini/Developer/loyverse-data")
-RAW_DIR = LOYVERSE_DATA_ROOT / "raw"
-PROCESSED_DIR = LOYVERSE_DATA_ROOT / "processed"
-LOG_DIR = LOYVERSE_DATA_ROOT / "logs"
+
+def loyverse_data_root() -> Path:
+    return _loyverse_data_root()
+
+
+def raw_dir() -> Path:
+    return loyverse_data_root() / "raw"
+
+
+def processed_dir() -> Path:
+    return loyverse_data_root() / "processed"
+
+
+def log_dir() -> Path:
+    return loyverse_data_root() / "logs"
+
+
+def chrome_profile_dir() -> Path:
+    return loyverse_data_root() / "chrome-profile"
+
+
+def chrome_launch_hint() -> str:
+    profile = chrome_profile_dir()
+    return (
+        "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome "
+        f"--remote-debugging-port=9222 --user-data-dir={profile}"
+    )
 
 SUPPORTED_FORMATS = {"csv", "xlsx", "pdf"}
 EXT_BY_FORMAT = {"csv": "csv", "xlsx": "xlsx", "pdf": "pdf"}
@@ -91,11 +119,165 @@ class LoyverseAutomationError(RuntimeError):
         self.status = status
 
 
-def run_loyverse_daily_sales_import(date_text: str, fmt: str = "csv", force: bool = False) -> LoyverseAutomationResult:
+@dataclass(frozen=True)
+class LoyverseBackfillSummary:
+    from_date: str
+    to_date: str
+    format: str
+    attempted: int
+    skipped: int
+    ok: int
+    failed: int
+    failures: list[dict[str, str]]
+    missing_before: int
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def working_days_between(start: date, end: date) -> list[date]:
+    days: list[date] = []
+    cursor = start
+    while cursor <= end:
+        if cursor.weekday() < 6:
+            days.append(cursor)
+        cursor += timedelta(days=1)
+    return days
+
+
+def _non_empty_file(path: Path) -> bool:
+    return path.exists() and path.stat().st_size > 0
+
+
+def day_is_covered(target_date: str, fmt: str = "csv") -> bool:
+    clean_format = _validate_format(fmt)
+    ext = EXT_BY_FORMAT[clean_format]
+    candidates = [
+        raw_dir() / f"loyverse_goods_daily_{target_date}.{ext}",
+        processed_dir() / f"loyverse_goods_daily_{target_date}.csv",
+        processed_dir() / f"item_sales_summary_{target_date}_{target_date}.csv",
+        FULOFILO_RAW_DIR / f"item_sales_summary_{target_date}_{target_date}.csv",
+    ]
+    return any(_non_empty_file(path) for path in candidates)
+
+
+def list_missing_loyverse_days(
+    start_date: str,
+    end_date: str,
+    fmt: str = "csv",
+) -> list[str]:
+    start = date.fromisoformat(_validate_date(start_date))
+    end = date.fromisoformat(_validate_date(end_date))
+    if end < start:
+        raise LoyverseAutomationError("end date must be on or after start date")
+    return [
+        day.isoformat()
+        for day in working_days_between(start, end)
+        if not day_is_covered(day.isoformat(), fmt)
+    ]
+
+
+def backfill_missing_loyverse_sales(
+    start_date: str,
+    end_date: str,
+    fmt: str = "csv",
+    *,
+    force: bool = False,
+    skip_existing: bool = True,
+    continue_on_error: bool = True,
+    sync_each_day: bool = True,
+) -> LoyverseBackfillSummary:
+    missing = list_missing_loyverse_days(start_date, end_date, fmt)
+    failures: list[dict[str, str]] = []
+    skipped = 0
+    ok = 0
+    logger = logging.getLogger("loyverse.backfill")
+
+    try:
+        with _playwright_cdp_session() as session:
+            for day in missing:
+                if skip_existing and not force and day_is_covered(day, fmt):
+                    skipped += 1
+                    continue
+                result = run_loyverse_daily_sales_import(
+                    day,
+                    fmt=fmt,
+                    force=force,
+                    sync_after=sync_each_day,
+                    session=session,
+                )
+                if result.ok:
+                    ok += 1
+                else:
+                    failures.append({"date": day, "message": result.message})
+                    if not continue_on_error:
+                        break
+    except LoyverseAutomationError as exc:
+        failures.append({"date": "session", "message": str(exc)})
+        if not continue_on_error:
+            raise
+
+    if not sync_each_day and ok > 0:
+        _run_sync_subprocess(logger)
+
+    return LoyverseBackfillSummary(
+        from_date=start_date,
+        to_date=end_date,
+        format=_validate_format(fmt),
+        attempted=len(missing) - skipped,
+        skipped=skipped,
+        ok=ok,
+        failed=len(failures),
+        failures=failures,
+        missing_before=len(missing),
+    )
+
+
+@dataclass
+class _PlaywrightCdpSession:
+    browser: Any
+    context: Any
+    page: Any
+
+
+@contextlib.contextmanager
+def _playwright_cdp_session() -> Iterator[_PlaywrightCdpSession]:
+    try:
+        from playwright.sync_api import Error as PlaywrightError
+        from playwright.sync_api import sync_playwright
+    except ModuleNotFoundError as exc:
+        raise LoyverseAutomationError(
+            "Playwright is not installed. Run: uv add playwright && uv run playwright install chromium"
+        ) from exc
+
+    with sync_playwright() as playwright:
+        try:
+            browser = playwright.chromium.connect_over_cdp("http://127.0.0.1:9222")
+        except PlaywrightError as exc:
+            raise LoyverseAutomationError(
+                f"browser not open for automation. Start Chrome with: {chrome_launch_hint()}"
+            ) from exc
+        context = browser.contexts[0] if browser.contexts else browser.new_context(accept_downloads=True)
+        page = context.pages[0] if context.pages else context.new_page()
+        try:
+            yield _PlaywrightCdpSession(browser=browser, context=context, page=page)
+        finally:
+            with contextlib.suppress(Exception):
+                browser.close()
+
+
+def run_loyverse_daily_sales_import(
+    date_text: str,
+    fmt: str = "csv",
+    force: bool = False,
+    *,
+    sync_after: bool = True,
+    session: _PlaywrightCdpSession | None = None,
+) -> LoyverseAutomationResult:
     target_date = _validate_date(date_text)
     clean_format = _validate_format(fmt)
-    raw_path = RAW_DIR / f"loyverse_goods_daily_{target_date}.{EXT_BY_FORMAT[clean_format]}"
-    processed_path = PROCESSED_DIR / f"loyverse_goods_daily_{target_date}.csv"
+    raw_path = raw_dir() / f"loyverse_goods_daily_{target_date}.{EXT_BY_FORMAT[clean_format]}"
+    processed_path = processed_dir() / f"loyverse_goods_daily_{target_date}.csv"
     logger, log_path = _configure_logger(target_date, clean_format)
 
     logger.info("event=%s date=%s format=%s force=%s", "running", target_date, clean_format, force)
@@ -106,7 +288,9 @@ def run_loyverse_daily_sales_import(date_text: str, fmt: str = "csv", force: boo
                 raise LoyverseAutomationError(f"Existing file is empty: {raw_path}")
             logger.info("event=downloaded idempotent=true raw_path=%s", raw_path)
         else:
-            downloaded = _download_with_playwright(target_date, clean_format, logger)
+            downloaded = _download_with_playwright(
+                target_date, clean_format, logger, session=session
+            )
             _move_download(downloaded, raw_path, force=force)
             logger.info("event=downloaded raw_path=%s size=%s", raw_path, raw_path.stat().st_size)
 
@@ -129,7 +313,7 @@ def run_loyverse_daily_sales_import(date_text: str, fmt: str = "csv", force: boo
             normalized = _normalize_to_processed_csv(raw_path, processed_path, target_date)
             logger.info("event=imported processed_path=%s rows=%s", processed_path, normalized)
 
-        _import_processed_csv(processed_path, logger)
+        _import_processed_csv(processed_path, logger, sync_after=sync_after)
         logger.info("event=validated processed_path=%s", processed_path)
         return LoyverseAutomationResult(
             ok=True,
@@ -176,15 +360,15 @@ def _validate_format(value: str) -> str:
 
 
 def _ensure_dirs() -> None:
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    raw_dir().mkdir(parents=True, exist_ok=True)
+    processed_dir().mkdir(parents=True, exist_ok=True)
+    log_dir().mkdir(parents=True, exist_ok=True)
 
 
 def _configure_logger(target_date: str, fmt: str) -> tuple[logging.Logger, Path]:
     _ensure_dirs()
     run_id = datetime.now().strftime("%Y%m%dT%H%M%S")
-    log_path = LOG_DIR / f"loyverse_goods_daily_{target_date}_{fmt}_{run_id}.jsonl"
+    log_path = log_dir() / f"loyverse_goods_daily_{target_date}_{fmt}_{run_id}.jsonl"
     logger = logging.getLogger(f"loyverse.{target_date}.{fmt}.{run_id}")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -208,59 +392,54 @@ def _configure_logger(target_date: str, fmt: str) -> tuple[logging.Logger, Path]
     return logger, log_path
 
 
-def _download_with_playwright(target_date: str, fmt: str, logger: logging.Logger) -> Path:
-    try:
-        from playwright.sync_api import Error as PlaywrightError
-        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
-        from playwright.sync_api import sync_playwright
-    except ModuleNotFoundError as exc:
-        raise LoyverseAutomationError(
-            "Playwright is not installed. Run: cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics && uv add playwright && uv run playwright install chromium"
-        ) from exc
+def _download_with_playwright(
+    target_date: str,
+    fmt: str,
+    logger: logging.Logger,
+    *,
+    session: _PlaywrightCdpSession | None = None,
+) -> Path:
+    from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-    cdp_url = "http://127.0.0.1:9222"
     report_url = REPORT_URL.format(date=target_date)
     download_dir = Path(tempfile.mkdtemp(prefix="loyverse-download-"))
+    owns_session = session is None
+    if owns_session:
+        session_cm = _playwright_cdp_session()
+        session = session_cm.__enter__()
     try:
-        try:
-            with sync_playwright() as p:
-                try:
-                    browser = p.chromium.connect_over_cdp(cdp_url)
-                except PlaywrightError as exc:
-                    raise LoyverseAutomationError(
-                        "browser not open for automation. Start Chrome with: /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/Users/eduardofgiovannini/Developer/loyverse-data/chrome-profile"
-                    ) from exc
+        page = session.page
+        page.goto(report_url, wait_until="domcontentloaded", timeout=60_000)
+        page.wait_for_timeout(1_500)
+        if _session_expired(page):
+            raise LoyverseAutomationError("Loyverse session expired. Log in manually, then retry.")
 
-                context = browser.contexts[0] if browser.contexts else browser.new_context(accept_downloads=True)
-                page = context.pages[0] if context.pages else context.new_page()
-                page.goto(report_url, wait_until="domcontentloaded", timeout=45_000)
-                page.wait_for_load_state("networkidle", timeout=45_000)
-                if _session_expired(page):
-                    raise LoyverseAutomationError("Loyverse session expired. Log in manually, then retry.")
+        export = page.locator("#export-button")
+        if export.count() == 0:
+            export = page.get_by_role("button", name=re.compile("Exportar|Export", re.I))
+        if export.count() == 0:
+            export = page.get_by_text(re.compile("^\\s*(Exportar|Export)\\s*$", re.I))
+        if export.count() == 0:
+            raise LoyverseAutomationError("export button not found")
 
-                export = page.locator("#export-button")
-                if export.count() == 0:
-                    export = page.get_by_role("button", name=re.compile("Exportar|Export", re.I))
-                if export.count() == 0:
-                    export = page.get_by_text(re.compile("^\\s*(Exportar|Export)\\s*$", re.I))
-                if export.count() == 0:
-                    raise LoyverseAutomationError("export button not found")
-
-                with page.expect_download(timeout=60_000) as download_info:
-                    export.first.click(timeout=15_000)
-                    _click_format_choice(page, fmt)
-                download = download_info.value
-                suggested = download.suggested_filename or f"loyverse-download.{EXT_BY_FORMAT[fmt]}"
-                temp_path = download_dir / suggested
-                download.save_as(str(temp_path))
-                _assert_non_empty(temp_path)
-                browser.close()
-                return temp_path
-        except PlaywrightTimeoutError as exc:
-            raise LoyverseAutomationError("download timeout") from exc
+        with page.expect_download(timeout=90_000) as download_info:
+            export.first.click(timeout=15_000)
+            _click_format_choice(page, fmt)
+        download = download_info.value
+        suggested = download.suggested_filename or f"loyverse-download.{EXT_BY_FORMAT[fmt]}"
+        temp_path = download_dir / suggested
+        download.save_as(str(temp_path))
+        _assert_non_empty(temp_path)
+        logger.info("event=download_saved path=%s size=%s", temp_path, temp_path.stat().st_size)
+        return temp_path
+    except PlaywrightTimeoutError as exc:
+        raise LoyverseAutomationError("download timeout") from exc
     except Exception:
         shutil.rmtree(download_dir, ignore_errors=True)
         raise
+    finally:
+        if owns_session:
+            session_cm.__exit__(None, None, None)
 
 
 def _session_expired(page: Any) -> bool:
@@ -338,19 +517,47 @@ def _default_column(canonical: str) -> Any:
     return 0
 
 
-def _import_processed_csv(processed_path: Path, logger: logging.Logger) -> None:
+def _run_sync_subprocess(logger: logging.Logger) -> None:
+    proc = subprocess.run(["bash", str(SYNC_SCRIPT)], cwd=str(ROOT), capture_output=True, text=True)
+    logger.info(
+        "event=subprocess label=sync_excel exit=%s stdout=%s stderr=%s",
+        proc.returncode,
+        proc.stdout.strip(),
+        proc.stderr.strip(),
+    )
+    if proc.returncode != 0:
+        raise LoyverseAutomationError(f"sync_excel failed: {(proc.stderr or proc.stdout).strip()}")
+
+
+def _import_processed_csv(
+    processed_path: Path,
+    logger: logging.Logger,
+    *,
+    sync_after: bool = True,
+) -> None:
     dated_import = processed_path.parent / _import_filename(processed_path.name)
     if dated_import != processed_path:
         shutil.copy2(processed_path, dated_import)
+    fulofilo_copy = FULOFILO_RAW_DIR / dated_import.name
+    if dated_import.resolve() != fulofilo_copy.resolve():
+        FULOFILO_RAW_DIR.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dated_import, fulofilo_copy)
+
     runner = VENV_PYTHON if VENV_PYTHON.exists() else Path(sys.executable)
-    for cmd, label in [
-        ([str(runner), str(IMPORT_SCRIPT), str(dated_import)], "import_sales_summary_to_excel"),
-        (["bash", str(SYNC_SCRIPT)], "sync_excel"),
-    ]:
-        proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
-        logger.info("event=subprocess label=%s exit=%s stdout=%s stderr=%s", label, proc.returncode, proc.stdout.strip(), proc.stderr.strip())
-        if proc.returncode != 0:
-            raise LoyverseAutomationError(f"{label} failed: {(proc.stderr or proc.stdout).strip()}")
+    import_cmd = [str(runner), str(IMPORT_SCRIPT), str(dated_import)]
+    proc = subprocess.run(import_cmd, cwd=str(ROOT), capture_output=True, text=True)
+    logger.info(
+        "event=subprocess label=import_sales_summary_to_excel exit=%s stdout=%s stderr=%s",
+        proc.returncode,
+        proc.stdout.strip(),
+        proc.stderr.strip(),
+    )
+    if proc.returncode != 0:
+        raise LoyverseAutomationError(
+            f"import_sales_summary_to_excel failed: {(proc.stderr or proc.stdout).strip()}"
+        )
+    if sync_after:
+        _run_sync_subprocess(logger)
 
 
 def _import_filename(name: str) -> str:
