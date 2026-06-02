@@ -29,8 +29,9 @@ Business logic remains in Python code inside this repository.
 
 Primary references:
 
-- `/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docs/n8n/README.md`
-- `/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docs/USER_GUIDE.md`
+- [`docs/n8n/README.md`](n8n/README.md)
+- [`docs/n8n/fulofilo_orchestration_workflow.json`](n8n/fulofilo_orchestration_workflow.json)
+- [`docs/USER_GUIDE.md`](USER_GUIDE.md)
 
 ## Legacy Notice
 

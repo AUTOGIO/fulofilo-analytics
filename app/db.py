@@ -19,6 +19,7 @@ Parquet schema (from etl/ingest.py):
 import duckdb
 from datetime import datetime as _dt
 from pathlib import Path
+from typing import Literal
 import polars as pl
 
 BASE     = Path(__file__).resolve().parent.parent
@@ -309,6 +310,152 @@ def get_monthly_breakdown(conn, months: list[str] | None = None):
         """).pl()
     except Exception:
         return pl.DataFrame()
+
+
+_PERIOD_QTY = "CAST(REPLACE(CAST(s.Quantity AS VARCHAR), ',', '.') AS DOUBLE)"
+_PERIOD_TOTAL = "CAST(REPLACE(CAST(s.Total AS VARCHAR), ',', '.') AS DOUBLE)"
+
+
+def get_executive_period_breakdown(
+    conn,
+    grain: Literal["month", "week"],
+    *,
+    fixed_total: float | None = None,
+    limit: int = 12,
+) -> pl.DataFrame:
+    """Executive KPI metrics grouped by month or ISO week (last *limit* periods).
+
+    Snapshot KPIs (low_critical, low_warn, ops_score) are always null in rows.
+    sell_through and avg_turnover use current inventory as denominator (labeled in UI).
+    """
+    if grain == "month":
+        period_expr = "strftime(CAST(s.Date AS DATE), '%Y-%m')"
+    else:
+        period_expr = "strftime(CAST(s.Date AS DATE), '%G-W%V')"
+
+    if fixed_total is None:
+        try:
+            from app.utils.fixed_costs import load_fixed_costs
+
+            _, fixed_total = load_fixed_costs()
+        except Exception:
+            fixed_total = 0.0
+    fixed_total = float(fixed_total or 0.0)
+
+    empty_cols = [
+        "period_key",
+        "receita",
+        "unidades",
+        "lucro",
+        "margin_pct",
+        "ticket",
+        "burn_ratio",
+        "sell_through",
+        "avg_turnover",
+        "low_critical",
+        "low_warn",
+        "ops_score",
+    ]
+
+    try:
+        stock_row = conn.execute(
+            "SELECT COALESCE(SUM(CAST(current_stock AS DOUBLE)), 0) FROM inventory"
+        ).fetchone()
+        current_stock_total = float(stock_row[0] or 0) if stock_row else 0.0
+    except Exception:
+        current_stock_total = 0.0
+
+    try:
+        df = conn.execute(
+            f"""
+            WITH line_sales AS (
+                SELECT
+                    {period_expr} AS period_key,
+                    lower(s.Product) AS product_key,
+                    s.Product AS product,
+                    {_PERIOD_QTY} AS qty,
+                    {_PERIOD_TOTAL} AS line_revenue,
+                    CASE
+                        WHEN COALESCE(p.unit_profit, 0) > 0
+                            THEN COALESCE(p.unit_profit, 0) * {_PERIOD_QTY}
+                        ELSE {_PERIOD_TOTAL} * COALESCE(p.margin_pct, 0) / 100.0
+                    END AS line_profit
+                FROM sales s
+                LEFT JOIN products p ON lower(s.Product) = lower(p.full_name)
+            ),
+            period_totals AS (
+                SELECT
+                    period_key,
+                    SUM(line_revenue) AS receita,
+                    SUM(qty) AS unidades,
+                    SUM(line_profit) AS lucro
+                FROM line_sales
+                GROUP BY period_key
+            ),
+            period_sku AS (
+                SELECT period_key, product_key, SUM(qty) AS period_qty
+                FROM line_sales
+                WHERE qty > 0
+                GROUP BY period_key, product_key
+            ),
+            sku_turnover AS (
+                SELECT
+                    ps.period_key,
+                    ps.period_qty::FLOAT / NULLIF(i.current_stock::FLOAT, 0) AS giro
+                FROM period_sku ps
+                LEFT JOIN inventory i ON ps.product_key = lower(i.product)
+            ),
+            turnover_agg AS (
+                SELECT period_key, AVG(giro) AS avg_turnover
+                FROM sku_turnover
+                WHERE giro IS NOT NULL
+                GROUP BY period_key
+            ),
+            ranked AS (
+                SELECT
+                    pt.period_key,
+                    pt.receita,
+                    pt.unidades,
+                    pt.lucro,
+                    CASE WHEN pt.receita > 0 THEN pt.lucro / pt.receita * 100 ELSE 0 END AS margin_pct,
+                    CASE WHEN pt.unidades > 0 THEN pt.receita / pt.unidades ELSE 0 END AS ticket,
+                    CASE WHEN pt.receita > 0 THEN {fixed_total} / pt.receita * 100 ELSE 0 END AS burn_ratio,
+                    CASE
+                        WHEN pt.unidades > 0 AND (pt.unidades + {current_stock_total}) > 0
+                            THEN pt.unidades / (pt.unidades + {current_stock_total}) * 100
+                        ELSE 0
+                    END AS sell_through,
+                    COALESCE(ta.avg_turnover, 0) AS avg_turnover
+                FROM period_totals pt
+                LEFT JOIN turnover_agg ta ON pt.period_key = ta.period_key
+            )
+            SELECT *
+            FROM ranked
+            ORDER BY period_key DESC
+            LIMIT {int(limit)}
+            """
+        ).pl()
+    except Exception:
+        return pl.DataFrame(schema={c: pl.Float64 if c != "period_key" else pl.Utf8 for c in empty_cols})
+
+    if df.is_empty():
+        return pl.DataFrame(schema={c: pl.Float64 if c != "period_key" else pl.Utf8 for c in empty_cols})
+
+    df = df.sort("period_key")
+    df = df.with_columns(
+        pl.lit(None, dtype=pl.Int64).alias("low_critical"),
+        pl.lit(None, dtype=pl.Int64).alias("low_warn"),
+        pl.lit(None, dtype=pl.Int64).alias("ops_score"),
+    )
+    return df.select(empty_cols)
+
+
+def get_executive_monthly_breakdown(conn, **kwargs) -> pl.DataFrame:
+    return get_executive_period_breakdown(conn, "month", **kwargs)
+
+
+def get_executive_weekly_breakdown(conn, **kwargs) -> pl.DataFrame:
+    return get_executive_period_breakdown(conn, "week", **kwargs)
 
 
 def get_kpis_by_months(conn, months: list[str] | None = None):

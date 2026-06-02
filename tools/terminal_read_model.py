@@ -14,6 +14,22 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+_MONTH_LABELS = {
+    "2026-01": "Jan 2026",
+    "2026-02": "Fev 2026",
+    "2026-03": "Mar 2026",
+    "2026-04": "Abr 2026",
+    "2026-05": "Mai 2026",
+    "2026-06": "Jun 2026",
+    "2026-07": "Jul 2026",
+    "2026-08": "Ago 2026",
+    "2026-09": "Set 2026",
+    "2026-10": "Out 2026",
+    "2026-11": "Nov 2026",
+    "2026-12": "Dez 2026",
+}
+_WEEK_MONTHS = ("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez")
+
 
 def repo_root() -> Path:
     env = os.environ.get("FULO_REPO_ROOT")
@@ -37,6 +53,50 @@ def _f(value: object) -> float:
         return float(value) if value is not None else 0.0
     except (TypeError, ValueError):
         return 0.0
+
+
+def _period_label(period_key: str, grain: str) -> str:
+    if grain == "month":
+        return _MONTH_LABELS.get(period_key, period_key)
+    try:
+        year_s, week_s = period_key.split("-W", 1)
+        week_n = int(week_s)
+        start = datetime.fromisocalendar(int(year_s), week_n, 1)
+        return f"W{week_n} · {start.day} {_WEEK_MONTHS[start.month - 1]}"
+    except (TypeError, ValueError):
+        return period_key
+
+
+def _serialize_period_rows(df: object, grain: str) -> list[dict]:
+    if df is None or not hasattr(df, "is_empty") or df.is_empty():
+        return []
+    out: list[dict] = []
+    for row in df.iter_rows(named=True):
+        receita = float(row.get("receita") or 0)
+        lucro = float(row.get("lucro") or 0)
+        ticket = float(row.get("ticket") or 0)
+        key = str(row.get("period_key") or "")
+        out.append(
+            {
+                "key": key,
+                "label": _period_label(key, grain),
+                "revenue": receita,
+                "revenue_fmt": money_br(receita),
+                "units": float(row.get("unidades") or 0),
+                "profit": lucro,
+                "profit_fmt": money_br(lucro),
+                "margin_pct": float(row.get("margin_pct") or 0),
+                "ticket": ticket,
+                "ticket_fmt": money_br(ticket),
+                "avg_turnover": float(row.get("avg_turnover") or 0),
+                "sell_through": float(row.get("sell_through") or 0),
+                "burn_ratio": float(row.get("burn_ratio") or 0),
+                "low_critical": None,
+                "low_warn": None,
+                "ops_score": None,
+            }
+        )
+    return out
 
 
 def _last_sync_label(root: Path) -> str:
@@ -66,6 +126,8 @@ def main() -> int:
             get_conn,
             get_daily_sales_trend,
             get_data_mtime,
+            get_executive_monthly_breakdown,
+            get_executive_weekly_breakdown,
             get_inventory_alerts,
             get_margin_matrix,
             get_monthly_breakdown,
@@ -73,7 +135,11 @@ def main() -> int:
             get_summary_kpis,
         )
         from app.utils.fixed_costs import load_fixed_costs  # type: ignore
+        from app.utils.reorder_engine import LEAD_TIME_DAYS, get_alerts  # type: ignore
         from app.utils.source_health import get_source_health  # type: ignore
+        from core.event_engine import detect_operational_events, enrich_reorder_alert, get_sku_velocity_stats  # type: ignore
+        from core.ops_events import read_recent_events  # type: ignore
+        from core.recommendations import build_decision_map_summary  # type: ignore
     except Exception as e:
         sys.stderr.write(f"import failed: {e}\n")
         return 2
@@ -142,6 +208,13 @@ def main() -> int:
 
     _, fixed_total = load_fixed_costs()
     burn_ratio = (float(fixed_total) / revenue * 100) if revenue else 0.0
+
+    exec_months_df = get_executive_monthly_breakdown(conn, fixed_total=float(fixed_total))
+    exec_weeks_df = get_executive_weekly_breakdown(conn, fixed_total=float(fixed_total))
+    executive_periods = {
+        "months": _serialize_period_rows(exec_months_df, "month"),
+        "weeks": _serialize_period_rows(exec_weeks_df, "week"),
+    }
 
     turnover_pd = turnover_df.to_pandas() if hasattr(turnover_df, "to_pandas") and not turnover_df.is_empty() else None
     avg_turnover = float(turnover_pd["giro"].mean()) if turnover_pd is not None and not turnover_pd.empty else 0.0
@@ -214,7 +287,37 @@ def main() -> int:
 
     insights = []
     try:
-        if inv_pd is not None and not inv_pd.empty:
+        reorder_df = get_alerts(conn)
+        velocity_df = get_sku_velocity_stats(conn)
+        velocity_by = velocity_df.set_index("product") if not velocity_df.empty else None
+        ops_events = detect_operational_events(conn, reorder_df if not reorder_df.empty else None)
+        for ev in ops_events[:6]:
+            accent = "red" if ev.get("severity") == "HIGH" else "amber" if ev.get("severity") == "MEDIUM" else "cyan"
+            insights.append(
+                {
+                    "code": str(ev.get("event_type", "OPS"))[:6],
+                    "text": str(ev.get("product") or ev.get("event_type", "")),
+                    "detail": str(ev.get("message", ""))[:160],
+                    "accent": accent,
+                }
+            )
+        if reorder_df is not None and not reorder_df.empty:
+            urgent = reorder_df[reorder_df["days_remaining"] <= LEAD_TIME_DAYS].head(4)
+            for row in urgent.itertuples(index=False):
+                base = row._asdict() if hasattr(row, "_asdict") else dict(row._mapping)
+                vrow = None
+                if velocity_by is not None and str(base.get("product", "")) in velocity_by.index:
+                    vrow = velocity_by.loc[str(base["product"])]
+                enriched = enrich_reorder_alert(base, vrow)
+                insights.append(
+                    {
+                        "code": str(enriched.get("priority", "RESTOC"))[:6],
+                        "text": str(row.product),
+                        "detail": str(enriched.get("explanation", ""))[:160],
+                        "accent": "red" if enriched.get("priority") == "HIGH" else "amber",
+                    }
+                )
+        if not insights and inv_pd is not None and not inv_pd.empty:
             crit = inv_pd[inv_pd["alert"] == "🔴 Crítico"].copy()
             low = inv_pd[inv_pd["alert"] == "🟡 Baixo"].copy()
             watch = list(crit.sort_values(["current_stock"], ascending=True).head(6).to_dict(orient="records"))
@@ -247,6 +350,28 @@ def main() -> int:
         {"k": "POLICY", "v": "generated layers remain reproducible and read-only"},
     ]
 
+    operational_timeline = []
+    try:
+        for ev in read_recent_events(limit=15):
+            operational_timeline.append(
+                {
+                    "type": str(ev.get("type", "")),
+                    "severity": str(ev.get("severity", "")),
+                    "message": str(ev.get("message", "")),
+                    "ts": str(ev.get("ts", "")),
+                }
+            )
+    except Exception:
+        operational_timeline = []
+
+    decision_map = []
+    try:
+        mm_pd = margin_df.to_pandas() if hasattr(margin_df, "to_pandas") and not margin_df.is_empty() else None
+        if mm_pd is not None and not mm_pd.empty:
+            decision_map = build_decision_map_summary(mm_pd)
+    except Exception:
+        decision_map = []
+
     out = {
         "meta": {
             "generated_at": iso_now(),
@@ -254,6 +379,7 @@ def main() -> int:
             "last_sync_label": _last_sync_label(root),
             "ok": ok,
         },
+        "executive_periods": executive_periods,
         "executive": {
             "revenue_fmt": money_br(revenue),
             "margin_pct": float(margin_pct),
@@ -282,6 +408,9 @@ def main() -> int:
         "insights": insights,
         "anomalies": anomalies,
         "contract": contract_rows,
+        "operational_timeline": operational_timeline,
+        "decision_map": decision_map,
+        "ai_status": "ACTIVE" if insights else "WATCH",
     }
 
     conn.close()

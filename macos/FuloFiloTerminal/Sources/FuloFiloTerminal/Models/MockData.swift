@@ -1,6 +1,37 @@
 import SwiftUI
 
 enum MockData {
+    static let executivePeriods = TerminalStore.ReadModelSnapshot.ExecutivePeriods(
+        months: [
+            .init(
+                key: "2026-03", label: "Mar 2026",
+                revenue: 69_566, revenue_fmt: "R$ 69.566", units: 2176,
+                profit: 40_117, profit_fmt: "R$ 40.117",
+                margin_pct: 57.6, ticket: 32.0, ticket_fmt: "R$ 32",
+                avg_turnover: 0.07, sell_through: 6.5, burn_ratio: 18.6,
+                low_critical: nil, low_warn: nil, ops_score: nil
+            ),
+            .init(
+                key: "2026-05", label: "Mai 2026",
+                revenue: 72_415, revenue_fmt: "R$ 72.415", units: 2294,
+                profit: 41_669, profit_fmt: "R$ 41.669",
+                margin_pct: 57.5, ticket: 31.6, ticket_fmt: "R$ 32",
+                avg_turnover: 0.08, sell_through: 6.8, burn_ratio: 17.9,
+                low_critical: nil, low_warn: nil, ops_score: nil
+            )
+        ],
+        weeks: [
+            .init(
+                key: "2026-W20", label: "W20 · 12 Mai",
+                revenue: 16_054, revenue_fmt: "R$ 16.054", units: 502,
+                profit: 9_258, profit_fmt: "R$ 9.258",
+                margin_pct: 57.7, ticket: 32.0, ticket_fmt: "R$ 32",
+                avg_turnover: 0.02, sell_through: 1.5, burn_ratio: 80.6,
+                low_critical: nil, low_warn: nil, ops_score: nil
+            )
+        ]
+    )
+
     static let executiveKPIs: [KPI] = [
         KPI(title: "REVENUE", value: "R$ 178,079", subtitle: "gross sales intelligence", accent: TerminalColors.green),
         KPI(title: "MARGIN", value: "57.7%", subtitle: "R$ 102,825", accent: TerminalColors.amber),

@@ -20,6 +20,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.components.hud import HUD, hud_plotly_layout, inject_hud_css
+from app.components.executive_periods import render_executive_period_panel
 from app.components.sidebar import get_month_filter, render_sidebar
 from app.components.terminal import (
     command_tape,
@@ -41,6 +42,8 @@ from app.db import (
     get_conn,
     get_daily_sales_trend,
     get_data_mtime,
+    get_executive_monthly_breakdown,
+    get_executive_weekly_breakdown,
     get_inventory_alerts,
     get_kpis_by_months,
     get_margin_matrix,
@@ -51,6 +54,9 @@ from app.db import (
 from app.utils.fixed_costs import load_fixed_costs
 from app.utils.reorder_engine import LEAD_TIME_DAYS, get_alerts
 from app.utils.source_health import ROOT, STATUS_PATH, get_source_health, render_source_health_warning
+from core.event_engine import detect_operational_events, enrich_reorder_alert, get_sku_velocity_stats
+from core.ops_events import events_to_feed_rows, read_recent_events
+from core.recommendations import build_decision_map_summary
 
 
 _FAVICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")
@@ -143,6 +149,9 @@ def load_terminal_data(data_version: str, selected_months: tuple[str, ...]):  # 
     except Exception:
         category_df = pl.DataFrame()
 
+    exec_months_df = get_executive_monthly_breakdown(conn)
+    exec_weeks_df = get_executive_weekly_breakdown(conn)
+
     conn.close()
     return {
         "kpis": kpis,
@@ -154,6 +163,8 @@ def load_terminal_data(data_version: str, selected_months: tuple[str, ...]):  # 
         "sales_trend": sales_trend_df,
         "available_months": available_months,
         "monthly": monthly_df,
+        "exec_months": exec_months_df,
+        "exec_weeks": exec_weeks_df,
         "inventory_value": _f(inventory_value),
         "payment": payment_df,
         "latest_sales": latest_sales_df,
@@ -195,6 +206,20 @@ turnover_pd = data["turnover"].to_pandas() if not data["turnover"].is_empty() el
 avg_turnover = float(turnover_pd["giro"].mean()) if not turnover_pd.empty else 0.0
 sell_through = (units / (units + inventory_pd["current_stock"].sum()) * 100) if not inventory_pd.empty and units else 0.0
 
+_ops_conn = get_conn()
+_reorder_live = pd.DataFrame()
+_ops_events: list = []
+_velocity_stats = pd.DataFrame()
+try:
+    _reorder_live = get_alerts(_ops_conn)
+    _ops_events = detect_operational_events(_ops_conn, _reorder_live if not _reorder_live.empty else None)
+    _velocity_stats = get_sku_velocity_stats(_ops_conn)
+finally:
+    _ops_conn.close()
+
+_ai_status = "ACTIVE" if _ops_events else "WATCH"
+_ai_sub = f"{len(_ops_events)} rule events" if _ops_events else "rules engine online"
+
 terminal_header(
     [
         {"label": "Daily Revenue", "value": money(revenue, 0), "sub": "selected operating window", "color": HUD["green"]},
@@ -202,7 +227,7 @@ terminal_header(
         {"label": "Inventory Valuation", "value": money(data["inventory_value"], 0), "sub": f"{total_skus} active SKUs", "color": HUD["cyan"]},
         {"label": "Operational Health", "value": f"{ops_score}/100", "sub": readiness, "color": HUD["green"] if ops_score >= 80 else HUD["amber"]},
         {"label": "Sync Status", "value": "SYNCED" if data["health"].get("ok") else "CHECK", "sub": _last_sync_label(), "color": status_color("ready" if data["health"].get("ok") else "warning")},
-        {"label": "AI Assistant", "value": "WATCH", "sub": "rules engine online", "color": HUD["cyan"]},
+        {"label": "AI Assistant", "value": _ai_status, "sub": _ai_sub, "color": HUD["cyan"]},
     ]
 )
 command_tape(
@@ -235,6 +260,9 @@ with main_col:
             ]
         ),
     )
+
+    panel("Period Breakdown", "month + week control", "")
+    render_executive_period_panel(data["exec_months"], data["exec_weeks"])
 
     grid_left, grid_mid = st.columns([1.15, 1], gap="small")
 
@@ -329,36 +357,78 @@ with main_col:
         panel("Bloomberg-Style Product Tape", "top revenue drivers", dataframe_table(product_perf, 12))
 
     latest_pd = data["latest_sales"].to_pandas() if not data["latest_sales"].is_empty() else pd.DataFrame()
-    feed_rows = [
-        {"time": _last_sync_label()[-5:], "type": "SYNC", "message": "Excel master synchronized into parquet/DuckDB read models.", "color": HUD["green"]},
-        {"time": "LIVE", "type": "DATA", "message": f"{health.get('catalog_real_rows', 0)} catalog rows, {health.get('daily_sales_rows', 0)} sales rows, {health.get('cashflow_rows', 0)} cashflow rows.", "color": HUD["cyan"]},
-    ]
-    if critical_count:
+    timeline_events = read_recent_events(limit=20)
+    feed_rows = events_to_feed_rows(timeline_events, severity_colors={
+        "HIGH": HUD["red"],
+        "CRITICAL": HUD["red"],
+        "MEDIUM": HUD["amber"],
+        "LOW": HUD["cyan"],
+        "INFO": HUD["gold"],
+    })
+    if not feed_rows:
+        feed_rows = [
+            {"time": _last_sync_label()[-5:], "type": "SYNC", "message": "Excel master synchronized into parquet/DuckDB read models.", "color": HUD["green"]},
+        ]
+    if critical_count and not any("critical" in r.get("message", "").lower() for r in feed_rows):
         top_critical = inventory_pd.loc[inventory_pd["alert"] == "🔴 Crítico", "product"].head(1).to_list()
-        feed_rows.append({"time": "RISK", "type": "ALERT", "message": f"Critical inventory exposure detected: {top_critical[0] if top_critical else critical_count}." , "color": HUD["red"]})
-    for row in latest_pd.head(5).itertuples(index=False):
-        feed_rows.append({"time": str(row.Date)[5:], "type": "SALE", "message": f"{row.Product} | {int(row.Quantity)} un. | {money(row.Total, 2)} via {row.Payment_Method}", "color": HUD["gold"]})
-    panel("Operational Feed", "sync logs + audit events + recent sales", feed(feed_rows))
+        feed_rows.insert(0, {
+            "time": "RISK",
+            "type": "ALERT",
+            "message": f"Critical inventory exposure: {top_critical[0] if top_critical else critical_count} SKU(s).",
+            "color": HUD["red"],
+        })
+    for row in latest_pd.head(3).itertuples(index=False):
+        feed_rows.append({"time": str(row.Date)[5:], "type": "SALE", "message": f"{row.Product} | {int(row.Quantity)} un. | {money(row.Total, 2)}", "color": HUD["gold"]})
+    panel("Operational Timeline", "event stream + recent sales", feed(feed_rows))
+
+    margin_pd = data["margin"].to_pandas() if not data["margin"].is_empty() else pd.DataFrame()
+    decision_rows = build_decision_map_summary(margin_pd) if not margin_pd.empty else []
+    if decision_rows:
+        decision_table = pd.DataFrame(decision_rows)[["velocity", "margin", "quadrant", "sku_count", "action"]]
+        decision_table.columns = ["Velocity", "Margin", "Quadrant", "SKUs", "Action"]
+        panel("Merchandising Decision Map", "velocity × margin → action", dataframe_table(decision_table, 4))
 
 with ai_col:
-    reorder_df = get_alerts(get_conn())
+    reorder_df = _reorder_live if _reorder_live is not None else get_alerts(get_conn())
+    velocity_by_product = (
+        _velocity_stats.set_index("product") if not _velocity_stats.empty else None
+    )
     insights = []
+    for ev in _ops_events[:4]:
+        sev = str(ev.get("severity", "INFO"))
+        color = HUD["red"] if sev == "HIGH" else HUD["amber"] if sev == "MEDIUM" else HUD["cyan"]
+        insights.append({
+            "time": "OPS",
+            "type": str(ev.get("event_type", "EVENT"))[:8],
+            "message": str(ev.get("message", ""))[:180],
+            "color": color,
+        })
     if not reorder_df.empty:
         urgent = reorder_df[reorder_df["days_remaining"] <= LEAD_TIME_DAYS].head(4)
         for row in urgent.itertuples(index=False):
-            insights.append({"time": "AI", "type": "RESTOCK", "message": f"{row.product}: {int(row.days_remaining)} days remaining. Suggested buy {int(row.suggested_qty)} units.", "color": HUD["red"]})
-    if margin_pct < 45 and revenue > 0:
+            base = row._asdict() if hasattr(row, "_asdict") else dict(row._mapping)
+            vrow = None
+            if velocity_by_product is not None and str(base.get("product", "")) in velocity_by_product.index:
+                vrow = velocity_by_product.loc[str(base["product"])]
+            enriched = enrich_reorder_alert(base, vrow)
+            insights.append({
+                "time": "AI",
+                "type": enriched.get("priority", "RESTOCK"),
+                "message": enriched.get("explanation", str(row.product))[:180],
+                "color": HUD["red"] if enriched.get("priority") == "HIGH" else HUD["amber"],
+            })
+    if margin_pct < 45 and revenue > 0 and len(insights) < 6:
         insights.append({"time": "AI", "type": "MARGIN", "message": f"Gross margin at {margin_pct:.1f}%. Review pricing on high-velocity low-margin SKUs.", "color": HUD["amber"]})
-    if burn_ratio > 35:
+    if burn_ratio > 35 and len(insights) < 6:
         insights.append({"time": "AI", "type": "BURN", "message": f"Fixed monthly cost load is {burn_ratio:.1f}% of revenue. Monitor runway and staffing sensitivity.", "color": HUD["gold"]})
-    if readiness != "READY":
+    if readiness != "READY" and len(insights) < 6:
         insights.append({"time": "AI", "type": "DATA", "message": "Production readiness is not green. Validate workbook Meta, sales, inventory, and cashflow before executive use.", "color": HUD["amber"]})
-    if healthy_skus and not critical_count:
+    if healthy_skus and not critical_count and len(insights) < 6:
         insights.append({"time": "AI", "type": "HEALTH", "message": "Inventory risk is contained. Use category mix and ABC velocity to prioritize restock capital.", "color": HUD["green"]})
     if not insights:
         insights.append({"time": "AI", "type": "WATCH", "message": "No material anomaly detected in the current read models.", "color": HUD["green"]})
 
-    panel("AI Retail Insights", "assistant watchlist", feed(insights))
+    panel("AI Retail Insights", "explainable rule engine", feed(insights))
 
     risk_rows = [
         {"time": "SKU", "type": "RISK", "message": f"{critical_count} critical SKUs require immediate attention.", "color": HUD["red"] if critical_count else HUD["green"]},

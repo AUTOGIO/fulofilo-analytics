@@ -91,8 +91,34 @@ final class TerminalStore {
             let top_c: [ABCItem]
         }
 
+        struct ExecutivePeriodRow: Decodable, Identifiable {
+            var id: String { key }
+            let key: String
+            let label: String
+            let revenue: Double
+            let revenue_fmt: String
+            let units: Double
+            let profit: Double
+            let profit_fmt: String
+            let margin_pct: Double
+            let ticket: Double
+            let ticket_fmt: String
+            let avg_turnover: Double
+            let sell_through: Double
+            let burn_ratio: Double
+            let low_critical: Int?
+            let low_warn: Int?
+            let ops_score: Int?
+        }
+
+        struct ExecutivePeriods: Decodable {
+            let months: [ExecutivePeriodRow]
+            let weeks: [ExecutivePeriodRow]
+        }
+
         let meta: Meta
         let executive: Executive
+        let executive_periods: ExecutivePeriods?
         let inventory_matrix: [InventoryMatrixRow]
         let sales_series: [SalesSeriesPoint]
         let bubbles: [BubbleRow]

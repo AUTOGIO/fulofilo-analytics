@@ -60,6 +60,16 @@ flowchart TD
 3. Review the dashboard outputs.
 4. Use `Validar dados` in the sidebar when you need a stricter check.
 
+### Executive Overview — period breakdown
+
+On **Executive Overview** (Streamlit `app/app.py` and macOS FF Terminal), the eight KPI cards at the top remain **all-period aggregates**. Directly below them, **Period Breakdown** shows the same KPI columns by **Month** or **Week** (last 12 periods).
+
+- **Flow metrics** (revenue, margin, ticket, fixed burn) come from `daily_sales` joined to product margins.
+- **Turnover** and **sell-through** use **current inventory** as the stock denominator for every row (not a historical snapshot).
+- **Low stock** and **ops efficiency** are **current-state only** and appear as `—` in period rows; use the KPI cards above for live alerts and ops score.
+
+The macOS app loads this table from `tools/terminal_read_model.py` (`executive_periods` in the JSON read model).
+
 ## 4. n8n orchestration workflow
 
 ### 4.1 Start n8n locally
@@ -102,6 +112,7 @@ Import this file in n8n:
 make automation-refresh-dashboard-data
 make automation-sync-excel-master
 make automation-generate-replenishment-alerts
+make automation-generate-daily-briefing
 make automation-export-reports
 make automation-validate-data-integrity
 ```
@@ -126,6 +137,10 @@ make automation-run-daily
   - `data/automation/locks/*.lock`
 - Automation logs:
   - `logs/automation/*.log`
+- Operational timeline:
+  - `data/logs/ops_events.jsonl`
+- Operator decision log:
+  - `data/logs/ops_decisions.csv` (via `core.ops_memory.log_decision`)
 - Sync health:
   - `data/excel/source_sync_status.json`
 

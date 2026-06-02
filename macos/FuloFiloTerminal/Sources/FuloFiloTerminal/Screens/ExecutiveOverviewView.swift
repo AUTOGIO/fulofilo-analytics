@@ -23,11 +23,23 @@ struct ExecutiveOverviewView: View {
                     }
                 }
 
+                SectionPanel(
+                    title: "PERIOD BREAKDOWN",
+                    subtitle: "MONTH + WEEK CONTROL",
+                    accent: TerminalColors.cyan
+                ) {
+                    ExecutivePeriodPanel(periods: periodsForReadModel())
+                }
+
                 tabContent
             }
             .padding(TerminalSpacing.sm)
         }
         .background(TerminalColors.bg)
+    }
+
+    private func periodsForReadModel() -> TerminalStore.ReadModelSnapshot.ExecutivePeriods {
+        store.snapshot?.executive_periods ?? MockData.executivePeriods
     }
 
     @ViewBuilder

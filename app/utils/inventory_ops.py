@@ -11,6 +11,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from app.utils.excel_sync import MASTER_PATH, backup_workbook, run_canonical_sync
 from app.utils.workbook_lock import locked_workbook
+from core.ops_events import emit_event
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 INV_PATH = ROOT / "data" / "parquet" / "inventory.parquet"
@@ -76,6 +77,15 @@ def _append_audit_log(
                 "delta": qty_after - qty_before,
             }
         )
+    emit_event(
+        "INVENTORY",
+        severity="MEDIUM" if action == "adjust" else "INFO",
+        message=f"Stock {action}: SKU {sku} {qty_before} → {qty_after} (Δ{qty_after - qty_before})",
+        sku=sku,
+        action=action.upper(),
+        signals={"qty_before": qty_before, "qty_after": qty_after, "delta": qty_after - qty_before},
+        source="inventory_ops",
+    )
 
 
 def _require_inventory_sheet(wb: openpyxl.Workbook) -> Worksheet:

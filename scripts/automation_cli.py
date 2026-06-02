@@ -68,7 +68,7 @@ def _json_dump_atomic(path: Path, payload: dict[str, Any]) -> None:
 def _resolve_fingerprint_inputs(action: str) -> list[Path]:
     if action in {"refresh-dashboard-data", "sync-excel-master", "validate-data-integrity", "run-daily-automation"}:
         return [MASTER_XLSX]
-    if action in {"generate-replenishment-alerts", "export-reports"}:
+    if action in {"generate-replenishment-alerts", "export-reports", "generate-daily-briefing"}:
         return sorted(PARQUET_DIR.glob("*.parquet"))
     return []
 
@@ -176,12 +176,22 @@ def _run_subprocess(cmd: list[str], logger: logging.Logger, label: str) -> dict[
 
 
 def _sync_excel(logger: logging.Logger, sku_policy: str) -> dict[str, Any]:
+    from core.ops_events import emit_event
+
     result = _run_subprocess(
         ["bash", str(SYNC_SCRIPT), "--sku-policy", sku_policy],
         logger,
         "sync_excel",
     )
     status = _json_load(STATUS_JSON, {})
+    emit_event(
+        "SYNC",
+        severity="INFO" if status.get("ok") else "MEDIUM",
+        message="Excel master synchronized into parquet/DuckDB read models.",
+        action="SYNC_COMPLETE",
+        signals={"ok": bool(status.get("ok", False)), "warnings": len(status.get("warnings", []))},
+        source="automation_cli",
+    )
     return {
         "step": result,
         "status_file": str(STATUS_JSON),
@@ -193,20 +203,44 @@ def _sync_excel(logger: logging.Logger, sku_policy: str) -> dict[str, Any]:
 
 def _generate_replenishment_alerts(logger: logging.Logger) -> dict[str, Any]:
     from app.db import get_conn
-    from app.utils.reorder_engine import ALERT_THRESHOLD, LEAD_TIME_DAYS, export_excel, get_alerts
+    from app.utils.reorder_engine import ALERT_THRESHOLD, LEAD_TIME_DAYS, export_excel, get_alerts, notify_macos
+    from core.event_engine import (
+        detect_operational_events,
+        enrich_reorder_alert,
+        get_sku_velocity_stats,
+        persist_detected_events,
+    )
+    from core.ops_events import emit_event
 
     outputs = ROOT / "data" / "outputs"
     outputs.mkdir(parents=True, exist_ok=True)
     out_json = outputs / "replenishment_alerts.json"
 
+    workbook_path = None
+    event_count = 0
+    enriched_alerts: list[dict[str, Any]] = []
+    alerts_df = None
     conn = get_conn()
     try:
         alerts_df = get_alerts(conn)
         workbook_path = export_excel(conn)
+        velocity_df = get_sku_velocity_stats(conn)
+        velocity_by_product = (
+            velocity_df.set_index("product") if not velocity_df.empty else None
+        )
+        for row in alerts_df.head(20).itertuples(index=False):
+            base = row._asdict() if hasattr(row, "_asdict") else dict(row._mapping)
+            vrow = None
+            if velocity_by_product is not None and str(base.get("product", "")) in velocity_by_product.index:
+                vrow = velocity_by_product.loc[str(base["product"])]
+            enriched_alerts.append(enrich_reorder_alert(base, vrow))
+
+        detected = detect_operational_events(conn, alerts_df)
+        event_count = persist_detected_events(detected, source="replenishment_alerts")
     finally:
         conn.close()
 
-    if alerts_df.empty:
+    if alerts_df is None or alerts_df.empty:
         payload = {
             "generated_at": _utc_now(),
             "total_alerts": 0,
@@ -214,28 +248,77 @@ def _generate_replenishment_alerts(logger: logging.Logger) -> dict[str, Any]:
             "alert_threshold_days": ALERT_THRESHOLD,
             "urgent_threshold_days": LEAD_TIME_DAYS,
             "top_alerts": [],
+            "enriched_alerts": [],
+            "operational_events_emitted": event_count,
             "alert_workbook": str(workbook_path) if workbook_path else None,
         }
     else:
         urgent = alerts_df[alerts_df["days_remaining"] <= LEAD_TIME_DAYS]
-        top = alerts_df.head(20).to_dict(orient="records")
         payload = {
             "generated_at": _utc_now(),
             "total_alerts": int(len(alerts_df)),
             "urgent_alerts": int(len(urgent)),
             "alert_threshold_days": ALERT_THRESHOLD,
             "urgent_threshold_days": LEAD_TIME_DAYS,
-            "top_alerts": top,
+            "top_alerts": alerts_df.head(20).to_dict(orient="records"),
+            "enriched_alerts": enriched_alerts,
+            "operational_events_emitted": event_count,
             "alert_workbook": str(workbook_path) if workbook_path else None,
         }
 
     _json_dump_atomic(out_json, payload)
     logger.info("Replenishment alert JSON saved: %s", out_json)
+
+    if alerts_df is not None and not alerts_df.empty:
+        notify_macos(alerts_df)
+        emit_event(
+            "REPLENISHMENT",
+            severity="HIGH" if payload["urgent_alerts"] else "MEDIUM",
+            message=(
+                f"{payload['urgent_alerts']} urgent / {payload['total_alerts']} total "
+                "replenishment alerts generated."
+            ),
+            action="REVIEW_REORDER",
+            source="automation_cli",
+        )
+
     return {
         "alert_json": str(out_json),
         "alert_workbook": payload.get("alert_workbook"),
         "total_alerts": payload["total_alerts"],
         "urgent_alerts": payload["urgent_alerts"],
+        "operational_events_emitted": payload.get("operational_events_emitted", 0),
+    }
+
+
+def _generate_daily_briefing(logger: logging.Logger) -> dict[str, Any]:
+    from app.db import get_conn
+    from core.daily_briefing import generate_daily_briefing, notify_macos_briefing, save_daily_briefing
+    from core.event_engine import get_category_demand_forecast
+    from core.ops_events import emit_event
+
+    conn = get_conn()
+    try:
+        payload = generate_daily_briefing(conn)
+        payload["category_forecast_7d"] = get_category_demand_forecast(conn, horizon_days=7)
+    finally:
+        conn.close()
+
+    out_path = save_daily_briefing(payload)
+    notify_macos_briefing(payload)
+    emit_event(
+        "BRIEFING",
+        severity="INFO",
+        message=f"Daily briefing: {payload.get('urgent_reorder_alerts', 0)} urgent reorders, "
+        f"{payload.get('critical_skus', 0)} critical SKUs.",
+        action="READ_BRIEFING",
+        source="automation_cli",
+    )
+    logger.info("Daily briefing saved: %s", out_path)
+    return {
+        "briefing_json": str(out_path),
+        "urgent_reorder_alerts": payload.get("urgent_reorder_alerts", 0),
+        "critical_skus": payload.get("critical_skus", 0),
     }
 
 
@@ -282,6 +365,7 @@ def _run_daily_automation(logger: logging.Logger, sku_policy: str) -> dict[str, 
     steps = [
         {"action": "refresh-dashboard-data", "details": _sync_excel(logger, sku_policy=sku_policy)},
         {"action": "generate-replenishment-alerts", "details": _generate_replenishment_alerts(logger)},
+        {"action": "generate-daily-briefing", "details": _generate_daily_briefing(logger)},
         {"action": "export-reports", "details": _export_reports(logger)},
     ]
     return {"automation_steps": steps}
@@ -420,6 +504,8 @@ def execute_action(
                 details = _sync_excel(logger, sku_policy=sku_policy)
             elif action == "generate-replenishment-alerts":
                 details = _generate_replenishment_alerts(logger)
+            elif action == "generate-daily-briefing":
+                details = _generate_daily_briefing(logger)
             elif action == "export-reports":
                 details = _export_reports(logger)
             elif action == "validate-data-integrity":
@@ -519,6 +605,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
     p_alerts = sub.add_parser("generate-replenishment-alerts", help="Generate replenishment alerts artifacts.")
     _add_common_flags(p_alerts)
+
+    p_briefing = sub.add_parser("generate-daily-briefing", help="Generate executive daily briefing + macOS notification.")
+    _add_common_flags(p_briefing)
 
     p_export = sub.add_parser("export-reports", help="Generate Excel and ABC report artifacts.")
     _add_common_flags(p_export)

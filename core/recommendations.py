@@ -24,7 +24,7 @@ import logging
 
 import pandas as pd
 
-from core.classification import STAR, CASH_COW, HIDDEN_GEM, DOG, UNKNOWN
+from core.classification import STAR, CASH_COW, HIDDEN_GEM, DOG, UNKNOWN, classify_dataframe
 
 logger = logging.getLogger(__name__)
 
@@ -126,3 +126,38 @@ def enrich_with_recommendations(df: pd.DataFrame, display: bool = True) -> pd.Da
         )
 
     return result
+
+
+# ── Decision map (velocity × margin → action) ───────────────────────────────────
+
+_QUADRANT_AXES: dict[str, tuple[str, str]] = {
+    STAR:       ("High", "High"),
+    CASH_COW:   ("High", "Low"),
+    HIDDEN_GEM: ("Low", "High"),
+    DOG:        ("Low", "Low"),
+}
+
+
+def build_decision_map_summary(products_df: pd.DataFrame) -> list[dict[str, object]]:
+    """
+    Build actionable 2×2 merchandising matrix rows from product metrics.
+    Requires qty_sold and margin_pct columns.
+    """
+    if products_df.empty or not {"qty_sold", "margin_pct"}.issubset(products_df.columns):
+        return []
+
+    classified = classify_dataframe(products_df)
+    rows: list[dict[str, object]] = []
+    for label in (STAR, CASH_COW, HIDDEN_GEM, DOG):
+        sub = classified[classified["classification"] == label]
+        velocity, margin = _QUADRANT_AXES[label]
+        rows.append(
+            {
+                "quadrant": label,
+                "velocity": velocity,
+                "margin": margin,
+                "sku_count": int(len(sub)),
+                "action": ACTION_MAP.get(label, ""),
+            }
+        )
+    return rows

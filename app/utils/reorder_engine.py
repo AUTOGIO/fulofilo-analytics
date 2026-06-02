@@ -2,12 +2,12 @@
 FulôFiló — Smart Reorder Alert Engine
 =======================================
 Calculates when to reorder each product based on:
-  - Giro (sell-through rate) from March + April 2026 sales history
+  - Rolling 14-day sell-through from daily_sales (fallback: period aggregate)
   - Supplier lead time + safety buffer
   - Suggested order quantity for 45-day coverage
 
 Formula:
-  daily_rate     = qty_sold / SALES_PERIOD_DAYS
+  daily_rate     = qty_14d / ROLLING_VELOCITY_DAYS  (or qty_sold / SALES_PERIOD_DAYS)
   days_remaining = current_stock / daily_rate
   ALERT when:    days_remaining ≤ LEAD_TIME + BUFFER  (24 days)
   suggested_qty  = ceil(daily_rate × COVERAGE_DAYS)   (45 days)
@@ -15,7 +15,6 @@ Formula:
 
 from __future__ import annotations
 
-import math
 import os
 import subprocess
 from pathlib import Path
@@ -25,7 +24,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent.parent
 
 # ── Configuration (all changeable per supplier later) ─────────────────────────
-SALES_PERIOD_DAYS = 61   # March 1 – April 30, 2026
+SALES_PERIOD_DAYS = 61   # March 1 – April 30, 2026 (fallback rate)
+ROLLING_VELOCITY_DAYS = 14
 LEAD_TIME_DAYS    = 12   # Default supplier lead time (days)
 BUFFER_DAYS       = 12   # Safety buffer (days)
 ALERT_THRESHOLD   = LEAD_TIME_DAYS + BUFFER_DAYS   # 24 days
@@ -37,33 +37,68 @@ COVERAGE_DAYS     = 45   # Target reorder coverage (days)
 def get_reorder_df(conn) -> pd.DataFrame:
     """
     Full reorder analysis — all products with sales data from the canonical sync.
-    Uses products table directly; current_stock from inventory JOIN where
-    available, otherwise falls back to DEFAULT_STOCK (300 units).
-    Products with zero sales are excluded (no giro to calculate).
+    Uses rolling 14-day velocity from daily_sales when available; falls back to
+    products.qty_sold / SALES_PERIOD_DAYS.
     """
     DEFAULT_STOCK = 300  # baseline set at system initialization
 
     try:
         df = conn.execute(f"""
+            WITH ref AS (
+                SELECT MAX(CAST(Date AS DATE)) AS max_date FROM sales
+            ),
+            rolling AS (
+                SELECT
+                    s.Product AS product,
+                    SUM(CASE
+                        WHEN CAST(s.Date AS DATE) > r.max_date - INTERVAL {ROLLING_VELOCITY_DAYS} DAY
+                        THEN CAST(s.Quantity AS DOUBLE) ELSE 0 END) AS qty_14d
+                FROM sales s
+                CROSS JOIN ref r
+                GROUP BY s.Product
+            )
             SELECT
                 p.sku                                                                AS slug,
                 p.full_name                                                          AS product,
                 p.category,
                 COALESCE(NULLIF(i.current_stock, 0), {DEFAULT_STOCK})               AS current_stock,
                 p.qty_sold,
-                ROUND(p.qty_sold::FLOAT / {SALES_PERIOD_DAYS}, 3)                  AS daily_rate,
+                p.margin_pct,
+                p.unit_profit,
+                COALESCE(ro.qty_14d, 0)                                              AS qty_14d,
+                ROUND(
+                    CASE
+                        WHEN COALESCE(ro.qty_14d, 0) > 0
+                        THEN ro.qty_14d::FLOAT / {ROLLING_VELOCITY_DAYS}
+                        ELSE p.qty_sold::FLOAT / {SALES_PERIOD_DAYS}
+                    END
+                , 3)                                                                 AS daily_rate,
                 ROUND(
                     COALESCE(NULLIF(i.current_stock, 0), {DEFAULT_STOCK})::FLOAT /
-                    (p.qty_sold::FLOAT / {SALES_PERIOD_DAYS})
+                    NULLIF(
+                        CASE
+                            WHEN COALESCE(ro.qty_14d, 0) > 0
+                            THEN ro.qty_14d::FLOAT / {ROLLING_VELOCITY_DAYS}
+                            ELSE p.qty_sold::FLOAT / {SALES_PERIOD_DAYS}
+                        END
+                    , 0)
                 , 0)                                                                 AS days_remaining,
-                CEIL(p.qty_sold::FLOAT / {SALES_PERIOD_DAYS} * {COVERAGE_DAYS})     AS suggested_qty,
+                CEIL(
+                    CASE
+                        WHEN COALESCE(ro.qty_14d, 0) > 0
+                        THEN ro.qty_14d::FLOAT / {ROLLING_VELOCITY_DAYS}
+                        ELSE p.qty_sold::FLOAT / {SALES_PERIOD_DAYS}
+                    END * {COVERAGE_DAYS}
+                )                                                                    AS suggested_qty,
                 {LEAD_TIME_DAYS}                                                     AS lead_time,
                 {BUFFER_DAYS}                                                        AS buffer,
                 {ALERT_THRESHOLD}                                                    AS alert_threshold
             FROM products p
             LEFT JOIN inventory i ON lower(p.full_name) = lower(i.product)
+            LEFT JOIN rolling ro ON lower(p.full_name) = lower(ro.product)
             WHERE p.qty_sold > 0
-            ORDER BY days_remaining ASC
+               OR COALESCE(ro.qty_14d, 0) > 0
+            ORDER BY days_remaining ASC NULLS LAST
         """).df()
         return df
     except Exception:
@@ -115,7 +150,8 @@ def export_excel(conn) -> Path | None:
         "product":        "Produto",
         "category":       "Categoria",
         "current_stock":  "Estoque Atual",
-        "qty_sold":       "Vendido (Mar–Abr)",
+        "qty_sold":       "Vendido (Período)",
+        "qty_14d":        "Vendido (14d)",
         "daily_rate":     "Venda/Dia",
         "days_remaining": "Dias Restantes",
         "suggested_qty":  "Qtd Sugerida (45d)",
@@ -123,7 +159,7 @@ def export_excel(conn) -> Path | None:
         "buffer":         "Buffer (dias)",
         "alert_threshold":"Limiar Alerta (dias)",
         "urgency":        "Urgência",
-    }).drop(columns=["slug"], errors="ignore")
+    }).drop(columns=["slug", "margin_pct", "unit_profit"], errors="ignore")
 
     alerts_display = display[display["Dias Restantes"] <= ALERT_THRESHOLD].copy()
 
@@ -198,7 +234,7 @@ def _style_workbook(wb, alerts_df: pd.DataFrame, full_df: pd.DataFrame) -> None:
 
 # ── macOS Notification ────────────────────────────────────────────────────────
 
-def notify_macos(alerts_df: pd.DataFrame) -> None:
+def notify_macos(alerts_df: pd.DataFrame, *, title_prefix: str = "FulôFiló AI — Reposição") -> None:
     """
     Fire a native macOS notification summarizing reorder alerts.
     Silent no-op on Streamlit Cloud or if no alerts.
@@ -229,7 +265,7 @@ def notify_macos(alerts_df: pd.DataFrame) -> None:
     script = (
         f'display notification "{body}" '
         f'with title "{title}" '
-        f'subtitle "FulôFiló AI — Reposição"'
+        f'subtitle "{title_prefix}"'
     )
     try:
         subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)
