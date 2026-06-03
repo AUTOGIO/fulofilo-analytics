@@ -1,6 +1,6 @@
 # FulôFiló Analytics — User Guide
 
-_Last updated: 2026-05-15_
+_Last updated: 2026-06-02_
 
 ## 1. Source of truth and boundaries
 
@@ -72,40 +72,28 @@ The macOS app loads this table from `tools/terminal_read_model.py` (`executive_p
 
 For **real** month/week charts, use **one Loyverse item-sales-summary CSV per day** (not multi-month cumulative exports spread across calendar days).
 
-### Loyverse automation (local)
+### Loyverse and Rede automations
 
-Bundled data root (default after clone): `automations/loyverse-data/`. First-time setup: `bash scripts/setup_automations.sh`.
+Full setup, commands, log locations, and error solutions:
 
-Optional override:
+**[AUTOMATIONS_USER_GUIDE.md](AUTOMATIONS_USER_GUIDE.md)**
+
+Quick start after clone:
 
 ```bash
-export LOYVERSE_DATA_ROOT="$(pwd)/automations/loyverse-data"
+bash scripts/setup_automations.sh
 ```
 
-Start Chrome with Loyverse logged in (leave this window open during downloads):
+Loyverse (one day):
 
 ```bash
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-  --remote-debugging-port=9222 \
-  --user-data-dir="${LOYVERSE_DATA_ROOT:-$(pwd)/automations/loyverse-data}/chrome-profile"
+.venv/bin/python3 scripts/automation_cli.py download-loyverse-daily-sales --date 2026-06-02 --format csv
 ```
 
-Backfill all missing working days (Mon–Sat) in a range:
+Rede (Terminal):
 
 ```bash
-cd fulofilo-analytics
-.venv/bin/python3 scripts/automation_cli.py backfill-missing-loyverse-sales \
-  --from 2026-03-01 --to 2026-06-01 --format csv --continue-on-error
-bash scripts/sync_excel.sh
-```
-
-Rede portal downloads are bundled under `automations/rede-automation/` — see [`automations/README.md`](../automations/README.md).
-
-Single day (Streamlit sidebar **Baixar + importar Loyverse** uses the same pipeline):
-
-```bash
-.venv/bin/python3 scripts/automation_cli.py download-loyverse-daily-sales \
-  --date 2026-06-02 --format csv
+cd automations/rede-automation && npm run rede:vendas -- --yesterday
 ```
 
 ## 4. n8n orchestration workflow
@@ -113,7 +101,7 @@ Single day (Streamlit sidebar **Baixar + importar Loyverse** uses the same pipel
 ### 4.1 Start n8n locally
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd fulofilo-analytics
 docker compose -f docker-compose.n8n.yml up -d
 ```
 
@@ -122,7 +110,7 @@ UI: [http://localhost:5678](http://localhost:5678)
 ### 4.2 Start local webhook bridge
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd fulofilo-analytics
 export FULOFILO_AUTOMATION_TOKEN="change-this-token"
 make automation-webhook
 ```

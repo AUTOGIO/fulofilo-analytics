@@ -32,7 +32,9 @@ bash scripts/sync_excel.sh
 bash scripts/launch_app.sh
 ```
 
-Local sales automations (Loyverse exports, Rede portal downloads) are bundled under [`automations/`](automations/README.md).
+Local sales automations (Loyverse exports, Rede portal downloads) are bundled under [`automations/`](automations/README.md). User guide: [`docs/AUTOMATIONS_USER_GUIDE.md`](docs/AUTOMATIONS_USER_GUIDE.md).
+
+**Non-developer setup (Mac):** double-click `FuloFiloOperatorSetup.command`, or give Codex the prompt in [`docs/CODEX_OPERATOR_SETUP_PROMPT.md`](docs/CODEX_OPERATOR_SETUP_PROMPT.md).
 
 App URL: `http://127.0.0.1:8501`
 

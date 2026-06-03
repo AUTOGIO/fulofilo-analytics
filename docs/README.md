@@ -15,7 +15,7 @@ bash scripts/launch_app.sh
 
 Bundled Loyverse/Rede automations live under [`automations/`](../automations/README.md) (no separate repos required).
 
-Loyverse backfill and daily downloads require Chrome on port 9222 — see [USER_GUIDE.md](USER_GUIDE.md#loyverse-automation-local).
+Loyverse and Rede automations (setup, daily use, troubleshooting): **[AUTOMATIONS_USER_GUIDE.md](AUTOMATIONS_USER_GUIDE.md)**.
 
 Canonical source of truth:
 
@@ -38,6 +38,8 @@ Primary references:
 - [`docs/n8n/README.md`](n8n/README.md)
 - [`docs/n8n/fulofilo_orchestration_workflow.json`](n8n/fulofilo_orchestration_workflow.json)
 - [`docs/USER_GUIDE.md`](USER_GUIDE.md)
+- [`docs/AUTOMATIONS_USER_GUIDE.md`](AUTOMATIONS_USER_GUIDE.md)
+- [`docs/CODEX_OPERATOR_SETUP_PROMPT.md`](CODEX_OPERATOR_SETUP_PROMPT.md) — Codex: clone, install, open dashboards + guided tour
 
 ## Legacy Notice
 

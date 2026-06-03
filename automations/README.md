@@ -71,4 +71,4 @@ Or trigger from the FulôFiló automation CLI / dashboard:
 
 Downloads default to `~/Downloads/Rede`.
 
-See also: [docs/USER_GUIDE.md](../docs/USER_GUIDE.md#loyverse-automation-local).
+See also: [docs/AUTOMATIONS_USER_GUIDE.md](../docs/AUTOMATIONS_USER_GUIDE.md) (full user guide + troubleshooting).
