@@ -381,6 +381,47 @@ def _download_loyverse_daily_sales(logger: logging.Logger, target_date: str, fmt
     return result
 
 
+def _backfill_missing_loyverse_sales(
+    logger: logging.Logger,
+    start_date: str,
+    end_date: str,
+    fmt: str,
+    force: bool,
+    skip_existing: bool,
+    continue_on_error: bool,
+    sync_each_day: bool,
+) -> dict[str, Any]:
+    from app.utils.loyverse_automation import backfill_missing_loyverse_sales
+
+    logger.info(
+        "Loyverse backfill: %s -> %s format=%s force=%s skip_existing=%s continue_on_error=%s",
+        start_date,
+        end_date,
+        fmt,
+        force,
+        skip_existing,
+        continue_on_error,
+    )
+    summary = backfill_missing_loyverse_sales(
+        start_date,
+        end_date,
+        fmt=fmt,
+        force=force,
+        skip_existing=skip_existing,
+        continue_on_error=continue_on_error,
+        sync_each_day=sync_each_day,
+    )
+    payload = summary.to_dict()
+    if summary.failed and not summary.ok:
+        raise RuntimeError(
+            f"Loyverse backfill failed for all {summary.failed} day(s). "
+            f"First error: {summary.failures[0]['message'] if summary.failures else 'unknown'}"
+        )
+    if summary.failed:
+        logger.warning("Loyverse backfill completed with %s failure(s).", summary.failed)
+    return payload
+
+
 def _download_loyverse_sales_period(logger: logging.Logger, start_date: str, end_date: str, fmt: str, force: bool) -> dict[str, Any]:
     from datetime import date, timedelta
 
@@ -454,6 +495,11 @@ def execute_action(
     run_tests: bool = True,
     target_date: str | None = None,
     fmt: str = "csv",
+    period_from: str | None = None,
+    period_to: str | None = None,
+    skip_existing: bool = True,
+    continue_on_error: bool = True,
+    sync_each_day: bool = True,
 ) -> dict[str, Any]:
     _ensure_dirs()
     run_id = datetime.now().strftime("%Y%m%dT%H%M%S")
@@ -480,9 +526,14 @@ def execute_action(
                 }
 
         if (
-            action not in {"download-loyverse-daily-sales", "download-loyverse-sales-period", "launch-rede-sales-download"}
-            and
-            not force
+            action
+            not in {
+                "download-loyverse-daily-sales",
+                "download-loyverse-sales-period",
+                "backfill-missing-loyverse-sales",
+                "launch-rede-sales-download",
+            }
+            and not force
             and command_state.get("last_status") == "success"
             and command_state.get("last_fingerprint") == fingerprint
         ):
@@ -521,6 +572,21 @@ def execute_action(
                     raise ValueError("Missing required period as target_date=start:end for download-loyverse-sales-period.")
                 start_date, end_date = target_date.split(":", 1)
                 details = _download_loyverse_sales_period(logger, start_date=start_date, end_date=end_date, fmt=fmt, force=force)
+            elif action == "backfill-missing-loyverse-sales":
+                start_date = period_from or (target_date.split(":", 1)[0] if target_date and ":" in target_date else None)
+                end_date = period_to or (target_date.split(":", 1)[1] if target_date and ":" in target_date else None)
+                if not start_date or not end_date:
+                    raise ValueError("Missing required --from and --to for backfill-missing-loyverse-sales.")
+                details = _backfill_missing_loyverse_sales(
+                    logger,
+                    start_date=start_date,
+                    end_date=end_date,
+                    fmt=fmt,
+                    force=force,
+                    skip_existing=skip_existing,
+                    continue_on_error=continue_on_error,
+                    sync_each_day=sync_each_day,
+                )
             elif action == "launch-rede-sales-download":
                 if not target_date:
                     raise ValueError("Missing required target_date for launch-rede-sales-download.")
@@ -630,6 +696,33 @@ def _build_parser() -> argparse.ArgumentParser:
     p_loyverse_period.add_argument("--to", required=True, dest="period_to", help="End date as YYYY-MM-DD.")
     p_loyverse_period.add_argument("--format", choices=("csv", "xlsx", "excel", "pdf"), default="csv")
     _add_common_flags(p_loyverse_period)
+
+    p_loyverse_backfill = sub.add_parser(
+        "backfill-missing-loyverse-sales",
+        help="Download and import Loyverse item sales for each missing working day in a period.",
+    )
+    p_loyverse_backfill.add_argument("--from", required=True, dest="period_from", help="Start date YYYY-MM-DD.")
+    p_loyverse_backfill.add_argument("--to", required=True, dest="period_to", help="End date YYYY-MM-DD.")
+    p_loyverse_backfill.add_argument("--format", choices=("csv", "xlsx", "excel", "pdf"), default="csv")
+    p_loyverse_backfill.add_argument(
+        "--skip-existing",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Skip days that already have a non-empty Loyverse/raw or item_sales_summary file.",
+    )
+    p_loyverse_backfill.add_argument(
+        "--continue-on-error",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Continue with remaining days when one day fails.",
+    )
+    p_loyverse_backfill.add_argument(
+        "--sync-each-day",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Run sync_excel after each imported day (disable for faster batch; run sync manually at end).",
+    )
+    _add_common_flags(p_loyverse_backfill)
 
     p_rede = sub.add_parser("launch-rede-sales-download", help="Launch the separate Rede sales download automation.")
     p_rede.add_argument("--date", required=True, dest="target_date", help="Report date as YYYY-MM-DD.")
@@ -754,10 +847,15 @@ def main() -> None:
         "run_tests": not getattr(args, "skip_tests", False),
         "target_date": (
             f"{args.period_from}:{args.period_to}"
-            if hasattr(args, "period_from") and hasattr(args, "period_to")
+            if getattr(args, "period_from", None) and getattr(args, "period_to", None)
             else getattr(args, "target_date", None)
         ),
         "fmt": getattr(args, "formats", getattr(args, "format", "csv")),
+        "period_from": getattr(args, "period_from", None),
+        "period_to": getattr(args, "period_to", None),
+        "skip_existing": getattr(args, "skip_existing", True),
+        "continue_on_error": getattr(args, "continue_on_error", True),
+        "sync_each_day": getattr(args, "sync_each_day", True),
     }
     result = execute_action(**kwargs)
     print(json.dumps(result, ensure_ascii=False, indent=2))

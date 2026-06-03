@@ -182,6 +182,15 @@ def main() -> None:
     start, end, source = period_from_name(csv_path)
     sales, units, revenue, cost = read_sales_summary(csv_path)
     days = working_days(start, end)
+    span_days = (end - start).days + 1
+    if span_days > 31 and len(days) > 1:
+        print(
+            f"WARNING: {csv_path.name} spans {span_days} calendar days — "
+            "totals are spread evenly across working days (estimates, not POS daily truth). "
+            "Prefer one CSV per day from Loyverse for real month/week charts."
+        )
+    if start == end:
+        print(f"NOTE: single-day import — daily figures match POS for {start.isoformat()}.")
 
     BACKUPS.mkdir(parents=True, exist_ok=True)
     ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -250,7 +259,8 @@ def main() -> None:
 
     RAW.mkdir(parents=True, exist_ok=True)
     raw_copy = RAW / f"{source}.csv"
-    shutil.copy2(csv_path, raw_copy)
+    if csv_path.resolve() != raw_copy.resolve():
+        shutil.copy2(csv_path, raw_copy)
 
     print(f"Imported {len(sales)} products across {len(days)} operating days")
     print(f"Units: {units:.3f}")

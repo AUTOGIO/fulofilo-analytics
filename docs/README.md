@@ -40,6 +40,7 @@ Primary references:
 - [`docs/USER_GUIDE.md`](USER_GUIDE.md)
 - [`docs/AUTOMATIONS_USER_GUIDE.md`](AUTOMATIONS_USER_GUIDE.md)
 - [`docs/CODEX_OPERATOR_SETUP_PROMPT.md`](CODEX_OPERATOR_SETUP_PROMPT.md) — Codex: clone, install, open dashboards + guided tour
+- [`docs/CODEX_GUIDED_ASSISTANCE_FF.md`](CODEX_GUIDED_ASSISTANCE_FF.md) — Codex: open guided assistance only (port 8502)
 
 ## Legacy Notice
 
