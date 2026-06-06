@@ -133,3 +133,6 @@ docker-compose*.yml
 
 # ── n8n docs ───────────────────────────
 docs/n8n/
+
+# Runtime sync artifacts (regenerated on each sync)
+data/excel/source_sync_status.json
