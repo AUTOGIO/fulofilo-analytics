@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "timestamp": "2026-06-02T22:18:18.553424+00:00",
+  "timestamp": "2026-06-05T02:20:24.947774+00:00",
   "warnings": [
     "CategoryOverrides is empty; this is allowed, but no manual category corrections have been recorded."
   ],
@@ -13,8 +13,8 @@
     "catalog_real_rows": 72,
     "inventory_rows": 72,
     "inventory_placeholder_only": false,
-    "daily_sales_rows": 1813,
-    "cashflow_rows": 160,
+    "daily_sales_rows": 2942,
+    "cashflow_rows": 34,
     "category_override_rows": 0,
     "category_overrides_empty": true,
     "meta_present_keys": [
@@ -30,8 +30,8 @@
   "catalog_real_rows": 72,
   "inventory_rows": 72,
   "inventory_placeholder_only": false,
-  "daily_sales_rows": 1813,
-  "cashflow_rows": 160,
+  "daily_sales_rows": 2942,
+  "cashflow_rows": 34,
   "category_override_rows": 0,
   "category_overrides_empty": true,
   "meta_present_keys": [

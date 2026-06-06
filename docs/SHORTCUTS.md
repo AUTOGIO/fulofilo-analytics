@@ -15,7 +15,7 @@ Shortcuts triggers the local automation webhook, which executes Python actions:
 ## 1. Start local webhook bridge
 
 ```bash
-cd /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics
+cd /Users/giovannini_nuovo/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/fulofilo-analytics
 export FULOFILO_AUTOMATION_TOKEN="change-this-token"
 make automation-webhook
 ```

@@ -247,7 +247,7 @@ n8n must not:
 
 Local startup:
 ```bash
-docker compose -f /Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/docker-compose.n8n.yml up -d
+docker compose -f /Users/giovannini_nuovo/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/fulofilo-analytics/docker-compose.n8n.yml up -d
 ```
 
 Automation webhook bridge:

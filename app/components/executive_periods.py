@@ -4,13 +4,19 @@ Executive KPI period breakdown — month/week tables under the KPI cluster.
 
 from __future__ import annotations
 
+import json
+import time
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import polars as pl
 import streamlit as st
 
 from app.components.terminal import dataframe_table, money
+
+_DEBUG_LOG = Path(__file__).resolve().parent.parent.parent / ".cursor" / "debug-95ad62.log"
+_DEBUG_SESSION = "95ad62"
 
 _MONTH_LABELS = {
     "2026-01": "Jan 2026",
@@ -104,8 +110,48 @@ def _period_table(df: pl.DataFrame, grain: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _audit_period_log(months_df: pl.DataFrame, weeks_df: pl.DataFrame) -> None:
+    # #region agent log
+    try:
+        month_rows = [
+            {
+                "period_key": str(r.get("period_key") or ""),
+                "receita": float(r.get("receita") or 0),
+                "margin_pct": float(r.get("margin_pct") or 0),
+                "ticket": float(r.get("ticket") or 0),
+            }
+            for r in months_df.iter_rows(named=True)
+        ]
+        week_rows = [
+            {"period_key": str(r.get("period_key") or ""), "receita": float(r.get("receita") or 0)}
+            for r in weeks_df.iter_rows(named=True)
+        ]
+        distinct_month_rev = len({round(m["receita"], 2) for m in month_rows})
+        payload = {
+            "sessionId": _DEBUG_SESSION,
+            "runId": "ui-audit",
+            "hypothesisId": "H1",
+            "location": "executive_periods.py:render",
+            "message": "period_breakdown_render",
+            "data": {
+                "months": month_rows,
+                "month_sum": sum(m["receita"] for m in month_rows),
+                "distinct_month_revenue_values": distinct_month_rev,
+                "weeks_tail": week_rows[-6:],
+            },
+            "timestamp": int(time.time() * 1000),
+        }
+        _DEBUG_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _DEBUG_LOG.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+    # #endregion
+
+
 def render_executive_period_panel(months_df: pl.DataFrame, weeks_df: pl.DataFrame) -> None:
     """Render Month | Week tabs below the Period Breakdown panel header."""
+    _audit_period_log(months_df, weeks_df)
     month_tab, week_tab = st.tabs(["Month", "Week"])
 
     with month_tab:

@@ -29,6 +29,9 @@ SHEET_CASHFLOW = "xl/worksheets/sheet4.xml"
 NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 ET.register_namespace("", NS["m"])
 
+# Loyverse sometimes exports month-to-date totals while the filename says a single day.
+SINGLE_DAY_MAX_REVENUE = 10_000.0
+
 
 def usage() -> None:
     print("Usage: python3 scripts/import_sales_summary_to_excel.py /path/item_sales_summary_YYYY-MM-DD_YYYY-MM-DD.csv")
@@ -191,6 +194,12 @@ def main() -> None:
         )
     if start == end:
         print(f"NOTE: single-day import — daily figures match POS for {start.isoformat()}.")
+        if revenue > SINGLE_DAY_MAX_REVENUE:
+            raise SystemExit(
+                f"Single-day import rejected: R$ {revenue:,.2f} on {start.isoformat()} "
+                "looks like a cumulative period export, not one POS day. "
+                f"Re-export Loyverse item sales for exactly {start.isoformat()}."
+            )
 
     BACKUPS.mkdir(parents=True, exist_ok=True)
     ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
