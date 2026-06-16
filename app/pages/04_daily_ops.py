@@ -73,7 +73,7 @@ try:
             result["Custo Unit. (R$)"]    = result["Custo Unit. (R$)"].apply(lambda x: f"R$ {x:.2f}" if x else "—")
             result["Preço (R$)"]          = result["Preço (R$)"].apply(lambda x: f"R$ {x:.2f}" if x else "—")
             result["Margem (%)"]          = result["Margem (%)"].apply(lambda x: f"{x:.1f}%" if x else "—")
-            st.dataframe(result, use_container_width=True, hide_index=True)
+            st.dataframe(result, width="stretch", hide_index=True)
         else:
             st.warning("Nenhum produto encontrado.")
 except Exception:
@@ -87,7 +87,7 @@ with hdr_col1:
     st.markdown('<div class="ff-section-label">Sales History</div>', unsafe_allow_html=True)
 with hdr_col2:
     st.markdown("<br>", unsafe_allow_html=True)
-    st.button("Sync Applied", use_container_width=True, type="primary", disabled=True)
+    st.button("Sync Applied", width="stretch", type="primary", disabled=True)
 history = load_sales_history()
 
 if history.empty:
@@ -166,7 +166,7 @@ else:
                   annotation_font_color="#FFD700",
                   annotation_position="top left")
     hud_plotly_layout(fig, height=380)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # ── Payment method breakdown ───────────────────────────────────────────────
     if not filtered_history.empty:
@@ -190,12 +190,12 @@ else:
                 marker=dict(line=dict(color="#080C18", width=2)),
             )
             hud_plotly_layout(fig_pay, height=320)
-            st.plotly_chart(fig_pay, use_container_width=True)
+            st.plotly_chart(fig_pay, width="stretch")
 
         with col_tbl:
             st.markdown("**Resumo por Pagamento**")
             pay_agg["Receita (R$)"] = pay_agg["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-            st.dataframe(pay_agg, use_container_width=True, hide_index=True)
+            st.dataframe(pay_agg, width="stretch", hide_index=True)
 
     with st.expander("All sales in selected period", expanded=False):
         show = filtered_history.sort_values("Date", ascending=False).copy()
@@ -203,4 +203,4 @@ else:
         show["Unit_Price"] = show["Unit_Price"].apply(lambda x: f"R$ {x:.2f}")
         show["Total"]      = show["Total"].apply(lambda x: f"R$ {x:.2f}")
         show.columns       = ["Data", "Produto", "Qtd", "Preço Unit.", "Total", "Pagamento", "Fonte"]
-        st.dataframe(show, use_container_width=True, hide_index=True)
+        st.dataframe(show, width="stretch", hide_index=True)

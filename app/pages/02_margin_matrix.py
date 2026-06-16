@@ -120,7 +120,7 @@ fig.add_annotation(x=pdf["qty_sold"].min()*1.5, y=pdf["margin_pct"].min()*1.1,
 
 fig.update_layout(coloraxis_showscale=True)
 hud_plotly_layout(fig, height=560)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # ── Top / Bottom Margin Tables ─────────────────────────────────────────────────
 st.divider()
@@ -133,7 +133,7 @@ with col1:
     top_margin.columns = ["Produto", "Categoria", "Margem (%)", "Receita (R$)"]
     top_margin["Margem (%)"]  = top_margin["Margem (%)"].apply(lambda x: f"{x:.1f}%")
     top_margin["Receita (R$)"] = top_margin["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    st.dataframe(top_margin, use_container_width=True, hide_index=True)
+    st.dataframe(top_margin, width="stretch", hide_index=True)
 
 with col2:
     st.subheader("Bottom 10 — Menor Margem")
@@ -142,7 +142,7 @@ with col2:
     bot_margin.columns = ["Produto", "Categoria", "Margem (%)", "Receita (R$)"]
     bot_margin["Margem (%)"]  = bot_margin["Margem (%)"].apply(lambda x: f"{x:.1f}%")
     bot_margin["Receita (R$)"] = bot_margin["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
-    st.dataframe(bot_margin, use_container_width=True, hide_index=True)
+    st.dataframe(bot_margin, width="stretch", hide_index=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # INTELLIGENCE LAYER — Classification + Recommendations + Alerts + Report
@@ -178,7 +178,7 @@ if "Margem" in show_enriched.columns:
 if "Receita (R$)" in show_enriched.columns:
     show_enriched["Receita (R$)"] = show_enriched["Receita (R$)"].apply(lambda x: f"R$ {x:,.2f}")
 
-st.dataframe(show_enriched, use_container_width=True, hide_index=True)
+st.dataframe(show_enriched, width="stretch", hide_index=True)
 
 # ── Alerts panel ─────────────────────────────────────────────────────────────
 st.divider()
@@ -224,7 +224,7 @@ if not cat_summary.empty:
     if "star_count" in cat_show.columns: rename_cat["star_count"] = "Stars"
     if "dog_count"  in cat_show.columns: rename_cat["dog_count"]  = "Dogs"
     cat_show = cat_show.rename(columns=rename_cat)
-    st.dataframe(cat_show, use_container_width=True, hide_index=True)
+    st.dataframe(cat_show, width="stretch", hide_index=True)
 
 # ── Weekly report generation ──────────────────────────────────────────────────
 st.divider()
@@ -233,7 +233,7 @@ col_r1, col_r2 = st.columns([3, 1])
 with col_r1:
     st.caption("Gera JSON + Markdown em `data/outputs/weekly_report.json`")
 with col_r2:
-    if st.button("Gerar Relatório", use_container_width=True):
+    if st.button("Gerar Relatório", width="stretch"):
         with st.spinner("Gerando..."):
             report = generate_weekly_report(enriched_pdf)
         meta = report.get("metadata", {})

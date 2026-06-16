@@ -282,7 +282,7 @@ with main_col:
             hud_plotly_layout(fig_stock, height=300)
             fig_stock.update_layout(margin=dict(l=8, r=8, t=18, b=8), coloraxis_showscale=False)
             panel("Inventory Intelligence", "stock health matrix", "")
-            st.plotly_chart(fig_stock, use_container_width=True)
+            st.plotly_chart(fig_stock, width="stretch")
 
             critical_table = inventory_pd.sort_values(["alert", "current_stock"]).head(8).copy()
             critical_table = critical_table[["product", "category", "current_stock", "min_stock", "alert"]]
@@ -304,7 +304,7 @@ with main_col:
                 legend=dict(orientation="h", y=1.08, x=0),
             )
             panel("Sales Intelligence", "velocity + demand trend", "")
-            st.plotly_chart(fig_month, use_container_width=True)
+            st.plotly_chart(fig_month, width="stretch")
 
         category_pd = data["category"].to_pandas() if not data["category"].is_empty() else pd.DataFrame()
         if not category_pd.empty:
@@ -329,7 +329,7 @@ with main_col:
             hud_plotly_layout(fig_cash, height=285)
             fig_cash.update_layout(margin=dict(l=8, r=8, t=18, b=40), legend=dict(orientation="h", y=1.08, x=0))
             panel("Cashflow Operations", "revenue vs expenses", "")
-            st.plotly_chart(fig_cash, use_container_width=True)
+            st.plotly_chart(fig_cash, width="stretch")
 
     with lower_right:
         payment_pd = data["payment"].to_pandas() if not data["payment"].is_empty() else pd.DataFrame()
@@ -345,7 +345,7 @@ with main_col:
             hud_plotly_layout(fig_pay, height=285)
             fig_pay.update_layout(margin=dict(l=8, r=8, t=18, b=40), coloraxis_showscale=False)
             panel("Payment Method Analytics", "daily commerce rails", "")
-            st.plotly_chart(fig_pay, use_container_width=True)
+            st.plotly_chart(fig_pay, width="stretch")
 
     abc_pd = data["abc"].to_pandas() if not data["abc"].is_empty() else pd.DataFrame()
     if not abc_pd.empty:

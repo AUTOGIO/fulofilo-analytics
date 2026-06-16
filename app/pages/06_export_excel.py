@@ -37,7 +37,7 @@ for i, s in enumerate(SHEETS):
 st.divider()
 
 # ── Generate button ────────────────────────────────────────────────────────────
-if st.button("Generate Report", type="primary", use_container_width=True):
+if st.button("Generate Report", type="primary", width="stretch"):
     bar = st.progress(0, text="Inicializando...")
     try:
         bar.progress(10, "Carregando dados Parquet...")
@@ -63,7 +63,7 @@ if st.button("Generate Report", type="primary", use_container_width=True):
             data=out_path.read_bytes(),
             file_name=out_path.name,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
+            width="stretch",
         )
     except Exception as exc:
         bar.progress(0, "Erro!")

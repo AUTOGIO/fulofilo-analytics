@@ -176,7 +176,7 @@ try:
         )
         fig.update_traces(marker_line_width=0)
         hud_plotly_layout(fig, height=400)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 except Exception as e:
     st.info(f"Dados de receita não disponíveis: {e}")
 

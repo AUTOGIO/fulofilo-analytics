@@ -114,7 +114,7 @@ def render_page_header(logo_path=None):
         return
     _, col_center, _ = st.columns([2, 1, 2])
     with col_center:
-        st.image(str(target), use_container_width=True)
+        st.image(str(target), width="stretch")
     st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
 
@@ -267,7 +267,7 @@ def render_sidebar(active_page: str = ""):
             st.caption("Automações locais ficam no FF Terminal em macOS. A nuvem exibe os dados já sincronizados.")
         else:
             st.caption("Use a rotina automática após atualizar vendas e dados operacionais na planilha Excel.")
-        if st.button("Executar rotina automática", use_container_width=True, type="primary", disabled=is_cloud):
+        if st.button("Executar rotina automática", width="stretch", type="primary", disabled=is_cloud):
             with st.spinner("Executando sync, alertas e relatórios..."):
                 ok, payload, stderr = _run_local_automation("run-daily-automation")
             if ok:
@@ -279,7 +279,7 @@ def render_sidebar(active_page: str = ""):
                 error = payload.get("error") or stderr or "Falha ao executar rotina automática."
                 st.error(error)
 
-        if st.button("✔ Validar dados", use_container_width=True, disabled=is_cloud):
+        if st.button("✔ Validar dados", width="stretch", disabled=is_cloud):
             with st.spinner("Executando validação estrita..."):
                 ok, payload, stderr = _run_local_automation("validate-data-integrity")
             if ok:
@@ -299,7 +299,7 @@ def render_sidebar(active_page: str = ""):
         )
         st.session_state.setdefault("rede_download_status", "idle")
         st.caption(f"Status: {st.session_state['rede_download_status']}")
-        if st.button("Baixar vendas Rede", use_container_width=True, disabled=is_cloud):
+        if st.button("Baixar vendas Rede", width="stretch", disabled=is_cloud):
             st.session_state["rede_download_status"] = "running"
             result = launch_rede_sales_download("date", rede_target_date, rede_formats)
             st.session_state["rede_download_status"] = "downloaded" if result.ok else "failed"
@@ -331,7 +331,7 @@ def render_sidebar(active_page: str = ""):
         loyverse_force = st.checkbox("Forçar novo download Loyverse", value=False, key="loyverse_download_force")
         st.session_state.setdefault("loyverse_download_status", "idle")
         st.caption(f"Status: {st.session_state['loyverse_download_status']}")
-        if st.button("Baixar + importar Loyverse", use_container_width=True, disabled=is_cloud):
+        if st.button("Baixar + importar Loyverse", width="stretch", disabled=is_cloud):
             st.session_state["loyverse_download_status"] = "running"
             with st.spinner("Baixando Loyverse e atualizando pipeline..."):
                 if loyverse_mode == "intervalo":
@@ -380,7 +380,7 @@ def render_sidebar(active_page: str = ""):
         if not is_cloud:
             st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-section-label">Deploy</div>', unsafe_allow_html=True)
-            if st.button("Sync & Push", use_container_width=True, help="Rebuilds parquets e faz git push → Streamlit redeploys"):
+            if st.button("Sync & Push", width="stretch", help="Rebuilds parquets e faz git push → Streamlit redeploys"):
                 sync_script = Path(__file__).resolve().parent.parent.parent / "etl" / "sync_and_push.py"
                 with st.spinner("Sincronizando..."):
                     result = subprocess.run(
@@ -401,4 +401,4 @@ def render_sidebar(active_page: str = ""):
                 '</div>',
                 unsafe_allow_html=True,
             )
-            st.image(str(GMT_LOGO), use_container_width=True)
+            st.image(str(GMT_LOGO), width="stretch")

@@ -105,7 +105,7 @@ border-radius:10px;padding:12px 18px;margin-bottom:12px;">
         giro_show = giro_pd[["product","category","qty_sold","current_stock","giro","giro_class"]].copy()
         giro_show.columns = ["Produto","Categoria","Qtd Vendida","Estoque Atual","Giro (x)","Classe"]
         giro_show = giro_show.sort_values("Giro (x)", ascending=False)
-        st.dataframe(giro_show, use_container_width=True, hide_index=True)
+        st.dataframe(giro_show, width="stretch", hide_index=True)
 
 st.divider()
 
@@ -150,7 +150,7 @@ with tab1:
     )
     fig.update_traces(marker_line_width=0)
     hud_plotly_layout(fig, height=max(420, len(view)*22))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with tab2:
     st.markdown('<div class="ff-section-label">Items Below Reorder Point</div>', unsafe_allow_html=True)
@@ -213,7 +213,7 @@ with tab3:
         )
         fig3.update_traces(marker_line_width=0)
         hud_plotly_layout(fig3, height=400)
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig3, width="stretch")
         total_val = cat_val["total_value"].sum()
         st.metric("Total Inventory Value", f"R$ {total_val:,.2f}")
     else:
@@ -254,7 +254,7 @@ if not inv_full.is_empty():
             with fc3:
                 new_qty = st.number_input("Novo Estoque", min_value=0, value=cur_stock, step=1)
 
-            submitted_adj = st.form_submit_button("💾 Salvar Ajuste", use_container_width=True, disabled=True)
+            submitted_adj = st.form_submit_button("💾 Salvar Ajuste", width="stretch", disabled=True)
 
         if submitted_adj and len(slug_vals):
             try:
@@ -271,4 +271,4 @@ if not inv_full.is_empty():
 
     with adj_col2:
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        st.button("Auto Sync", use_container_width=True, type="primary", disabled=True)
+        st.button("Auto Sync", width="stretch", type="primary", disabled=True)

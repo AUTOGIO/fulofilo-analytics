@@ -120,7 +120,7 @@ with tab1:
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
     hud_plotly_layout(fig, height=480)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with tab2:
     if "category" in filtered.columns:
@@ -132,7 +132,7 @@ with tab2:
         )
         fig2.update_traces(marker_line_width=1, marker_line_color="#080C18")
         hud_plotly_layout(fig2, height=540)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
     else:
         st.info("Dados de categoria não disponíveis.")
 
