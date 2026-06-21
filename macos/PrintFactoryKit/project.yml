@@ -1,0 +1,46 @@
+name: PrintFactoryKit
+options:
+  bundleIdPrefix: com.printfactorykit
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "16"
+  groupSortPosition: top
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  PrintFactoryKit:
+    type: application
+    platform: macOS
+    sources:
+      - path: PrintFactoryKit
+        excludes:
+          - "**/.DS_Store"
+    entitlements:
+      path: PrintFactoryKit/Resources/PrintFactoryKit.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.printfactorykit.app
+        INFOPLIST_FILE: PrintFactoryKit/Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_STRICT_CONCURRENCY: targeted
+    dependencies: []
+
+  PrintFactoryKitTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/PrintFactoryKitTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.printfactorykit.tests
+        INFOPLIST_FILE: Tests/PrintFactoryKitTests/Info.plist
+    dependencies:
+      - target: PrintFactoryKit

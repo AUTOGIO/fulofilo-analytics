@@ -1,0 +1,591 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C1462AAC5001FA46580B9F1 /* PrintFactoryKitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D91771D522D27581D91720 /* PrintFactoryKitApp.swift */; };
+		0C15EC6B383143088A13CFB4 /* PDFGenerationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13579C79D5E999D2F65A6601 /* PDFGenerationService.swift */; };
+		12657E9F553A20B7BFACE060 /* ZipExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC803AA89C3BDDCC333CD7F /* ZipExportService.swift */; };
+		163F1E0DEC1EE834A723EC8E /* ProjectDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223C495DD23E9D34380D87B /* ProjectDetailsView.swift */; };
+		2BBBB0551A18BEEFE64F1F66 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD5F3DED046F4BD9CEAC5 /* Project.swift */; };
+		2EC04BD7578A2CF0B4842AB7 /* PaletteExtractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8597171660D08279EB479F1A /* PaletteExtractionService.swift */; };
+		418D31B91693C5C52A00013A /* PackageGeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE218950683AAB95242DC699 /* PackageGeneratorService.swift */; };
+		433F1FA64313DFC4FEE49203 /* ImportArtworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0258C58A2D62F00E097689 /* ImportArtworkView.swift */; };
+		4A21B1BF6E904C5A9F077569 /* ProductionSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EC66642BA4C2C79D0C383 /* ProductionSpecs.swift */; };
+		59F105BA316C47B99B24F881 /* RepeatTileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D9CFF9F2043A24FCB0995A /* RepeatTileService.swift */; };
+		626E1873759273299B0D8155 /* ApprovalAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2F8F839C7A99204F611324 /* ApprovalAgentService.swift */; };
+		6C5E9C921F9EE299348B9C3C /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE5703C85F34C49057C8415 /* ResultView.swift */; };
+		77546EF123208B2E61264F0B /* AnalysisPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93455D6F2E7CFD29FB088357 /* AnalysisPreviewView.swift */; };
+		7A572A55143F691D3F3807C5 /* PrintFactoryKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 862EEC26F326E61244CE21A4 /* PrintFactoryKitTests.swift */; };
+		7E51A65F4F9668D7549220E0 /* ImageAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451E5E3104D9B7F9B1C31ACC /* ImageAnalysisService.swift */; };
+		7F781F63B8C23BA0C162B579 /* ProductionDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD2C113B291A12439F6B062 /* ProductionDefaults.swift */; };
+		A60A3AF0063866FFC6E6DC05 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCDEA93E0F6AE68400E85B /* ContentView.swift */; };
+		B084C1B41BA03884BB73EA3A /* SmartFillService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB3DB5E81791BCA0B0F032E /* SmartFillService.swift */; };
+		BFED022D6F9DCCD449DAC376 /* FactoryPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 866F2F6C8D43B9DE982E5F4B /* FactoryPackage.swift */; };
+		C9820485BAD5841773F85335 /* ProjectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986791450B51648D51D54156 /* ProjectViewModel.swift */; };
+		D74BC57AA9A0AA31914362F3 /* FileSystemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A6EF34163046E35AE72C9A /* FileSystemService.swift */; };
+		D950FE98583C1902BD938096 /* CreateFactoryPackageIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B555A0DA7E204AC8655BD5 /* CreateFactoryPackageIntent.swift */; };
+		DAA60541A599824A9CEB78CB /* ArtworkAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A417C33FF9F3BD46BF07D2D /* ArtworkAnalysis.swift */; };
+		EC63B100D15A6731FC6ABC39 /* ApprovalReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E08AD285A91763CA26BD0 /* ApprovalReport.swift */; };
+		F377CC8AD4192A82C5CDD45F /* MarkdownTemplateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0833A6A182370F794E96B4 /* MarkdownTemplateService.swift */; };
+		FC518FD765D2FF0777A57637 /* ProductionSpecsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F1E7B215FA0E4598F43CA3 /* ProductionSpecsView.swift */; };
+		FEDEE66273EEB9D5E19A75E3 /* PrintReadyExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F423DAF7F447DEE034166565 /* PrintReadyExportService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		13489B4A7592206B931B797B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13BECAF1BB8703ABC12C0388 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 41523989FAA84FFC72707C0B;
+			remoteInfo = PrintFactoryKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A7AD5F3DED046F4BD9CEAC5 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		0CB3DB5E81791BCA0B0F032E /* SmartFillService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartFillService.swift; sourceTree = "<group>"; };
+		1251D7903ACC194EDC360AC7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		13579C79D5E999D2F65A6601 /* PDFGenerationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFGenerationService.swift; sourceTree = "<group>"; };
+		306C7EB117CD40DC40744D3D /* PrintFactoryKit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrintFactoryKit.entitlements; sourceTree = "<group>"; };
+		35F1E7B215FA0E4598F43CA3 /* ProductionSpecsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionSpecsView.swift; sourceTree = "<group>"; };
+		451E5E3104D9B7F9B1C31ACC /* ImageAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnalysisService.swift; sourceTree = "<group>"; };
+		5A417C33FF9F3BD46BF07D2D /* ArtworkAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkAnalysis.swift; sourceTree = "<group>"; };
+		63137388AA6371A36DADACED /* PrintFactoryKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrintFactoryKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		64A6EF34163046E35AE72C9A /* FileSystemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemService.swift; sourceTree = "<group>"; };
+		6A0833A6A182370F794E96B4 /* MarkdownTemplateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTemplateService.swift; sourceTree = "<group>"; };
+		718E08AD285A91763CA26BD0 /* ApprovalReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalReport.swift; sourceTree = "<group>"; };
+		726AFCCFD014C03B8A47B3B9 /* PrintFactoryKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrintFactoryKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		77B555A0DA7E204AC8655BD5 /* CreateFactoryPackageIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFactoryPackageIntent.swift; sourceTree = "<group>"; };
+		7CD2C113B291A12439F6B062 /* ProductionDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionDefaults.swift; sourceTree = "<group>"; };
+		8223C495DD23E9D34380D87B /* ProjectDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailsView.swift; sourceTree = "<group>"; };
+		8597171660D08279EB479F1A /* PaletteExtractionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteExtractionService.swift; sourceTree = "<group>"; };
+		862EEC26F326E61244CE21A4 /* PrintFactoryKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintFactoryKitTests.swift; sourceTree = "<group>"; };
+		866F2F6C8D43B9DE982E5F4B /* FactoryPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryPackage.swift; sourceTree = "<group>"; };
+		88BCDEA93E0F6AE68400E85B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		93455D6F2E7CFD29FB088357 /* AnalysisPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisPreviewView.swift; sourceTree = "<group>"; };
+		986791450B51648D51D54156 /* ProjectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectViewModel.swift; sourceTree = "<group>"; };
+		BA0258C58A2D62F00E097689 /* ImportArtworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportArtworkView.swift; sourceTree = "<group>"; };
+		CEDAA6F9C3FBB35C9BDF8375 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DE218950683AAB95242DC699 /* PackageGeneratorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageGeneratorService.swift; sourceTree = "<group>"; };
+		E3D91771D522D27581D91720 /* PrintFactoryKitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintFactoryKitApp.swift; sourceTree = "<group>"; };
+		ECE5703C85F34C49057C8415 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
+		EEC803AA89C3BDDCC333CD7F /* ZipExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipExportService.swift; sourceTree = "<group>"; };
+		F2D9CFF9F2043A24FCB0995A /* RepeatTileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatTileService.swift; sourceTree = "<group>"; };
+		F423DAF7F447DEE034166565 /* PrintReadyExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintReadyExportService.swift; sourceTree = "<group>"; };
+		F53EC66642BA4C2C79D0C383 /* ProductionSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionSpecs.swift; sourceTree = "<group>"; };
+		FE2F8F839C7A99204F611324 /* ApprovalAgentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalAgentService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		013ADC046C4616938015A811 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				450560573BCD8E8A00D43F88 /* PrintFactoryKitTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		04EA14F4BA157A2E4963F493 /* PrintFactoryKit */ = {
+			isa = PBXGroup;
+			children = (
+				25E06AE9DC0617322DA88742 /* App */,
+				BB92E0439CE8B3B1CDF0FE4F /* AppIntents */,
+				7E787AB1FAFF9C5C80C4D2B9 /* Features */,
+				DF306E41427E4095E2EAB053 /* Models */,
+				3B20D40BF37802B767A50D1F /* Resources */,
+				EF0A367443956C8D980BD35C /* Services */,
+			);
+			path = PrintFactoryKit;
+			sourceTree = "<group>";
+		};
+		25E06AE9DC0617322DA88742 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				88BCDEA93E0F6AE68400E85B /* ContentView.swift */,
+				E3D91771D522D27581D91720 /* PrintFactoryKitApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		38454E99F86E346FBED7FF1D = {
+			isa = PBXGroup;
+			children = (
+				04EA14F4BA157A2E4963F493 /* PrintFactoryKit */,
+				013ADC046C4616938015A811 /* Tests */,
+				DE16778CB7426EA7831FF3A1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3B20D40BF37802B767A50D1F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1251D7903ACC194EDC360AC7 /* Info.plist */,
+				306C7EB117CD40DC40744D3D /* PrintFactoryKit.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		450560573BCD8E8A00D43F88 /* PrintFactoryKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				CEDAA6F9C3FBB35C9BDF8375 /* Info.plist */,
+				862EEC26F326E61244CE21A4 /* PrintFactoryKitTests.swift */,
+			);
+			path = PrintFactoryKitTests;
+			sourceTree = "<group>";
+		};
+		53D227A4FDEFF5DE68BBD8CE /* ProjectGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				DE218950683AAB95242DC699 /* PackageGeneratorService.swift */,
+				7CD2C113B291A12439F6B062 /* ProductionDefaults.swift */,
+				986791450B51648D51D54156 /* ProjectViewModel.swift */,
+			);
+			path = ProjectGenerator;
+			sourceTree = "<group>";
+		};
+		7E787AB1FAFF9C5C80C4D2B9 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				9913EDDB51F323879CF23109 /* Exporter */,
+				E42A824660E00E054A4E918A /* ImageAnalysis */,
+				FE84008BF40B645C67630E22 /* ImportArtwork */,
+				53D227A4FDEFF5DE68BBD8CE /* ProjectGenerator */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		9913EDDB51F323879CF23109 /* Exporter */ = {
+			isa = PBXGroup;
+			children = (
+				ECE5703C85F34C49057C8415 /* ResultView.swift */,
+			);
+			path = Exporter;
+			sourceTree = "<group>";
+		};
+		BB92E0439CE8B3B1CDF0FE4F /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				77B555A0DA7E204AC8655BD5 /* CreateFactoryPackageIntent.swift */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
+		DE16778CB7426EA7831FF3A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				726AFCCFD014C03B8A47B3B9 /* PrintFactoryKit.app */,
+				63137388AA6371A36DADACED /* PrintFactoryKitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DF306E41427E4095E2EAB053 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				718E08AD285A91763CA26BD0 /* ApprovalReport.swift */,
+				5A417C33FF9F3BD46BF07D2D /* ArtworkAnalysis.swift */,
+				866F2F6C8D43B9DE982E5F4B /* FactoryPackage.swift */,
+				F53EC66642BA4C2C79D0C383 /* ProductionSpecs.swift */,
+				0A7AD5F3DED046F4BD9CEAC5 /* Project.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E42A824660E00E054A4E918A /* ImageAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				93455D6F2E7CFD29FB088357 /* AnalysisPreviewView.swift */,
+				0CB3DB5E81791BCA0B0F032E /* SmartFillService.swift */,
+			);
+			path = ImageAnalysis;
+			sourceTree = "<group>";
+		};
+		EF0A367443956C8D980BD35C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FE2F8F839C7A99204F611324 /* ApprovalAgentService.swift */,
+				64A6EF34163046E35AE72C9A /* FileSystemService.swift */,
+				451E5E3104D9B7F9B1C31ACC /* ImageAnalysisService.swift */,
+				6A0833A6A182370F794E96B4 /* MarkdownTemplateService.swift */,
+				8597171660D08279EB479F1A /* PaletteExtractionService.swift */,
+				13579C79D5E999D2F65A6601 /* PDFGenerationService.swift */,
+				F423DAF7F447DEE034166565 /* PrintReadyExportService.swift */,
+				F2D9CFF9F2043A24FCB0995A /* RepeatTileService.swift */,
+				EEC803AA89C3BDDCC333CD7F /* ZipExportService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FE84008BF40B645C67630E22 /* ImportArtwork */ = {
+			isa = PBXGroup;
+			children = (
+				BA0258C58A2D62F00E097689 /* ImportArtworkView.swift */,
+				35F1E7B215FA0E4598F43CA3 /* ProductionSpecsView.swift */,
+				8223C495DD23E9D34380D87B /* ProjectDetailsView.swift */,
+			);
+			path = ImportArtwork;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		41523989FAA84FFC72707C0B /* PrintFactoryKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 441195794EA64DEA1935B71D /* Build configuration list for PBXNativeTarget "PrintFactoryKit" */;
+			buildPhases = (
+				B2DD678F987F0F37275FAEF0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrintFactoryKit;
+			packageProductDependencies = (
+			);
+			productName = PrintFactoryKit;
+			productReference = 726AFCCFD014C03B8A47B3B9 /* PrintFactoryKit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B6D678EE764D9628FB1EF758 /* PrintFactoryKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65D837D53A630F8C85C6F67F /* Build configuration list for PBXNativeTarget "PrintFactoryKitTests" */;
+			buildPhases = (
+				F5CB93E44E18ABFEA5970565 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				131CCEECF3402749F74B1FF9 /* PBXTargetDependency */,
+			);
+			name = PrintFactoryKitTests;
+			packageProductDependencies = (
+			);
+			productName = PrintFactoryKitTests;
+			productReference = 63137388AA6371A36DADACED /* PrintFactoryKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		13BECAF1BB8703ABC12C0388 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					41523989FAA84FFC72707C0B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					B6D678EE764D9628FB1EF758 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A17BA21FD97372B478EA6528 /* Build configuration list for PBXProject "PrintFactoryKit" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 38454E99F86E346FBED7FF1D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DE16778CB7426EA7831FF3A1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				41523989FAA84FFC72707C0B /* PrintFactoryKit */,
+				B6D678EE764D9628FB1EF758 /* PrintFactoryKitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B2DD678F987F0F37275FAEF0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				77546EF123208B2E61264F0B /* AnalysisPreviewView.swift in Sources */,
+				626E1873759273299B0D8155 /* ApprovalAgentService.swift in Sources */,
+				EC63B100D15A6731FC6ABC39 /* ApprovalReport.swift in Sources */,
+				DAA60541A599824A9CEB78CB /* ArtworkAnalysis.swift in Sources */,
+				A60A3AF0063866FFC6E6DC05 /* ContentView.swift in Sources */,
+				D950FE98583C1902BD938096 /* CreateFactoryPackageIntent.swift in Sources */,
+				BFED022D6F9DCCD449DAC376 /* FactoryPackage.swift in Sources */,
+				D74BC57AA9A0AA31914362F3 /* FileSystemService.swift in Sources */,
+				7E51A65F4F9668D7549220E0 /* ImageAnalysisService.swift in Sources */,
+				433F1FA64313DFC4FEE49203 /* ImportArtworkView.swift in Sources */,
+				F377CC8AD4192A82C5CDD45F /* MarkdownTemplateService.swift in Sources */,
+				0C15EC6B383143088A13CFB4 /* PDFGenerationService.swift in Sources */,
+				418D31B91693C5C52A00013A /* PackageGeneratorService.swift in Sources */,
+				2EC04BD7578A2CF0B4842AB7 /* PaletteExtractionService.swift in Sources */,
+				0C1462AAC5001FA46580B9F1 /* PrintFactoryKitApp.swift in Sources */,
+				FEDEE66273EEB9D5E19A75E3 /* PrintReadyExportService.swift in Sources */,
+				7F781F63B8C23BA0C162B579 /* ProductionDefaults.swift in Sources */,
+				4A21B1BF6E904C5A9F077569 /* ProductionSpecs.swift in Sources */,
+				FC518FD765D2FF0777A57637 /* ProductionSpecsView.swift in Sources */,
+				2BBBB0551A18BEEFE64F1F66 /* Project.swift in Sources */,
+				163F1E0DEC1EE834A723EC8E /* ProjectDetailsView.swift in Sources */,
+				C9820485BAD5841773F85335 /* ProjectViewModel.swift in Sources */,
+				59F105BA316C47B99B24F881 /* RepeatTileService.swift in Sources */,
+				6C5E9C921F9EE299348B9C3C /* ResultView.swift in Sources */,
+				B084C1B41BA03884BB73EA3A /* SmartFillService.swift in Sources */,
+				12657E9F553A20B7BFACE060 /* ZipExportService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5CB93E44E18ABFEA5970565 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A572A55143F691D3F3807C5 /* PrintFactoryKitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		131CCEECF3402749F74B1FF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 41523989FAA84FFC72707C0B /* PrintFactoryKit */;
+			targetProxy = 13489B4A7592206B931B797B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2645D96E3FE038223BC428AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PrintFactoryKit/Resources/PrintFactoryKit.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = PrintFactoryKit/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.printfactorykit.app;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+			};
+			name = Debug;
+		};
+		706CABDBA365A1192749DBBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		D7A30F2BEBB0E9CD8FAE1901 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Tests/PrintFactoryKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.printfactorykit.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrintFactoryKit.app/Contents/MacOS/PrintFactoryKit";
+			};
+			name = Debug;
+		};
+		DFA138071932288E1D6F6DD3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Tests/PrintFactoryKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.printfactorykit.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrintFactoryKit.app/Contents/MacOS/PrintFactoryKit";
+			};
+			name = Release;
+		};
+		F345484AC7C2D1B36F775164 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		F9ABF10039D30596BC963F15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PrintFactoryKit/Resources/PrintFactoryKit.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = PrintFactoryKit/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.printfactorykit.app;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		441195794EA64DEA1935B71D /* Build configuration list for PBXNativeTarget "PrintFactoryKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2645D96E3FE038223BC428AF /* Debug */,
+				F9ABF10039D30596BC963F15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		65D837D53A630F8C85C6F67F /* Build configuration list for PBXNativeTarget "PrintFactoryKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7A30F2BEBB0E9CD8FAE1901 /* Debug */,
+				DFA138071932288E1D6F6DD3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A17BA21FD97372B478EA6528 /* Build configuration list for PBXProject "PrintFactoryKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				706CABDBA365A1192749DBBF /* Debug */,
+				F345484AC7C2D1B36F775164 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 13BECAF1BB8703ABC12C0388 /* Project object */;
+}
