@@ -5,10 +5,9 @@ final class FileSystemService {
     static let shared = FileSystemService()
     private init() {}
 
-    let baseDirectory: URL = {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        return docs.appendingPathComponent("FULO_FILO_FACTORY_PROJECTS", isDirectory: true)
-    }()
+    var baseDirectory: URL {
+        AppSettings.shared.outputFolder
+    }
 
     private let subfolders = [
         "00_BRIEF",
@@ -27,23 +26,25 @@ final class FileSystemService {
     func nextProjectNumber() -> Int {
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(atPath: baseDirectory.path) else { return 1 }
+        let prefix = AppSettings.shared.projectPrefix
         let numbers = contents.compactMap { name -> Int? in
+            guard name.hasPrefix(prefix) else { return nil }
             let parts = name.components(separatedBy: "_")
-            guard parts.count >= 4, let n = Int(parts[3]) else { return nil }
-            return n
+            // prefix may itself contain underscores — number is always the last numeric segment before name
+            return parts.compactMap { Int($0) }.first
         }
         return (numbers.max() ?? 0) + 1
     }
 
     func makeProjectCode(year: Int, number: Int) -> String {
-        String(format: "FF_PRINT_%04d_%03d", year, number)
+        let prefix = AppSettings.shared.projectPrefix
+        return String(format: "%@_%04d_%03d", prefix, year, number)
     }
 
     func createProjectFolder(for project: FactoryProject) throws -> URL {
         try ensureBaseDirectoryExists()
         let projectURL = baseDirectory.appendingPathComponent(project.folderName, isDirectory: true)
 
-        // Never overwrite — suffix with timestamp if exists
         var finalURL = projectURL
         if FileManager.default.fileExists(atPath: finalURL.path) {
             let suffix = Int(Date().timeIntervalSince1970)
@@ -55,7 +56,6 @@ final class FileSystemService {
             try FileManager.default.createDirectory(at: subURL, withIntermediateDirectories: true)
         }
 
-        print("[FileSystemService] Created project folder: \(finalURL.path)")
         return finalURL
     }
 
@@ -63,12 +63,11 @@ final class FileSystemService {
         let source = URL(fileURLWithPath: sourcePath)
         let filename = source.lastPathComponent
         let dest = projectFolder
-            .appendingPathComponent("03_MASTER_ARTWORK/high_res_png")
+            .appendingPathComponent("03_MASTER_ARTWORK")
             .appendingPathComponent(filename)
         if !FileManager.default.fileExists(atPath: dest.path) {
             try FileManager.default.copyItem(at: source, to: dest)
         }
-        print("[FileSystemService] Copied artwork to: \(dest.path)")
         return dest
     }
 

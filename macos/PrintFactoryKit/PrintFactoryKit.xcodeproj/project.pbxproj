@@ -12,10 +12,12 @@
 		12657E9F553A20B7BFACE060 /* ZipExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC803AA89C3BDDCC333CD7F /* ZipExportService.swift */; };
 		163F1E0DEC1EE834A723EC8E /* ProjectDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223C495DD23E9D34380D87B /* ProjectDetailsView.swift */; };
 		2BBBB0551A18BEEFE64F1F66 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AD5F3DED046F4BD9CEAC5 /* Project.swift */; };
+		2E7BEAD38B074131B1441E36 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F4638155EAA11346FB94A7 /* AppSettings.swift */; };
 		2EC04BD7578A2CF0B4842AB7 /* PaletteExtractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8597171660D08279EB479F1A /* PaletteExtractionService.swift */; };
 		418D31B91693C5C52A00013A /* PackageGeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE218950683AAB95242DC699 /* PackageGeneratorService.swift */; };
 		433F1FA64313DFC4FEE49203 /* ImportArtworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0258C58A2D62F00E097689 /* ImportArtworkView.swift */; };
 		4A21B1BF6E904C5A9F077569 /* ProductionSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EC66642BA4C2C79D0C383 /* ProductionSpecs.swift */; };
+		556851F6E90C36D04DD94D3D /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD90B9E703D90C9C2D5B330 /* SetupView.swift */; };
 		59F105BA316C47B99B24F881 /* RepeatTileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D9CFF9F2043A24FCB0995A /* RepeatTileService.swift */; };
 		626E1873759273299B0D8155 /* ApprovalAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2F8F839C7A99204F611324 /* ApprovalAgentService.swift */; };
 		6C5E9C921F9EE299348B9C3C /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE5703C85F34C49057C8415 /* ResultView.swift */; };
@@ -53,6 +55,7 @@
 		13579C79D5E999D2F65A6601 /* PDFGenerationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFGenerationService.swift; sourceTree = "<group>"; };
 		306C7EB117CD40DC40744D3D /* PrintFactoryKit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrintFactoryKit.entitlements; sourceTree = "<group>"; };
 		35F1E7B215FA0E4598F43CA3 /* ProductionSpecsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionSpecsView.swift; sourceTree = "<group>"; };
+		40F4638155EAA11346FB94A7 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		451E5E3104D9B7F9B1C31ACC /* ImageAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnalysisService.swift; sourceTree = "<group>"; };
 		5A417C33FF9F3BD46BF07D2D /* ArtworkAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkAnalysis.swift; sourceTree = "<group>"; };
 		63137388AA6371A36DADACED /* PrintFactoryKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrintFactoryKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +81,7 @@
 		F2D9CFF9F2043A24FCB0995A /* RepeatTileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatTileService.swift; sourceTree = "<group>"; };
 		F423DAF7F447DEE034166565 /* PrintReadyExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintReadyExportService.swift; sourceTree = "<group>"; };
 		F53EC66642BA4C2C79D0C383 /* ProductionSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionSpecs.swift; sourceTree = "<group>"; };
+		FCD90B9E703D90C9C2D5B330 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		FE2F8F839C7A99204F611324 /* ApprovalAgentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalAgentService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,8 +110,10 @@
 		25E06AE9DC0617322DA88742 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				40F4638155EAA11346FB94A7 /* AppSettings.swift */,
 				88BCDEA93E0F6AE68400E85B /* ContentView.swift */,
 				E3D91771D522D27581D91720 /* PrintFactoryKitApp.swift */,
+				FCD90B9E703D90C9C2D5B330 /* SetupView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -315,6 +321,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77546EF123208B2E61264F0B /* AnalysisPreviewView.swift in Sources */,
+				2E7BEAD38B074131B1441E36 /* AppSettings.swift in Sources */,
 				626E1873759273299B0D8155 /* ApprovalAgentService.swift in Sources */,
 				EC63B100D15A6731FC6ABC39 /* ApprovalReport.swift in Sources */,
 				DAA60541A599824A9CEB78CB /* ArtworkAnalysis.swift in Sources */,
@@ -338,6 +345,7 @@
 				C9820485BAD5841773F85335 /* ProjectViewModel.swift in Sources */,
 				59F105BA316C47B99B24F881 /* RepeatTileService.swift in Sources */,
 				6C5E9C921F9EE299348B9C3C /* ResultView.swift in Sources */,
+				556851F6E90C36D04DD94D3D /* SetupView.swift in Sources */,
 				B084C1B41BA03884BB73EA3A /* SmartFillService.swift in Sources */,
 				12657E9F553A20B7BFACE060 /* ZipExportService.swift in Sources */,
 			);
