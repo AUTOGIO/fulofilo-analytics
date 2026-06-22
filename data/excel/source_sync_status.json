@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "timestamp": "2026-06-05T02:20:24.947774+00:00",
+  "timestamp": "2026-06-22T21:17:39.039830+00:00",
   "warnings": [
     "CategoryOverrides is empty; this is allowed, but no manual category corrections have been recorded."
   ],
@@ -9,34 +9,58 @@
     "healthy_production_data": true,
     "readiness_state": "ready",
     "placeholder_only": false,
-    "catalog_rows": 72,
-    "catalog_real_rows": 72,
-    "inventory_rows": 72,
+    "catalog_rows": 74,
+    "catalog_real_rows": 74,
+    "inventory_rows": 74,
     "inventory_placeholder_only": false,
-    "daily_sales_rows": 2942,
-    "cashflow_rows": 34,
+    "daily_sales_rows": 414,
+    "cashflow_rows": 26,
     "category_override_rows": 0,
     "category_overrides_empty": true,
     "meta_present_keys": [
       "schema_version",
       "workbook"
     ],
-    "meta_missing_keys": []
+    "meta_missing_keys": [],
+    "loyverse_reconciliation": {
+      "configured": true,
+      "anchor_path": "/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/data/raw/item_sales_summary_2026-03-01_2026-06-19.csv",
+      "anchor_source": "item_sales_summary_2026-03-01_2026-06-19",
+      "period_start": "2026-03-01",
+      "period_end": "2026-06-19",
+      "anchor_revenue": 265284.99,
+      "ledger_revenue": 265284.99,
+      "drift_revenue": 0.0,
+      "in_sync": true,
+      "anchor_skus": 42
+    }
   },
   "healthy_production_data": true,
   "readiness_state": "ready",
   "placeholder_only": false,
-  "catalog_rows": 72,
-  "catalog_real_rows": 72,
-  "inventory_rows": 72,
+  "catalog_rows": 74,
+  "catalog_real_rows": 74,
+  "inventory_rows": 74,
   "inventory_placeholder_only": false,
-  "daily_sales_rows": 2942,
-  "cashflow_rows": 34,
+  "daily_sales_rows": 414,
+  "cashflow_rows": 26,
   "category_override_rows": 0,
   "category_overrides_empty": true,
   "meta_present_keys": [
     "schema_version",
     "workbook"
   ],
-  "meta_missing_keys": []
+  "meta_missing_keys": [],
+  "loyverse_reconciliation": {
+    "configured": true,
+    "anchor_path": "/Users/eduardofgiovannini/Documents/GitHub/fulofilo-analytics/data/raw/item_sales_summary_2026-03-01_2026-06-19.csv",
+    "anchor_source": "item_sales_summary_2026-03-01_2026-06-19",
+    "period_start": "2026-03-01",
+    "period_end": "2026-06-19",
+    "anchor_revenue": 265284.99,
+    "ledger_revenue": 265284.99,
+    "drift_revenue": 0.0,
+    "in_sync": true,
+    "anchor_skus": 42
+  }
 }

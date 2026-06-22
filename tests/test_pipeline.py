@@ -264,6 +264,16 @@ def test_products_schema_matches_dashboard_contract():
     assert missing == [], f"products.parquet missing dashboard fields: {missing}"
 
 
+def test_extended_parquet_schema():
+    """Extended sync columns for procurement and forecasting."""
+    inv = pl.read_parquet(DATA_DIR / "inventory.parquet")
+    for col in ("supplier", "lead_time_days", "notes"):
+        assert col in inv.columns, f"inventory.parquet missing {col}"
+
+    sales = pl.read_parquet(DATA_DIR / "daily_sales.parquet")
+    assert "sku" in sales.columns, "daily_sales.parquet must include sku"
+
+
 def test_app_db_queries_accept_sync_excel_schema():
     """DuckDB query helpers must work against the canonical sync schema."""
     from app.db import (
@@ -603,3 +613,104 @@ def test_generated_artifacts_are_described_as_non_write_targets():
     assert "data/fulofilo.duckdb" in text
     assert "generated" in text
     assert "read-only" in text or "not a source-of-truth" in text or "not a source-of-truth" in text
+
+
+# ── Ground-truth metric pins (computed independently from raw Excel) ───────────
+# These values are derived directly from DailySales × Catalog without reusing
+# any app code. If they fail, a metric formula has regressed.
+
+def test_kpi_revenue_matches_ground_truth():
+    """Total revenue must equal sum(DailySales.Total) for valid SKU rows."""
+    import pandas as pd
+
+    xlsx = ROOT / "data" / "excel" / "FuloFilo_Master.xlsx"
+    if not xlsx.exists():
+        pytest.skip("Excel workbook not present")
+    sales = pd.read_excel(xlsx, sheet_name="DailySales", engine="openpyxl")
+    sales.columns = [str(c).strip() for c in sales.columns]
+
+    def _norm(v):
+        if v is None or (isinstance(v, float) and pd.isna(v)):
+            return ""
+        try:
+            return str(int(float(str(v).strip()))).zfill(5)
+        except ValueError:
+            return str(v).strip()
+
+    sales["sku_n"] = sales["sku"].map(_norm)
+    valid = sales[sales["sku_n"] != ""].copy()
+    gt_revenue = float(pd.to_numeric(valid["Total"], errors="coerce").fillna(0).sum())
+
+    prod = pl.read_parquet(DATA_DIR / "products.parquet")
+    app_revenue = float(prod["revenue"].sum())
+
+    assert abs(app_revenue - gt_revenue) < 0.05, (
+        f"Revenue mismatch: app={app_revenue:.2f}, ground_truth={gt_revenue:.2f}"
+    )
+
+
+def test_kpi_profit_matches_ground_truth():
+    """Total profit must equal sum(Total - unit_cost × Quantity) joined from Catalog."""
+    import pandas as pd
+
+    xlsx = ROOT / "data" / "excel" / "FuloFilo_Master.xlsx"
+    if not xlsx.exists():
+        pytest.skip("Excel workbook not present")
+    cat = pd.read_excel(xlsx, sheet_name="Catalog", engine="openpyxl")
+    sales = pd.read_excel(xlsx, sheet_name="DailySales", engine="openpyxl")
+    for df in (cat, sales):
+        df.columns = [str(c).strip() for c in df.columns]
+
+    def _norm(v):
+        if v is None or (isinstance(v, float) and pd.isna(v)):
+            return ""
+        try:
+            return str(int(float(str(v).strip()))).zfill(5)
+        except ValueError:
+            return str(v).strip()
+
+    cat["sku_n"] = cat["sku"].map(_norm)
+    sales["sku_n"] = sales["sku"].map(_norm)
+    valid = sales[sales["sku_n"] != ""].copy()
+    valid["Quantity"] = pd.to_numeric(valid["Quantity"], errors="coerce").fillna(0)
+    valid["Total"] = pd.to_numeric(valid["Total"], errors="coerce").fillna(0)
+    agg = valid.groupby("sku_n").agg(qty_sold=("Quantity", "sum"), revenue=("Total", "sum")).reset_index()
+    merged = agg.merge(cat[["sku_n", "unit_cost"]], on="sku_n", how="left")
+    merged["unit_cost"] = pd.to_numeric(merged["unit_cost"], errors="coerce").fillna(0)
+    gt_profit = float((merged["revenue"] - merged["unit_cost"] * merged["qty_sold"]).sum())
+
+    prod = pl.read_parquet(DATA_DIR / "products.parquet")
+    app_profit = float(prod["profit"].sum())
+
+    assert abs(app_profit - gt_profit) < 0.05, (
+        f"Profit mismatch: app={app_profit:.2f}, ground_truth={gt_profit:.2f}"
+    )
+
+
+def test_kpi_lucro_from_db_uses_profit_column():
+    """get_summary_kpis must return SUM(profit), not SUM(revenue*margin_pct/100)."""
+    from app.db import get_conn, get_summary_kpis
+
+    conn = get_conn()
+    try:
+        _, _, lucro, _ = get_summary_kpis(conn, "ALL")
+    finally:
+        conn.close()
+
+    prod = pl.read_parquet(DATA_DIR / "products.parquet")
+    expected_lucro = float(prod["profit"].sum())
+
+    assert abs(lucro - expected_lucro) < 0.05, (
+        f"get_summary_kpis lucro={lucro:.2f} but SUM(profit)={expected_lucro:.2f}; "
+        "formula must use SUM(profit), not SUM(revenue*margin_pct/100)"
+    )
+
+
+def test_kpi_category_revenue_reconciles_to_total():
+    """Revenue by category must sum to the grand total (no leakage or double counting)."""
+    prod = pl.read_parquet(DATA_DIR / "products.parquet")
+    total = float(prod["revenue"].sum())
+    cat_total = float(prod.group_by("category").agg(pl.col("revenue").sum())["revenue"].sum())
+    assert abs(cat_total - total) < 0.01, (
+        f"Category breakdown sum {cat_total:.2f} != grand total {total:.2f}"
+    )

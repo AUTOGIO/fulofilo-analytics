@@ -72,6 +72,18 @@ def get_conn():
                     f"CREATE OR REPLACE VIEW {name} AS "
                     f"SELECT *, suggested_price AS price FROM read_parquet('{p}');"
                 )
+            elif name == "sales":
+                sales_cols = set(pl.read_parquet(p, n_rows=0).columns)
+                if "sku" in sales_cols:
+                    conn.execute(
+                        f"CREATE OR REPLACE VIEW {name} AS "
+                        f"SELECT * FROM read_parquet('{p}');"
+                    )
+                else:
+                    conn.execute(
+                        f"CREATE OR REPLACE VIEW {name} AS "
+                        f"SELECT *, CAST('' AS VARCHAR) AS sku FROM read_parquet('{p}');"
+                    )
             else:
                 conn.execute(
                     f"CREATE OR REPLACE VIEW {name} AS "
@@ -84,10 +96,58 @@ def get_conn():
     # from current_stock so the dashboard always shows the real remaining stock.
     inv_p   = DATA_DIR / "inventory.parquet"
     sales_p = DATA_DIR / "daily_sales.parquet"
+    supplier_p = DATA_DIR / "supplier_catalog.parquet"
+    if supplier_p.exists():
+        conn.execute(
+            f"CREATE OR REPLACE VIEW supplier_catalog AS "
+            f"SELECT * FROM read_parquet('{supplier_p}');"
+        )
+    else:
+        conn.execute("""
+            CREATE OR REPLACE VIEW supplier_catalog AS
+            SELECT
+                CAST('' AS VARCHAR) AS sku,
+                CAST('' AS VARCHAR) AS supplier_id,
+                CAST('' AS VARCHAR) AS supplier_name,
+                CAST(12 AS INTEGER) AS lead_time_days,
+                CAST(0 AS INTEGER) AS moq,
+                CAST(1 AS INTEGER) AS case_pack
+            WHERE 1=0
+        """)
+
     if inv_p.exists():
         sync_date = _dt.fromtimestamp(inv_p.stat().st_mtime).date().isoformat()
+        inv_cols = set(pl.read_parquet(inv_p, n_rows=0).columns)
+        supplier_expr = "COALESCE(i.supplier, '')" if "supplier" in inv_cols else "''"
+        lead_expr = "COALESCE(i.lead_time_days, 12)" if "lead_time_days" in inv_cols else "12"
+        notes_expr = "COALESCE(i.notes, '')" if "notes" in inv_cols else "''"
+        sales_cols = set(pl.read_parquet(sales_p, n_rows=0).columns) if sales_p.exists() else set()
+        has_sku = "sku" in sales_cols
 
         if sales_p.exists():
+            if has_sku:
+                sold_join = f"""
+                    LEFT JOIN (
+                        SELECT
+                            sku AS join_sku,
+                            Product AS join_product,
+                            CAST(SUM(Quantity) AS BIGINT) AS sold_since_sync
+                        FROM read_parquet('{sales_p}')
+                        WHERE Date >= '{sync_date}'
+                        GROUP BY 1, 2
+                    ) s ON i.sku = s.join_sku OR lower(i.product) = lower(s.join_product)
+                """
+            else:
+                sold_join = f"""
+                    LEFT JOIN (
+                        SELECT
+                            Product AS join_product,
+                            CAST(SUM(Quantity) AS BIGINT) AS sold_since_sync
+                        FROM read_parquet('{sales_p}')
+                        WHERE Date >= '{sync_date}'
+                        GROUP BY Product
+                    ) s ON lower(i.product) = lower(s.join_product)
+                """
             conn.execute(f"""
                 CREATE OR REPLACE VIEW inventory AS
                 SELECT
@@ -100,21 +160,19 @@ def get_conn():
                         - COALESCE(s.sold_since_sync, 0)
                     )                          AS current_stock,
                     i.min_stock,
-                    i.reorder_qty
+                    i.reorder_qty,
+                    {supplier_expr}            AS supplier,
+                    {lead_expr}                AS lead_time_days,
+                    {notes_expr}               AS notes
                 FROM read_parquet('{inv_p}') i
-                LEFT JOIN (
-                    SELECT
-                        Product,
-                        CAST(SUM(Quantity) AS BIGINT) AS sold_since_sync
-                    FROM read_parquet('{sales_p}')
-                    WHERE Date >= '{sync_date}'
-                    GROUP BY Product
-                ) s ON lower(i.product) = lower(s.Product)
+                {sold_join}
             """)
         else:
+            extra = f", {supplier_expr} AS supplier, {lead_expr} AS lead_time_days, {notes_expr} AS notes"
             conn.execute(
                 f"CREATE OR REPLACE VIEW inventory AS "
-                f"SELECT * FROM read_parquet('{inv_p}');"
+                f"SELECT slug, sku, product, category, current_stock, min_stock, reorder_qty"
+                f"{extra} FROM read_parquet('{inv_p}');"
             )
 
     return conn
@@ -135,7 +193,7 @@ def get_summary_kpis(conn, period: str = "ALL"):
             SELECT
                 SUM(revenue)                                               AS receita,
                 SUM(qty_sold)                                              AS quantidade,
-                SUM(revenue * margin_pct / 100)                           AS lucro,
+                SUM(profit)                                                AS lucro,
                 ROUND(SUM(revenue) / NULLIF(SUM(qty_sold), 0), 2)         AS ticket_medio
             FROM products
             WHERE {pf}
@@ -154,7 +212,7 @@ def get_abc_analysis(conn, period: str = "ALL"):
                 category,
                 revenue,
                 qty_sold,
-                revenue * margin_pct / 100  AS profit,
+                profit,
                 abc_class,
                 cum_pct,
                 margin_pct
@@ -375,11 +433,7 @@ def get_executive_period_breakdown(
                     s.Product AS product,
                     {_PERIOD_QTY} AS qty,
                     {_PERIOD_TOTAL} AS line_revenue,
-                    CASE
-                        WHEN COALESCE(p.unit_profit, 0) > 0
-                            THEN COALESCE(p.unit_profit, 0) * {_PERIOD_QTY}
-                        ELSE {_PERIOD_TOTAL} * COALESCE(p.margin_pct, 0) / 100.0
-                    END AS line_profit
+                    {_PERIOD_TOTAL} - COALESCE(p.unit_cost, 0) * {_PERIOD_QTY} AS line_profit
                 FROM sales s
                 LEFT JOIN products p ON lower(s.Product) = lower(p.full_name)
             ),
@@ -493,3 +547,63 @@ PERIOD_OPTIONS: dict[str, str] = {
 
 def get_selected_period() -> str:
     return "ALL"
+
+
+def get_sales_timeseries(
+    conn,
+    grain: Literal["day", "week", "month"] = "day",
+    *,
+    sku: str | None = None,
+    category: str | None = None,
+) -> pl.DataFrame:
+    """Sales time series aggregated by day/week/month."""
+    if grain == "day":
+        period_expr = "CAST(s.Date AS DATE)"
+    elif grain == "week":
+        period_expr = "strftime(CAST(s.Date AS DATE), '%G-W%V')"
+    else:
+        period_expr = "strftime(CAST(s.Date AS DATE), '%Y-%m')"
+
+    filters = ["1=1"]
+    if sku:
+        filters.append(f"s.sku = '{sku}'")
+    if category:
+        filters.append(f"p.category = '{category}'")
+    where = " AND ".join(filters)
+
+    try:
+        return conn.execute(f"""
+            SELECT
+                {period_expr} AS period,
+                COALESCE(NULLIF(s.sku, ''), p.sku, '') AS sku,
+                COALESCE(p.category, '') AS category,
+                SUM(CAST(s.Quantity AS DOUBLE)) AS units,
+                SUM(CAST(s.Total AS DOUBLE)) AS revenue
+            FROM sales s
+            LEFT JOIN products p ON s.sku = p.sku OR lower(s.Product) = lower(p.full_name)
+            WHERE {where}
+            GROUP BY 1, 2, 3
+            ORDER BY period
+        """).pl()
+    except Exception:
+        return pl.DataFrame()
+
+
+def get_supplier_summary(conn) -> pl.DataFrame:
+    """Reorder lines grouped by supplier with alert counts."""
+    try:
+        return conn.execute("""
+            SELECT
+                COALESCE(sc.supplier_id, '') AS supplier_id,
+                COALESCE(sc.supplier_name, i.supplier, 'Não atribuído') AS supplier_name,
+                COUNT(DISTINCT p.sku) AS sku_count,
+                SUM(COALESCE(i.current_stock, 0)) AS total_stock,
+                SUM(p.revenue) AS total_revenue
+            FROM products p
+            LEFT JOIN inventory i ON p.sku = i.sku
+            LEFT JOIN supplier_catalog sc ON p.sku = sc.sku
+            GROUP BY 1, 2
+            ORDER BY total_revenue DESC
+        """).pl()
+    except Exception:
+        return pl.DataFrame()
