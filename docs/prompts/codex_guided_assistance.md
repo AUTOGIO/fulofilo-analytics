@@ -2,7 +2,7 @@
 
 Use this prompt when the repo is **already installed** and you only need to open the **interactive guided tour** (Loyverse, Rede, metrics, navigation).
 
-For full clone + install + all dashboards, use [CODEX_OPERATOR_SETUP_PROMPT.md](CODEX_OPERATOR_SETUP_PROMPT.md).
+For full clone + install + all dashboards, use [prompts/codex_operator_setup.md](prompts/codex_operator_setup.md).
 
 ---
 
@@ -102,4 +102,4 @@ curl -sf http://127.0.0.1:8502 && echo "OK"
 ## Related
 
 - App source: `tools/guided_assistance/app.py`
-- Full install prompt: [CODEX_OPERATOR_SETUP_PROMPT.md](CODEX_OPERATOR_SETUP_PROMPT.md)
+- Full install prompt: [prompts/codex_operator_setup.md](prompts/codex_operator_setup.md)

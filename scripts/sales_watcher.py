@@ -15,7 +15,7 @@ Operational data flow (POS automation lane — coexists with Excel-canonical doc
   8. Archive file → data/raw/
   9. git commit + push (optional) → notifications + dashboard
 
-Manual lane remains: edit workbook → bash scripts/sync_excel.sh (see DOCUMENTATION.md).
+Manual lane remains: edit workbook → bash scripts/sync_excel.sh (see docs/documentation.md).
 
 Usage:
     python scripts/sales_watcher.py              # process incoming/ once

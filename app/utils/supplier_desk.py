@@ -24,12 +24,12 @@ DEFAULT_CONFIG = {
 }
 
 FILE_LINKS = {
-    "chaveiro_imgs": ("Chaveiros", "FF_imagens_produtos/chaveiros_individuais/"),
-    "necessaire_imgs": ("Nécessaires", "FF_imagens_produtos/necessaires_individuais/"),
-    "carteira_imgs": ("Carteiras", "FF_imagens_produtos/carteiras_individuais/"),
-    "vestuario_imgs": ("Vestuário", "FF_imagens_produtos/vestuario_e_diversos/"),
-    "body_imgs": ("Bodys", "FF_imagens_produtos/bodys_individuais/"),
-    "mercadorias_imgs": ("Mercadorias", "FF_imagens_produtos/mercadorias/"),
+    "chaveiro_imgs": ("Chaveiros", "assets/product_images/chaveiros_individuais/"),
+    "necessaire_imgs": ("Nécessaires", "assets/product_images/necessaires_individuais/"),
+    "carteira_imgs": ("Carteiras", "assets/product_images/carteiras_individuais/"),
+    "vestuario_imgs": ("Vestuário", "assets/product_images/vestuario_e_diversos/"),
+    "body_imgs": ("Bodys", "assets/product_images/bodys_individuais/"),
+    "mercadorias_imgs": ("Mercadorias", "assets/product_images/mercadorias/"),
     "keychain_ctrl": ("Controle Chaveiros", "data/raw/keychain_sales_control.xlsx"),
     "female_keychain": ("Chaveiros Femininos", "data/raw/female_keychain_sales_control.xlsx"),
     "master": ("Master Excel", "data/excel/FuloFilo_Master.xlsx"),

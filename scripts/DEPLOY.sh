@@ -2,7 +2,7 @@
 # ══════════════════════════════════════════════════════════════════════════════
 # FulôFiló — Deploy Script
 # Run this ONCE from the project root after creating the GitHub repo.
-# Usage: bash DEPLOY.sh
+# Usage: bash scripts/DEPLOY.sh
 # ══════════════════════════════════════════════════════════════════════════════
 set -euo pipefail
 
@@ -51,7 +51,7 @@ read -rp "  Paste your Streamlit URL here and press Enter: " STREAMLIT_URL
 
 if [[ -z "$STREAMLIT_URL" ]]; then
   echo "  ⚠️  No URL entered. Skipping Cloudflare Worker update."
-  echo "     Edit cf-worker/worker.js manually and re-run: bash DEPLOY.sh"
+  echo "     Edit cf-worker/worker.js manually and re-run: bash scripts/DEPLOY.sh"
   exit 0
 fi
 

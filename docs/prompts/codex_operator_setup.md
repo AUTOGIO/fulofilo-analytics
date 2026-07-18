@@ -94,7 +94,7 @@ Tell the operator:
 
 ## Reference files in repo
 - docs/AUTOMATIONS_USER_GUIDE.md — error solutions
-- docs/CODEX_OPERATOR_SETUP_PROMPT.md — this prompt
+- docs/prompts/codex_operator_setup.md — this prompt
 - scripts/operator_bootstrap.sh
 - scripts/launch_operator_desktop.sh
 - tools/guided_assistance/app.py

@@ -98,7 +98,7 @@ def main() -> int:
             "CLOUDFLARE_API_TOKEN missing — cannot call API in this environment",
             {"hint": f"Set token or create {ROOT / '.env.cloudflare'}"},
         )
-        print("Set CLOUDFLARE_API_TOKEN or create .env.cloudflare — see configs/cloudflare.deploy.env.example", file=sys.stderr)
+        print("Set CLOUDFLARE_API_TOKEN or create .env.cloudflare — see config/cloudflare.deploy.env.example", file=sys.stderr)
         return 2
 
     base = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}"

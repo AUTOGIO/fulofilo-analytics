@@ -1,0 +1,7 @@
+high_season_months: [12, 1, 2, 7]
+multipliers:
+  high: 1.25
+  low: 0.85
+labels:
+  high: Alta temporada turística
+  low: Baixa temporada

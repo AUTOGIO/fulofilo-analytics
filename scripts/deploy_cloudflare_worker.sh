@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-# Optional: CLOUDFLARE_API_TOKEN — copy configs/cloudflare.deploy.env.example → .env.cloudflare
+# Optional: CLOUDFLARE_API_TOKEN — copy config/cloudflare.deploy.env.example → .env.cloudflare
 ENV_CF="$ROOT/.env.cloudflare"
 if [[ -f "$ENV_CF" ]]; then
   set -a

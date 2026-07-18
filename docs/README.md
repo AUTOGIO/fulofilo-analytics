@@ -53,6 +53,8 @@ bash scripts/sync_excel.sh --sku-policy strict
 uv run pytest
 ```
 
+To publish read models to Streamlit Cloud (sync + validate + git push), see **[SYNC_WORKFLOW.md](SYNC_WORKFLOW.md)**.
+
 ## Source of Truth & Generated Artifacts
 
 Canonical source of truth:
@@ -73,6 +75,7 @@ Generated artifacts (read models / reports):
 | [README.md](../README.md) | Operator + dev | Quick start, daily ops, n8n, validation |
 | [AGENTS.md](../AGENTS.md) | AI agents / devs | Architecture, commands, guardrails |
 | [docs/README.md](README.md) | All | Docs index (this file) |
+| [SYNC_WORKFLOW.md](SYNC_WORKFLOW.md) | Operator | Local sync → git push → Streamlit Cloud |
 | [USER_GUIDE.md](USER_GUIDE.md) | Operator | Dashboard usage |
 | [AUTOMATIONS_USER_GUIDE.md](AUTOMATIONS_USER_GUIDE.md) | Operator | Loyverse + Rede setup |
 | [DATA_DICTIONARY.md](DATA_DICTIONARY.md) | Analyst | Schema reference |
@@ -90,8 +93,8 @@ Primary references:
 - [`docs/n8n/fulofilo_orchestration_workflow.json`](n8n/fulofilo_orchestration_workflow.json)
 - [`docs/USER_GUIDE.md`](USER_GUIDE.md)
 - [`docs/AUTOMATIONS_USER_GUIDE.md`](AUTOMATIONS_USER_GUIDE.md)
-- [`docs/CODEX_OPERATOR_SETUP_PROMPT.md`](CODEX_OPERATOR_SETUP_PROMPT.md) — Codex: clone, install, open dashboards + guided tour
-- [`docs/CODEX_GUIDED_ASSISTANCE_FF.md`](CODEX_GUIDED_ASSISTANCE_FF.md) — Codex: open guided assistance only (port 8502)
+- [`docs/prompts/codex_operator_setup.md`](prompts/codex_operator_setup.md) — Codex: clone, install, open dashboards + guided tour
+- [`docs/prompts/codex_guided_assistance.md`](prompts/codex_guided_assistance.md) — Codex: open guided assistance only (port 8502)
 
 ## Legacy Notice
 
