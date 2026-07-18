@@ -24,6 +24,8 @@ import pandas as pd
 import polars as pl
 
 ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 EXCEL_DIR = ROOT / "data" / "excel"
 DEFAULT_XLSX = EXCEL_DIR / "FuloFilo_Master.xlsx"
 PARQUET_DIR = ROOT / "data" / "parquet"
@@ -35,6 +37,16 @@ SHEET_SALES = "DailySales"
 SHEET_CASHFLOW = "Cashflow"
 SHEET_OVERRIDES = "CategoryOverrides"
 SHEET_META = "Meta"
+SHEET_SUPPLIER_CATALOG = "SupplierCatalog"
+SHEET_PURCHASE_ORDERS = "PurchaseOrders"
+
+SUPPLIER_CATALOG_COLS = [
+    "sku", "supplier_id", "supplier_name", "lead_time_days", "moq", "case_pack",
+]
+PURCHASE_ORDER_COLS = [
+    "po_id", "supplier_id", "supplier_name", "sku", "product", "qty",
+    "unit_cost", "line_total", "status", "created_at", "notes",
+]
 
 TOL_SALES = 0.02
 MIN_REAL_SKUS_FOR_PRODUCTION = 5
@@ -80,6 +92,13 @@ def _read_sheet(xlsx: Path, name: str) -> pd.DataFrame:
     except ValueError as e:
         raise SystemExit(f"[sync_excel] Cannot read sheet '{name}' from {xlsx}: {e}") from e
     return _norm_cols(raw)
+
+
+def _read_optional_sheet(xlsx: Path, name: str) -> pd.DataFrame | None:
+    try:
+        return _read_sheet(xlsx, name)
+    except SystemExit:
+        return None
 
 
 def _build_health(cat: pd.DataFrame, inv: pd.DataFrame, sales: pd.DataFrame, cf: pd.DataFrame, ov: pd.DataFrame, meta: pd.DataFrame) -> dict:
@@ -205,6 +224,8 @@ def main() -> None:
     cf = _read_sheet(xlsx, SHEET_CASHFLOW)
     ov = _read_sheet(xlsx, SHEET_OVERRIDES)
     _meta = _read_sheet(xlsx, SHEET_META)
+    supplier_cat = _read_optional_sheet(xlsx, SHEET_SUPPLIER_CATALOG)
+    purchase_orders = _read_optional_sheet(xlsx, SHEET_PURCHASE_ORDERS)
 
     for sheet_name, df in [
         (SHEET_CATALOG, cat),
@@ -269,6 +290,25 @@ def main() -> None:
 
     health = _build_health(cat, inv, sales, cf, ov, _meta)
     _append_health_warnings(health, warnings)
+
+    try:
+        from app.utils.loyverse_reconciliation import check_anchor_drift
+
+        anchor_status = check_anchor_drift(sales)
+        health["loyverse_reconciliation"] = anchor_status
+        if anchor_status.get("configured") and not anchor_status.get("in_sync", True):
+            drift = float(anchor_status.get("drift_revenue") or 0.0)
+            msg = (
+                f"Loyverse anchor drift: ledger R$ {anchor_status.get('ledger_revenue', 0):,.2f} "
+                f"vs anchor R$ {anchor_status.get('anchor_revenue', 0):,.2f} "
+                f"(Δ R$ {drift:,.2f}). Run: uv run python scripts/reconcile_loyverse_sales.py"
+            )
+            if args.sku_policy == "strict":
+                errors.append(msg)
+            else:
+                warnings.append(msg)
+    except Exception as exc:
+        warnings.append(f"Loyverse reconciliation check skipped: {exc}")
 
     if health["placeholder_only"] and health["daily_sales_rows"] == 0 and health["cashflow_rows"] == 0:
         warnings.append(
@@ -374,16 +414,43 @@ def main() -> None:
         if c not in inv_out.columns:
             inv_out[c] = "" if c != "lead_time_days" else 7
     inv_pl = pl.from_pandas(
-        inv_out[["slug", "sku", "product", "category", "current_stock", "min_stock", "reorder_qty"]]
+        inv_out[
+            [
+                "slug", "sku", "product", "category", "current_stock", "min_stock",
+                "reorder_qty", "supplier", "lead_time_days", "notes",
+            ]
+        ]
     )
     inv_pl.write_parquet(PARQUET_DIR / "inventory.parquet")
+
+    if supplier_cat is not None and not supplier_cat.empty:
+        sc = supplier_cat.copy()
+        for col in SUPPLIER_CATALOG_COLS:
+            if col not in sc.columns:
+                sc[col] = "" if col not in ("lead_time_days", "moq", "case_pack") else 0
+        sc["sku"] = sc["sku"].map(_norm_sku)
+        sc = sc[sc["sku"] != ""]
+        for col in ("lead_time_days", "moq", "case_pack"):
+            sc[col] = pd.to_numeric(sc[col], errors="coerce").fillna(0).astype(int)
+        sc_pl = pl.from_pandas(sc[SUPPLIER_CATALOG_COLS])
+        sc_pl.write_parquet(PARQUET_DIR / "supplier_catalog.parquet")
+
+    if purchase_orders is not None and not purchase_orders.empty:
+        po = purchase_orders.copy()
+        for col in PURCHASE_ORDER_COLS:
+            if col not in po.columns:
+                po[col] = ""
+        po_pl = pl.from_pandas(po[PURCHASE_ORDER_COLS])
+        po_pl.write_parquet(PARQUET_DIR / "purchase_orders.parquet")
 
     ds = sales.copy()
     ds["Date"] = pd.to_datetime(ds["Date"], errors="coerce").dt.strftime("%Y-%m-%d")
     ds["Date"] = ds["Date"].fillna("")
+    ds["sku_norm"] = ds["sku_norm"].astype(str)
     ds_pl = pl.DataFrame(
         {
             "Date": ds["Date"].astype(str),
+            "sku": ds["sku_norm"].astype(str),
             "Product": ds["Product"].astype(str),
             "Quantity": pd.to_numeric(ds["Quantity"], errors="coerce").fillna(0.0),
             "Unit_Price": pd.to_numeric(ds["Unit_Price"], errors="coerce").fillna(0.0),

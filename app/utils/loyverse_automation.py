@@ -220,6 +220,16 @@ def backfill_missing_loyverse_sales(
     if not sync_each_day and ok > 0:
         _run_sync_subprocess(logger)
 
+    if ok > 0:
+        reconcile = _reconcile_loyverse_anchor(logger, through_date=end_date)
+        if reconcile.get("skipped"):
+            logger.warning(
+                "Loyverse backfill finished but anchor reconciliation was skipped (%s). "
+                "Drop a period export in data/incoming/ and run: "
+                "uv run python scripts/reconcile_loyverse_sales.py",
+                reconcile.get("reason", "unknown"),
+            )
+
     return LoyverseBackfillSummary(
         from_date=start_date,
         to_date=end_date,
@@ -314,6 +324,8 @@ def run_loyverse_daily_sales_import(
             logger.info("event=imported processed_path=%s rows=%s", processed_path, normalized)
 
         _import_processed_csv(processed_path, logger, sync_after=sync_after)
+        if sync_after:
+            _reconcile_loyverse_anchor(logger, through_date=target_date)
         logger.info("event=validated processed_path=%s", processed_path)
         return LoyverseAutomationResult(
             ok=True,
@@ -392,6 +404,33 @@ def _configure_logger(target_date: str, fmt: str) -> tuple[logging.Logger, Path]
     return logger, log_path
 
 
+def _dismiss_loyverse_backdrop(page: Any) -> None:
+    with contextlib.suppress(Exception):
+        page.evaluate("document.querySelectorAll('md-backdrop').forEach((el) => el.remove())")
+
+
+def _set_goods_report_single_day(page: Any, target_date: str) -> None:
+    """Loyverse ignores URL date params; set start/end to the same day in the UI."""
+    br_date = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d/%m/%Y")
+    _dismiss_loyverse_backdrop(page)
+    page.locator("#calendar-open-button").click(force=True, timeout=15_000)
+    page.wait_for_timeout(1_200)
+    start = page.locator("input.info-label-after")
+    end = page.locator("input.info-label-before")
+    if start.count() == 0 or end.count() == 0:
+        raise LoyverseAutomationError("Loyverse date picker inputs not found")
+    start.click()
+    start.fill(br_date)
+    end.click()
+    end.fill(br_date)
+    page.wait_for_timeout(500)
+    done = page.locator("button").filter(has_text=re.compile(r"CONCLU|Ok", re.I)).last
+    if done.count() == 0:
+        raise LoyverseAutomationError("Loyverse date picker confirm button not found")
+    done.click(force=True)
+    page.wait_for_timeout(3_500)
+
+
 def _download_with_playwright(
     target_date: str,
     fmt: str,
@@ -413,6 +452,8 @@ def _download_with_playwright(
         page.wait_for_timeout(1_500)
         if _session_expired(page):
             raise LoyverseAutomationError("Loyverse session expired. Log in manually, then retry.")
+        _set_goods_report_single_day(page, target_date)
+        logger.info("event=period_set date=%s", target_date)
 
         export = page.locator("#export-button")
         if export.count() == 0:
@@ -527,6 +568,34 @@ def _run_sync_subprocess(logger: logging.Logger) -> None:
     )
     if proc.returncode != 0:
         raise LoyverseAutomationError(f"sync_excel failed: {(proc.stderr or proc.stdout).strip()}")
+
+
+def _reconcile_loyverse_anchor(logger: logging.Logger, *, through_date: str | None = None) -> dict[str, Any]:
+    from app.utils.loyverse_reconciliation import find_latest_anchor, reconcile_loyverse_period
+
+    anchor = find_latest_anchor()
+    if anchor is None:
+        logger.info("event=reconcile skipped=true reason=no_anchor")
+        return {"skipped": True, "reason": "no_anchor"}
+
+    if through_date:
+        from scripts.import_sales_summary_to_excel import period_from_name
+
+        _, anchor_end, _ = period_from_name(anchor)
+        if date.fromisoformat(through_date) > anchor_end:
+            logger.info(
+                "event=reconcile skipped=true reason=anchor_stale through=%s anchor_end=%s",
+                through_date,
+                anchor_end.isoformat(),
+            )
+            return {"skipped": True, "reason": "anchor_stale", "anchor_end": anchor_end.isoformat()}
+
+    result = reconcile_loyverse_period(sync_after=True)
+    payload = result.to_dict()
+    logger.info("event=reconcile ok=%s skipped=%s drift=%s", result.ok, result.skipped, result.drift_revenue)
+    if not result.skipped and not result.ok:
+        raise LoyverseAutomationError(result.message)
+    return payload
 
 
 def _import_processed_csv(

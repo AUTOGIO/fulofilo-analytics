@@ -94,54 +94,21 @@ final class PDFGenerationService {
         let layoutManager = NSLayoutManager()
         textStorage.addLayoutManager(layoutManager)
 
-        var pageStart = 0
         var pageIndex = 0
         let glyphCount = layoutManager.numberOfGlyphs
 
-        func addPage() {
-            context.beginPDFPage(nil)
-            // White background
-            context.setFillColor(NSColor.white.cgColor)
-            context.fill(pageRect)
-
-            // Header
-            if pageIndex == 0 {
-                let headerAttrs: [NSAttributedString.Key: Any] = [
-                    .font: NSFont.boldSystemFont(ofSize: 8),
-                    .foregroundColor: NSColor.secondaryLabelColor
-                ]
-                let headerStr = NSAttributedString(string: "PrintFactoryKit — \(title)", attributes: headerAttrs)
-                headerStr.draw(at: CGPoint(x: margin, y: pageRect.height - 30))
-            }
-
-            // Footer
-            let footerAttrs: [NSAttributedString.Key: Any] = [
-                .font: NSFont.systemFont(ofSize: 7),
-                .foregroundColor: NSColor.tertiaryLabelColor
-            ]
-            let footerStr = NSAttributedString(string: "Page \(pageIndex + 1) — APPROVED FOR FACTORY REVIEW ONLY — Not for mass production", attributes: footerAttrs)
-            footerStr.draw(at: CGPoint(x: margin, y: 20))
-        }
-
-        // Simple rendering: chunk into pages
-        let contentHeight = pageRect.height - margin * 2 - 30
+        // Reserve space: 30pt header + margin top + margin bottom + 20pt footer
+        let contentHeight = pageRect.height - margin * 2 - 50
         let textContainer = NSTextContainer(size: CGSize(width: contentWidth, height: contentHeight))
         layoutManager.addTextContainer(textContainer)
-
-        // Force layout
         layoutManager.glyphRange(for: textContainer)
 
         var charIndex = 0
-        var usedGlyphs = 0
 
         repeat {
-            let container = NSTextContainer(size: CGSize(width: contentWidth, height: contentHeight))
-            let lm = NSLayoutManager()
-            let ts = NSTextStorage(attributedString: attrStr)
-            ts.addLayoutManager(lm)
-            lm.addTextContainer(container)
-
-            let remainingStr = NSAttributedString(attributedString: attrStr.attributedSubstring(from: NSRange(location: charIndex, length: attrStr.length - charIndex)))
+            let remainingStr = NSAttributedString(
+                attributedString: attrStr.attributedSubstring(
+                    from: NSRange(location: charIndex, length: attrStr.length - charIndex)))
             let ts2 = NSTextStorage(attributedString: remainingStr)
             let lm2 = NSLayoutManager()
             ts2.addLayoutManager(lm2)
@@ -151,28 +118,56 @@ final class PDFGenerationService {
             let glyphRange2 = lm2.glyphRange(for: tc2)
             let charRange2 = lm2.characterRange(forGlyphRange: glyphRange2, actualGlyphRange: nil)
 
-            addPage()
+            context.beginPDFPage(nil)
+            context.setFillColor(NSColor.white.cgColor)
+            context.fill(pageRect)
 
-            let nsContext = NSGraphicsContext(cgContext: context, flipped: false)
+            // Flip CTM so (0,0) is top-left — NSLayoutManager then draws top-to-bottom correctly
+            context.saveGState()
+            context.translateBy(x: 0, y: pageRect.height)
+            context.scaleBy(x: 1, y: -1)
+
+            let nsContext = NSGraphicsContext(cgContext: context, flipped: true)
             NSGraphicsContext.saveGraphicsState()
             NSGraphicsContext.current = nsContext
 
-            lm2.drawBackground(forGlyphRange: glyphRange2, at: CGPoint(x: margin, y: margin))
-            lm2.drawGlyphs(forGlyphRange: glyphRange2, at: CGPoint(x: margin, y: margin))
+            // Header (page 0 only) — y measured from top in flipped space
+            if pageIndex == 0 {
+                let headerAttrs: [NSAttributedString.Key: Any] = [
+                    .font: NSFont.boldSystemFont(ofSize: 8),
+                    .foregroundColor: NSColor.secondaryLabelColor
+                ]
+                NSAttributedString(string: "PrintFactoryKit — \(title)", attributes: headerAttrs)
+                    .draw(at: CGPoint(x: margin, y: 18))
+            }
+
+            // Footer — near the page bottom (high y in flipped space)
+            let footerAttrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 7),
+                .foregroundColor: NSColor.tertiaryLabelColor
+            ]
+            NSAttributedString(
+                string: "Page \(pageIndex + 1) — APPROVED FOR FACTORY REVIEW ONLY — Not for mass production",
+                attributes: footerAttrs)
+                .draw(at: CGPoint(x: margin, y: pageRect.height - 18))
+
+            // Content — starts just below the header area
+            let contentOriginY: CGFloat = margin + 30
+            lm2.drawBackground(forGlyphRange: glyphRange2, at: CGPoint(x: margin, y: contentOriginY))
+            lm2.drawGlyphs(forGlyphRange: glyphRange2, at: CGPoint(x: margin, y: contentOriginY))
 
             NSGraphicsContext.restoreGraphicsState()
+            context.restoreGState()
             context.endPDFPage()
 
             charIndex += charRange2.length
             pageIndex += 1
-            usedGlyphs += glyphRange2.length
 
             if charRange2.length == 0 { break }
 
         } while charIndex < attrStr.length
 
         _ = glyphCount
-        _ = pageStart
         context.closePDF()
 
         return pdfData as Data

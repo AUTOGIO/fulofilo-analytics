@@ -56,6 +56,15 @@ def main() -> None:
     ws.append(["schema_version", "1"])
     ws.append(["workbook", "FuloFilo_Master"])
 
+    ws = wb.create_sheet("SupplierCatalog", 6)
+    ws.append(["sku", "supplier_id", "supplier_name", "lead_time_days", "moq", "case_pack"])
+
+    ws = wb.create_sheet("PurchaseOrders", 7)
+    ws.append([
+        "po_id", "supplier_id", "supplier_name", "sku", "product", "qty",
+        "unit_cost", "line_total", "status", "created_at", "notes",
+    ])
+
     wb.save(OUT)
     print(f"✅ Wrote {OUT}")
     print("   Next: uv run python scripts/sync_excel.py")

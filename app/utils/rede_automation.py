@@ -7,10 +7,12 @@ from datetime import date
 from pathlib import Path
 
 from app.utils.automation_paths import rede_automation_root, rede_download_dir
+from app.utils.runtime import local_automations_available
 
 
 REDE_SCRIPT = rede_automation_root() / "scripts" / "rede-vendas.mjs"
 LAUNCHER_DIR = rede_automation_root() / ".dashboard-launchers"
+MACOS_OPEN = Path("/usr/bin/open")
 SUPPORTED_FORMATS = {"csv", "excel", "pdf"}
 
 
@@ -28,6 +30,12 @@ def launch_rede_sales_download(date_mode: str, target_date: date | None, formats
     or 2FA prompts. This function only triggers the downloader; it does not
     import Rede files into the Fulofilo canonical data pipeline.
     """
+    if not local_automations_available() or not MACOS_OPEN.is_file():
+        return RedeLaunchResult(
+            ok=False,
+            message="Rede downloads are available only in the local macOS FF Terminal.",
+        )
+
     rede_root = rede_automation_root()
     if not rede_root.exists() or not REDE_SCRIPT.exists():
         return RedeLaunchResult(
@@ -63,7 +71,14 @@ def launch_rede_sales_download(date_mode: str, target_date: date | None, formats
     launcher_path.write_text("#!/usr/bin/env bash\nset -euo pipefail\n" + "\n".join(command) + "\n", encoding="utf-8")
     launcher_path.chmod(0o755)
 
-    result = subprocess.run(["/usr/bin/open", str(launcher_path)], capture_output=True, text=True, check=False)
+    try:
+        result = subprocess.run([str(MACOS_OPEN), str(launcher_path)], capture_output=True, text=True, check=False)
+    except OSError as exc:
+        return RedeLaunchResult(
+            ok=False,
+            message=f"Unable to open the Rede automation launcher: {exc}",
+            launcher_path=launcher_path,
+        )
     if result.returncode != 0:
         error = (result.stderr or result.stdout or "macOS open command failed").strip()
         return RedeLaunchResult(ok=False, message=error, launcher_path=launcher_path)

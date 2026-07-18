@@ -7,12 +7,12 @@ consistent logo + navigation across the entire app.
 
 from pathlib import Path
 import json
-import os
 import streamlit as st
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.utils.source_health import get_source_health
 from app.utils.rede_automation import launch_rede_sales_download
+from app.utils.runtime import is_streamlit_cloud, local_automations_available
 from app.utils.supplier_desk import DEFAULT_CONFIG, load_supplier_desk
 
 # ── Month filter session-state key ────────────────────────────────────────────
@@ -69,6 +69,11 @@ _NAV = [
     ("pages/01_abc_analysis.py",  "SA", "Sales Analytics"),
     ("pages/02_margin_matrix.py", "CF", "Cashflow"),
     ("pages/05_categories.py",    "CI", "Category Intelligence"),
+    ("pages/08_forecasting.py",   "FC", "Forecasting"),
+    ("pages/09_procurement.py",   "PO", "Procurement"),
+    ("pages/10_what_if.py",       "SIM", "What-If"),
+    ("pages/11_benchmarks.py",    "BM", "Benchmarks"),
+    ("pages/12_cohorts.py",       "CH", "Cohorts"),
     ("pages/06_export_excel.py",  "RP", "Reports"),
     ("pages/07_suppliers.py",     "AI", "AI Insights"),
 ]
@@ -124,14 +129,18 @@ def get_selected_period() -> str:
 
 
 def _is_streamlit_cloud() -> bool:
-    return bool(os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("IS_STREAMLIT_CLOUD"))
+    return is_streamlit_cloud()
+
+
+def _local_automations_available() -> bool:
+    return local_automations_available()
 
 
 def _run_local_automation(action: str, force: bool = False, extra_args: list[str] | None = None) -> tuple[bool, dict, str]:
     import subprocess
 
     root = Path(__file__).resolve().parent.parent.parent
-    if _is_streamlit_cloud():
+    if not _local_automations_available():
         return False, {}, "Local automations are disabled on Streamlit Cloud. Use FF Terminal on macOS."
 
     venv_runner = root / ".venv" / "bin" / "python3"
@@ -154,6 +163,23 @@ def _run_local_automation(action: str, force: bool = False, extra_args: list[str
     return result.returncode == 0, payload, (result.stderr or "").strip()
 
 
+def _run_shell_script(script: Path, *args: str) -> tuple[bool, str]:
+    import subprocess
+
+    root = Path(__file__).resolve().parent.parent.parent
+    if not _local_automations_available():
+        return False, "Local automations are disabled on Streamlit Cloud. Use FF Terminal on macOS."
+
+    result = subprocess.run(
+        ["bash", str(script), *args],
+        capture_output=True,
+        text=True,
+        cwd=str(root),
+    )
+    log = "\n".join(part for part in [result.stdout or "", result.stderr or ""] if part).strip()
+    return result.returncode == 0, log
+
+
 def render_sidebar(active_page: str = ""):
     """
     Render logo + full HUD-styled navigation sidebar.
@@ -161,7 +187,7 @@ def render_sidebar(active_page: str = ""):
         active_page: filename of the current page (e.g. 'app.py')
     """
     inject_logo()
-    is_cloud = _is_streamlit_cloud()
+    local_automations_disabled = not _local_automations_available()
 
     # HUD sidebar extra CSS (supplements hud.py global styles)
     st.markdown("""
@@ -263,11 +289,11 @@ def render_sidebar(active_page: str = ""):
 
         st.markdown('<hr style="border-color:rgba(0,212,255,0.18);margin:10px 0 8px;">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-section-label">Automation Controls</div>', unsafe_allow_html=True)
-        if is_cloud:
+        if local_automations_disabled:
             st.caption("Automações locais ficam no FF Terminal em macOS. A nuvem exibe os dados já sincronizados.")
         else:
             st.caption("Use a rotina automática após atualizar vendas e dados operacionais na planilha Excel.")
-        if st.button("Executar rotina automática", width="stretch", type="primary", disabled=is_cloud):
+        if st.button("Executar rotina automática", width="stretch", type="primary", disabled=local_automations_disabled):
             with st.spinner("Executando sync, alertas e relatórios..."):
                 ok, payload, stderr = _run_local_automation("run-daily-automation")
             if ok:
@@ -279,7 +305,7 @@ def render_sidebar(active_page: str = ""):
                 error = payload.get("error") or stderr or "Falha ao executar rotina automática."
                 st.error(error)
 
-        if st.button("✔ Validar dados", width="stretch", disabled=is_cloud):
+        if st.button("✔ Validar dados", width="stretch", disabled=local_automations_disabled):
             with st.spinner("Executando validação estrita..."):
                 ok, payload, stderr = _run_local_automation("validate-data-integrity")
             if ok:
@@ -299,7 +325,7 @@ def render_sidebar(active_page: str = ""):
         )
         st.session_state.setdefault("rede_download_status", "idle")
         st.caption(f"Status: {st.session_state['rede_download_status']}")
-        if st.button("Baixar vendas Rede", width="stretch", disabled=is_cloud):
+        if st.button("Baixar vendas Rede", width="stretch", disabled=local_automations_disabled):
             st.session_state["rede_download_status"] = "running"
             result = launch_rede_sales_download("date", rede_target_date, rede_formats)
             st.session_state["rede_download_status"] = "downloaded" if result.ok else "failed"
@@ -331,7 +357,7 @@ def render_sidebar(active_page: str = ""):
         loyverse_force = st.checkbox("Forçar novo download Loyverse", value=False, key="loyverse_download_force")
         st.session_state.setdefault("loyverse_download_status", "idle")
         st.caption(f"Status: {st.session_state['loyverse_download_status']}")
-        if st.button("Baixar + importar Loyverse", width="stretch", disabled=is_cloud):
+        if st.button("Baixar + importar Loyverse", width="stretch", disabled=local_automations_disabled):
             st.session_state["loyverse_download_status"] = "running"
             with st.spinner("Baixando Loyverse e atualizando pipeline..."):
                 if loyverse_mode == "intervalo":
@@ -376,22 +402,29 @@ def render_sidebar(active_page: str = ""):
         )
 
         # ── Sync & Deploy button (local only — no-op on Streamlit Cloud) ─────────
-        import subprocess
-        if not is_cloud:
+        if not local_automations_disabled:
             st.markdown('<hr style="border-color:rgba(0,212,255,0.10);margin:6px 0;">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-section-label">Deploy</div>', unsafe_allow_html=True)
-            if st.button("Sync & Push", width="stretch", help="Rebuilds parquets e faz git push → Streamlit redeploys"):
-                sync_script = Path(__file__).resolve().parent.parent.parent / "etl" / "sync_and_push.py"
-                with st.spinner("Sincronizando..."):
-                    result = subprocess.run(
-                        ["python3", str(sync_script), "--message", "manual sync via dashboard"],
-                        capture_output=True, text=True,
-                        cwd=str(sync_script.parent.parent),
-                    )
-                if result.returncode == 0:
+            if st.button(
+                "Sync & Push",
+                width="stretch",
+                help="Sincroniza Excel → parquets, valida e faz git push → Streamlit Cloud redeploys",
+            ):
+                sync_script = Path(__file__).resolve().parent.parent.parent / "scripts" / "sync_and_push.sh"
+                try:
+                    with st.spinner("Sincronizando e publicando..."):
+                        ok, log_output = _run_shell_script(sync_script)
+                except Exception as exc:
+                    ok = False
+                    log_output = f"Falha ao executar sync_and_push.sh: {exc}"
+
+                if ok:
                     st.success("Push realizado. App atualiza em ~60s")
                 else:
-                    st.error(f"❌ Erro:\n{result.stderr[-300:]}")
+                    st.error("Falha no Sync & Push. Veja o log abaixo.")
+
+                with st.expander("Log do Sync & Push", expanded=not ok):
+                    st.code(log_output or "(sem saída)", language="text")
 
         # ── GMT branding ───────────────────────────────────────────────────────
         if GMT_LOGO.exists():

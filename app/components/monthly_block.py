@@ -148,7 +148,7 @@ def render_monthly_block(conn=None):
                 x=0,
             ),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # ── Per-month table (always visible when >1 month) ────────────────────────
     if len(rows_sorted) > 1:

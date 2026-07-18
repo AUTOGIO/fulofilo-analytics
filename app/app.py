@@ -249,7 +249,7 @@ with main_col:
         "financial + operational control",
         kpi_grid(
             [
-                {"label": "Revenue", "value": money(revenue, 0), "delta": "gross sales intelligence", "color": HUD["green"]},
+                {"label": "Revenue", "value": money(revenue, 0), "delta": "net sales ledger", "color": HUD["green"]},
                 {"label": "Margin", "value": f"{margin_pct:.1f}%", "delta": money(profit, 0), "color": HUD["gold"]},
                 {"label": "Inventory Turnover", "value": f"{avg_turnover:.2f}x", "delta": "sales / live stock", "color": HUD["cyan"]},
                 {"label": "Sell-through", "value": f"{sell_through:.1f}%", "delta": "units sold vs available", "color": HUD["green"]},

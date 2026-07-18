@@ -29,6 +29,9 @@ packages = ["app", "etl"]
 coreml = [
     "coremltools>=7.2",
 ]
+forecast = [
+    "statsmodels>=0.14",
+]
 
 [dependency-groups]
 dev = [

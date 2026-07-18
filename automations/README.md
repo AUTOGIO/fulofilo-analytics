@@ -44,8 +44,11 @@ bash scripts/setup_automations.sh
 
 ```bash
 .venv/bin/python3 scripts/automation_cli.py download-loyverse-daily-sales --date 2026-06-01
+uv run python scripts/reconcile_loyverse_sales.py
 bash scripts/sync_excel.sh
 ```
+
+Drop a Loyverse **period export** (e.g. `item-sales-summary-2026-03-01-2026-06-19.csv`) in `data/incoming/`. Reconciliation runs automatically after daily Loyverse imports and during `make automation-run-daily`; you can also run it manually with the command above.
 
 ## Rede (macOS Keychain)
 

@@ -24,11 +24,10 @@ final class MarkdownTemplateService {
         - **Print Method:** \(project.printMethod.rawValue)
 
         ## Visual Description
-        *[Describe the visual concept, motifs, and mood of the artwork here.]*
+        \(project.notes.isEmpty ? "See reference artwork in 09_ORIGINAL_ARTWORK_IMAGE/." : project.notes)
 
-        - **Motifs:** To be described based on artwork
         - **Color Mood:** Extracted palette below
-        - **Artwork Style:** Bitmap / Raster — requires vectorization
+        - **Artwork Style:** Bitmap / Raster — requires vectorization for screen print
 
         ## Extracted Color Palette
         \(colors.isEmpty ? "  - No colors extracted" : colors)
@@ -101,9 +100,9 @@ final class MarkdownTemplateService {
         - [ ] **Status: NEEDS PROFESSIONAL PREPARATION**
 
         ### 2. Seamless Repeat Tile
-        - [ ] Create seamless repeat tile appropriate for product dimensions
-        - [ ] Variants: seamless, sparse, dense, mini motif
-        - [ ] **Status: NOT PROVIDED — NEEDS PREPARATION**
+        - [x] Repeat tiles included in 10_VECTOR_AND_REPEAT/: seamless 2×2 and 3×3 at 300 DPI
+        - [ ] Review repeat quality and adjust scale if needed
+        - [ ] **Status: PROVIDED — CONFIRM WITH FACTORY**
 
         ### 3. Print Scale
         - [ ] Define intended print scale relative to product dimensions
@@ -255,8 +254,8 @@ final class MarkdownTemplateService {
         ### Print Specifications
         - **Print Method:** \(project.printMethod.rawValue)
         - **Artwork Source:** \(analysis.fileFormat) — \(analysis.pixelWidth) × \(analysis.pixelHeight) px (original)
-        - **Repeat Tiles Included:** seamless_2x2.png, seamless_3x3.png, sparse_2x2.png
-        - **Print-scaled File Included:** artwork_print_scaled.png\(printPx)
+        - **Repeat Tiles Included:** seamless_repeat_2x2_300dpi.png, seamless_repeat_3x3_300dpi.png (in 10_VECTOR_AND_REPEAT/)
+        - **Print-Ready Files Included:** artwork_PRINT_READY_300dpi.png, artwork_PRINT_READY_300dpi.pdf, artwork_PRINT_READY.svg
 
         ### Hardware & Trims
         - **Zipper:** \(zipperLine)
@@ -362,7 +361,7 @@ final class MarkdownTemplateService {
         IMPORTANT NOTES:
         • The artwork provided is a raster/bitmap source. Vector files will be provided
           after professional vectorization.
-        • Seamless repeat tiles are not yet available — please advise on your requirements.
+        • Seamless repeat tiles (2×2 and 3×3 at 300 DPI) are included in the 10_VECTOR_AND_REPEAT/ folder.
         • All dimensions in the tech pack are placeholders — please confirm specifications.
         • A physical pre-production sample is mandatory before bulk production.
 
@@ -393,8 +392,7 @@ final class MarkdownTemplateService {
         AVISOS IMPORTANTES:
         • A arte fornecida é em formato raster/bitmap. Arquivos vetoriais serão
           enviados após vetorização profissional.
-        • As peças de repetição seamless ainda não estão disponíveis — por favor,
-          informe os requisitos da fábrica.
+        • Repetições seamless (2×2 e 3×3 a 300 DPI) estão incluídas na pasta 10_VECTOR_AND_REPEAT/.
         • Todas as dimensões no tech pack são marcadores temporários — confirmar
           as especificações.
         • Uma amostra física de pré-produção é obrigatória antes da produção em escala.

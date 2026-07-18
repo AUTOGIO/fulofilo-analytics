@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrintFactoryKit — Apresentação</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #888;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f3;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.22);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-primary: #f0efec;
+      --color-text-secondary: #aaa;
+      --color-text-tertiary: #777;
+      --color-background-primary: #1c1c1e;
+      --color-background-secondary: #2c2c2e;
+      --color-border-tertiary: rgba(255,255,255,0.10);
+      --color-border-secondary: rgba(255,255,255,0.20);
+    }
+    .tag-purple { background:#26215C; color:#CEC8F6; }
+    .tag-teal   { background:#04342C; color:#9FE1CB; }
+    .tag-coral  { background:#4A1B0C; color:#F5C4B3; }
+    .tag-amber  { background:#412402; color:#FAC775; }
+    .ba-before  { background:#501313; border-color:#791F1F; }
+    .ba-after   { background:#173404; border-color:#3B6D11; }
+    .ba-before .ba-label { color:#F7C1C1; }
+    .ba-after  .ba-label { color:#C0DD97; }
+    .ba-before .ba-list  { color:#F0BEBE; }
+    .ba-after  .ba-list  { color:#A8D87A; }
+    .badge-green  { background:#173404; color:#C0DD97; }
+    .badge-purple { background:#26215C; color:#CEC8F6; }
+    .cta-box      { background:#26215C; border-color:#534AB7; }
+    .cta-box h3   { color:#CEC8F6; }
+    .cta-box p    { color:#AFA9EC; }
+    .cta-box i    { color:#AFA9EC; }
+    .promise-card i { color:#AFA9EC; }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 0 0 3rem;
+  }
+
+  /* ── Header bar ── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 2rem;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    position: sticky;
+    top: 0;
+    background: var(--color-background-primary);
+    z-index: 10;
+  }
+  .top-bar-logo { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+  .top-bar-logo i { color: #534AB7; }
+  .top-bar-meta { font-size: 12px; color: var(--color-text-tertiary); }
+
+  /* ── Slides ── */
+  .slide { padding: 2.5rem 2rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .slide:last-child { border-bottom: none; }
+
+  /* ── Tags ── */
+  .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; letter-spacing: .04em; padding: 3px 10px; border-radius: 20px; margin-bottom: 1rem; }
+  .tag-purple { background: #EEEDFE; color: #3C3489; }
+  .tag-teal   { background: #E1F5EE; color: #085041; }
+  .tag-coral  { background: #FAECE7; color: #712B13; }
+  .tag-amber  { background: #FAEEDA; color: #633806; }
+
+  /* ── Typography ── */
+  h1 { font-size: 26px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; margin-bottom: .5rem; }
+  h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; margin-bottom: .5rem; }
+  h3 { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: .25rem; }
+  p  { font-size: 15px; color: var(--color-text-secondary); line-height: 1.6; }
+
+  /* ── Hero grid ── */
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem; }
+
+  /* ── Generic card ── */
+  .pain-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.25rem;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+  .pain-card i { font-size: 22px; margin-bottom: .5rem; display: block; }
+  .pain-card p { font-size: 13px; }
+
+  /* ── Steps ── */
+  .steps-list { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .step { display: flex; align-items: flex-start; gap: 1rem; }
+  .step-num { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; background: #EEEDFE; color: #3C3489; font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+  .step-body { padding-top: 4px; }
+  .step-body p { font-size: 13px; margin-top: 2px; }
+  .connector { width: 1px; height: 20px; background: var(--color-border-tertiary); margin-left: 17px; }
+
+  /* ── Files grid ── */
+  .files-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; margin-top: 1.5rem; }
+  .file-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: .75rem 1rem; }
+  .file-card i { font-size: 20px; margin-bottom: .4rem; display: block; }
+  .file-card .name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .file-card .desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; display: inline-block; margin-top: 4px; }
+  .badge-green  { background: #EAF3DE; color: #27500A; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+
+  /* ── Before / After ── */
+  .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+  .ba-card { border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .ba-before { background: #FCEBEB; border: 0.5px solid #F7C1C1; }
+  .ba-after  { background: #EAF3DE; border: 0.5px solid #C0DD97; }
+  .ba-label  { font-size: 11px; font-weight: 500; margin-bottom: .5rem; display: flex; align-items: center; gap: 4px; }
+  .ba-before .ba-label { color: #A32D2D; }
+  .ba-after  .ba-label { color: #3B6D11; }
+  .ba-list { list-style: none; font-size: 13px; line-height: 1.9; }
+  .ba-before .ba-list { color: #711F1F; }
+  .ba-after  .ba-list { color: #27500A; }
+
+  /* ── Promise grid ── */
+  .promise-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+  .promise-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .promise-card i { font-size: 24px; margin-bottom: .6rem; display: block; color: #534AB7; }
+  .promise-card h3 { font-size: 14px; }
+  .promise-card p  { font-size: 12px; }
+
+  /* ── CTA box ── */
+  .cta-box { margin-top: 1.5rem; background: #EEEDFE; border-radius: var(--border-radius-lg); padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; border: 0.5px solid #AFA9EC; }
+  .cta-box i  { font-size: 28px; color: #534AB7; min-width: 28px; }
+  .cta-box h3 { color: #26215C; margin-bottom: 2px; }
+  .cta-box p  { font-size: 13px; color: #3C3489; }
+
+  /* ── Material cards ── */
+  .material-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 1rem; margin-bottom: .75rem; }
+  .material-card i { font-size: 24px; min-width: 24px; }
+
+  /* ── Footer ── */
+  footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--color-text-tertiary); border-top: 0.5px solid var(--color-border-tertiary); margin-top: 1rem; }
+
+  /* ── Responsive ── */
+  @media (max-width: 520px) {
+    .hero-grid, .before-after, .promise-grid { grid-template-columns: 1fr; }
+    body { padding: 0; }
+    .slide { padding: 2rem 1.25rem; }
+    .top-bar { padding: .75rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <i class="ti ti-package" aria-hidden="true"></i>
+    PrintFactoryKit
+  </div>
+  <div class="top-bar-meta">Apresentação do produto · 2026</div>
+</div>
+
+<!-- Slide 1 — Hero -->
+<div class="slide">
+  <div class="tag tag-purple"><i class="ti ti-sparkles" aria-hidden="true"></i> PrintFactoryKit</div>
+  <h1>Sua arte, pronta para a fábrica.<br>Em um clique.</h1>
+  <p>Você criou algo bonito. Agora precisa virar um produto real — uma bolsa, uma canga, uma necessaire. O PrintFactoryKit cuida de tudo entre a sua imagem e a fábrica.</p>
+
+  <div class="hero-grid">
+    <div class="pain-card">
+      <i class="ti ti-file-x" style="color:#D85A30" aria-hidden="true"></i>
+      <h3>Do jeito antigo</h3>
+      <p>Dezenas de e-mails. Arquivos faltando. A fábrica pede coisas que você não sabe como fazer. Semanas perdidas.</p>
+    </div>
+    <div class="pain-card">
+      <i class="ti ti-package" style="color:#1D9E75" aria-hidden="true"></i>
+      <h3>Com o app</h3>
+      <p>Jogue a imagem. Preencha alguns campos. O app monta o pacote completo para a fábrica — em segundos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2 — How it works -->
+<div class="slide">
+  <div class="tag tag-teal">Como funciona</div>
+  <h2>Quatro passos do rascunho à fábrica</h2>
+  <p>Sem softwares de design. Sem conhecimento técnico.</p>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Jogue sua arte</h3>
+        <p>Qualquer foto ou desenho digital. JPEG, PNG — o que você tiver.</p>
+      </div>
+    </div>
+    <div class="connector"></div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Descreva o produto</h3>
+        <p>Escolha o tipo (bolsa, necessaire, canga…), o material e as medidas. O app conhece os padrões do mercado e preenche a maioria dos campos automaticamente.</p>
+      </div>
+    </div>
+    <div class="connector"></div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Clique em "Gerar"</h3>
+        <p>O app prepara sua imagem na qualidade certa para impressão, cria todos os documentos e empacota tudo em um único arquivo ZIP.</p>
+      </div>
+    </div>
+    <div class="connector"></div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Envie o ZIP para a fábrica</h3>
+        <p>O texto do e-mail já está escrito dentro do pacote — em português e inglês. É só anexar e enviar.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3 — What's inside -->
+<div class="slide">
+  <div class="tag tag-coral">O que está dentro</div>
+  <h2>A fábrica recebe tudo que precisa</h2>
+  <p>Um único arquivo ZIP. Sem e-mails de acompanhamento pedindo peças faltando.</p>
+
+  <div class="files-grid">
+    <div class="file-card">
+      <i class="ti ti-file-text" style="color:#534AB7" aria-hidden="true"></i>
+      <div class="name">Guia de instruções</div>
+      <div class="desc">Explica para a fábrica como ler o pacote</div>
+      <span class="badge badge-purple">Para a fábrica</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-palette" style="color:#1D9E75" aria-hidden="true"></i>
+      <div class="name">Paleta de cores</div>
+      <div class="desc">Cada cor extraída da arte, com os códigos exatos que a impressora da fábrica precisa</div>
+      <span class="badge badge-green">Gerado automaticamente</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-ruler-2" style="color:#534AB7" aria-hidden="true"></i>
+      <div class="name">Ficha técnica</div>
+      <div class="desc">Medidas, materiais, zíper, alças, forro — o blueprint completo</div>
+      <span class="badge badge-purple">Para a fábrica</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-printer" style="color:#1D9E75" aria-hidden="true"></i>
+      <div class="name">Arte para impressão</div>
+      <div class="desc">Sua imagem na qualidade profissional — o arquivo que a fábrica carrega na máquina</div>
+      <span class="badge badge-green">Gerado automaticamente</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-layout-grid" style="color:#1D9E75" aria-hidden="true"></i>
+      <div class="name">Padrões de repetição</div>
+      <div class="desc">Sua arte em tiles sem emenda — pronta para estamparia corrida em tecido</div>
+      <span class="badge badge-green">Gerado automaticamente</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-clipboard-check" style="color:#534AB7" aria-hidden="true"></i>
+      <div class="name">Checklist de aprovação</div>
+      <div class="desc">Um formulário que a fábrica assina antes de começar a produção — te protege</div>
+      <span class="badge badge-purple">Para a fábrica</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-robot" style="color:#1D9E75" aria-hidden="true"></i>
+      <div class="name">Relatório de prontidão</div>
+      <div class="desc">Verificação automática: o pacote está completo para enviar?</div>
+      <span class="badge badge-green">Gerado automaticamente</span>
+    </div>
+    <div class="file-card">
+      <i class="ti ti-message" style="color:#534AB7" aria-hidden="true"></i>
+      <div class="name">Texto do e-mail</div>
+      <div class="desc">Mensagem pronta para colar para o fornecedor — em PT e EN</div>
+      <span class="badge badge-purple">Para você</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4 — Material-aware -->
+<div class="slide">
+  <div class="tag tag-amber">Inteligente com materiais</div>
+  <h2>Ele sabe a diferença entre os tecidos</h2>
+  <p>Materiais diferentes se comportam de forma diferente na produção. O PrintFactoryKit ajusta os arquivos automaticamente de acordo com o que você está fazendo.</p>
+
+  <div style="margin-top:1.5rem">
+    <div class="material-card">
+      <i class="ti ti-shirt" style="color:#534AB7" aria-hidden="true"></i>
+      <div>
+        <h3>Cetim + Lona (bolsas)</h3>
+        <p style="font-size:13px">Adiciona uma borda de segurança de 4 mm ao redor da arte — para que a impressão nunca seja cortada na hora de montar a bolsa.</p>
+      </div>
+    </div>
+    <div class="material-card">
+      <i class="ti ti-wave-square" style="color:#0F6E56" aria-hidden="true"></i>
+      <div>
+        <h3>Poliéster com Elastano (cangas, praia)</h3>
+        <p style="font-size:13px">Tecido elástico encolhe ao imprimir. O app automaticamente deixa a arte 8% mais alta para que fique certa depois da impressão.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5 — Before vs After -->
+<div class="slide">
+  <div class="tag tag-teal">Antes vs. depois</div>
+  <h2>O que muda para você</h2>
+
+  <div class="before-after">
+    <div class="ba-card ba-before">
+      <div class="ba-label"><i class="ti ti-x" aria-hidden="true"></i> Sem o app</div>
+      <ul class="ba-list">
+        <li>📧 Dezenas de e-mails</li>
+        <li>🔍 Caçar o formato de arquivo certo</li>
+        <li>❓ "Que resolução você precisa?"</li>
+        <li>⏳ Semanas até a primeira amostra</li>
+        <li>💸 Pagar designer só para preparar arquivos</li>
+      </ul>
+    </div>
+    <div class="ba-card ba-after">
+      <div class="ba-label"><i class="ti ti-check" aria-hidden="true"></i> Com PrintFactoryKit</div>
+      <ul class="ba-list">
+        <li>📦 Um ZIP, tudo dentro</li>
+        <li>✅ Arquivos sempre no formato certo</li>
+        <li>🤖 App cuida dos detalhes técnicos</li>
+        <li>⚡ Pacote pronto em menos de 1 minuto</li>
+        <li>🆓 Sem softwares ou designers extras</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6 — Honest limits + CTA -->
+<div class="slide">
+  <div class="tag tag-purple">O que o app não faz</div>
+  <h2>Ainda é seu — e isso é importante</h2>
+  <p>O app cuida da preparação. Algumas decisões só podem vir de você e da fábrica.</p>
+
+  <div class="promise-grid">
+    <div class="promise-card">
+      <i class="ti ti-shirt-sport" aria-hidden="true"></i>
+      <h3>Amostra física primeiro</h3>
+      <p>Sempre peça uma peça antes do pedido completo. Aprove com os olhos e as mãos — não na tela.</p>
+    </div>
+    <div class="promise-card">
+      <i class="ti ti-color-swatch" aria-hidden="true"></i>
+      <h3>Confirmação de cores</h3>
+      <p>Telas mentem. Faça a fábrica casar as cores com uma referência física antes de imprimir milhares de peças.</p>
+    </div>
+    <div class="promise-card">
+      <i class="ti ti-pencil-cog" aria-hidden="true"></i>
+      <h3>Vetorização (opcional)</h3>
+      <p>Para detalhes muito finos ou impressões grandes, um designer pode precisar redesenhar a arte em vetores. O app avisa quando necessário.</p>
+    </div>
+    <div class="promise-card">
+      <i class="ti ti-signature" aria-hidden="true"></i>
+      <h3>Assinatura da fábrica</h3>
+      <p>O checklist dentro do pacote precisa ser assinado pela fábrica antes da produção em massa. É sua proteção legal.</p>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <i class="ti ti-apple" aria-hidden="true"></i>
+    <div>
+      <h3>Roda completamente no seu Mac</h3>
+      <p>Sem internet, sem assinatura, sem nuvem. Sua arte nunca sai do seu computador. Funciona em qualquer Mac com chip Apple Silicon (M1 e mais recentes), macOS 2026+.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  PrintFactoryKit · parte do projeto <strong>FulôFiló Analytics</strong> · 2026<br>
+  Feito com Apple Intelligence · 100% local · Apple Silicon
+</footer>
+
+</body>
+</html>

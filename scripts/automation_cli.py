@@ -68,7 +68,8 @@ def _json_dump_atomic(path: Path, payload: dict[str, Any]) -> None:
 def _resolve_fingerprint_inputs(action: str) -> list[Path]:
     if action in {"refresh-dashboard-data", "sync-excel-master", "validate-data-integrity", "run-daily-automation"}:
         return [MASTER_XLSX]
-    if action in {"generate-replenishment-alerts", "export-reports", "generate-daily-briefing"}:
+    if action in {"generate-replenishment-alerts", "export-reports", "generate-daily-briefing",
+                  "generate-forecasts", "generate-po-drafts"}:
         return sorted(PARQUET_DIR.glob("*.parquet"))
     return []
 
@@ -201,6 +202,48 @@ def _sync_excel(logger: logging.Logger, sku_policy: str) -> dict[str, Any]:
     }
 
 
+def _generate_forecasts(logger: logging.Logger) -> dict[str, Any]:
+    from app.db import get_conn
+    from core.forecasting.runner import save_forecast_artifacts
+    from core.ops_events import emit_event
+
+    conn = get_conn()
+    try:
+        paths = save_forecast_artifacts(conn)
+    finally:
+        conn.close()
+    logger.info("Forecasts saved: %s", paths)
+    emit_event(
+        "FORECAST",
+        severity="INFO",
+        message="Category and SKU forecasts generated.",
+        action="REVIEW_FORECAST",
+        source="automation_cli",
+    )
+    return paths
+
+
+def _generate_po_drafts(logger: logging.Logger) -> dict[str, Any]:
+    from app.db import get_conn
+    from core.procurement.purchase_order import export_po_artifacts
+    from core.ops_events import emit_event
+
+    conn = get_conn()
+    try:
+        result = export_po_artifacts(conn)
+    finally:
+        conn.close()
+    logger.info("PO drafts: %s PO(s)", result.get("po_count", 0))
+    emit_event(
+        "PROCUREMENT",
+        severity="MEDIUM" if result.get("po_count") else "INFO",
+        message=f"{result.get('po_count', 0)} purchase-order draft(s) generated.",
+        action="REVIEW_PO_DRAFTS",
+        source="automation_cli",
+    )
+    return result
+
+
 def _generate_replenishment_alerts(logger: logging.Logger) -> dict[str, Any]:
     from app.db import get_conn
     from app.utils.reorder_engine import ALERT_THRESHOLD, LEAD_TIME_DAYS, export_excel, get_alerts, notify_macos
@@ -253,7 +296,7 @@ def _generate_replenishment_alerts(logger: logging.Logger) -> dict[str, Any]:
             "alert_workbook": str(workbook_path) if workbook_path else None,
         }
     else:
-        urgent = alerts_df[alerts_df["days_remaining"] <= LEAD_TIME_DAYS]
+        urgent = alerts_df[alerts_df["days_remaining"] <= alerts_df["lead_time"]]
         payload = {
             "generated_at": _utc_now(),
             "total_alerts": int(len(alerts_df)),
@@ -362,9 +405,14 @@ def _validate_data_integrity(logger: logging.Logger, run_tests: bool) -> dict[st
 
 
 def _run_daily_automation(logger: logging.Logger, sku_policy: str) -> dict[str, Any]:
+    from app.utils.loyverse_reconciliation import reconcile_loyverse_period
+
     steps = [
         {"action": "refresh-dashboard-data", "details": _sync_excel(logger, sku_policy=sku_policy)},
+        {"action": "reconcile-loyverse-sales", "details": reconcile_loyverse_period(sync_after=True).to_dict()},
+        {"action": "generate-forecasts", "details": _generate_forecasts(logger)},
         {"action": "generate-replenishment-alerts", "details": _generate_replenishment_alerts(logger)},
+        {"action": "generate-po-drafts", "details": _generate_po_drafts(logger)},
         {"action": "generate-daily-briefing", "details": _generate_daily_briefing(logger)},
         {"action": "export-reports", "details": _export_reports(logger)},
     ]
@@ -500,6 +548,7 @@ def execute_action(
     skip_existing: bool = True,
     continue_on_error: bool = True,
     sync_each_day: bool = True,
+    anchor_path: str | Path | None = None,
 ) -> dict[str, Any]:
     _ensure_dirs()
     run_id = datetime.now().strftime("%Y%m%dT%H%M%S")
@@ -532,6 +581,7 @@ def execute_action(
                 "download-loyverse-sales-period",
                 "backfill-missing-loyverse-sales",
                 "launch-rede-sales-download",
+                "reconcile-loyverse-sales",
             }
             and not force
             and command_state.get("last_status") == "success"
@@ -555,6 +605,10 @@ def execute_action(
                 details = _sync_excel(logger, sku_policy=sku_policy)
             elif action == "generate-replenishment-alerts":
                 details = _generate_replenishment_alerts(logger)
+            elif action == "generate-forecasts":
+                details = _generate_forecasts(logger)
+            elif action == "generate-po-drafts":
+                details = _generate_po_drafts(logger)
             elif action == "generate-daily-briefing":
                 details = _generate_daily_briefing(logger)
             elif action == "export-reports":
@@ -591,6 +645,15 @@ def execute_action(
                 if not target_date:
                     raise ValueError("Missing required target_date for launch-rede-sales-download.")
                 details = _launch_rede_sales_download(logger, target_date=target_date, formats=fmt)
+            elif action == "reconcile-loyverse-sales":
+                from app.utils.loyverse_reconciliation import reconcile_loyverse_period
+
+                details = reconcile_loyverse_period(
+                    anchor_path=Path(anchor_path) if anchor_path else None,
+                    sync_after=True,
+                ).to_dict()
+                if not details.get("skipped") and not details.get("ok"):
+                    raise RuntimeError(details.get("message") or "Loyverse reconciliation failed.")
             else:
                 raise ValueError(f"Unsupported action: {action}")
 
@@ -672,6 +735,12 @@ def _build_parser() -> argparse.ArgumentParser:
     p_alerts = sub.add_parser("generate-replenishment-alerts", help="Generate replenishment alerts artifacts.")
     _add_common_flags(p_alerts)
 
+    p_forecasts = sub.add_parser("generate-forecasts", help="Generate category/SKU forecast JSON artifacts.")
+    _add_common_flags(p_forecasts)
+
+    p_po = sub.add_parser("generate-po-drafts", help="Generate purchase-order draft JSON and Excel files.")
+    _add_common_flags(p_po)
+
     p_briefing = sub.add_parser("generate-daily-briefing", help="Generate executive daily briefing + macOS notification.")
     _add_common_flags(p_briefing)
 
@@ -723,6 +792,18 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Run sync_excel after each imported day (disable for faster batch; run sync manually at end).",
     )
     _add_common_flags(p_loyverse_backfill)
+
+    p_reconcile = sub.add_parser(
+        "reconcile-loyverse-sales",
+        help="Align DailySales with the latest Loyverse period anchor CSV.",
+    )
+    p_reconcile.add_argument(
+        "--anchor",
+        type=Path,
+        default=None,
+        help="Optional path to item-sales-summary CSV. Defaults to latest in data/incoming or data/raw.",
+    )
+    _add_common_flags(p_reconcile)
 
     p_rede = sub.add_parser("launch-rede-sales-download", help="Launch the separate Rede sales download automation.")
     p_rede.add_argument("--date", required=True, dest="target_date", help="Report date as YYYY-MM-DD.")
@@ -856,6 +937,7 @@ def main() -> None:
         "skip_existing": getattr(args, "skip_existing", True),
         "continue_on_error": getattr(args, "continue_on_error", True),
         "sync_each_day": getattr(args, "sync_each_day", True),
+        "anchor_path": getattr(args, "anchor", None),
     }
     result = execute_action(**kwargs)
     print(json.dumps(result, ensure_ascii=False, indent=2))

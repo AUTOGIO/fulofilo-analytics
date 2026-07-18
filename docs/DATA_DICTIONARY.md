@@ -63,6 +63,9 @@ Key columns:
 - `current_stock`
 - `min_stock`
 - `reorder_qty`
+- `supplier`
+- `lead_time_days`
+- `notes`
 
 ### `data/parquet/daily_sales.parquet`
 
@@ -71,12 +74,19 @@ Generated sales read model.
 Key columns:
 
 - `Date`
+- `sku`
 - `Product`
 - `Quantity`
 - `Unit_Price`
 - `Total`
 - `Payment_Method`
 - `Source`
+
+### `data/parquet/supplier_catalog.parquet`
+
+Optional supplier-SKU mapping (from Excel `SupplierCatalog` sheet).
+
+Key columns: `sku`, `supplier_id`, `supplier_name`, `lead_time_days`, `moq`, `case_pack`
 
 ### `data/parquet/cashflow.parquet`
 

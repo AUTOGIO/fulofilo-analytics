@@ -49,7 +49,11 @@ def generate_daily_briefing(conn) -> dict[str, Any]:
         critical_count = int((inv_pd.get("alert") == "🔴 Crítico").sum())
 
     alerts_df = get_alerts(conn)
-    urgent_count = int((alerts_df["days_remaining"] <= LEAD_TIME_DAYS).sum()) if not alerts_df.empty else 0
+    urgent_count = 0
+    if not alerts_df.empty and "lead_time" in alerts_df.columns:
+        urgent_count = int((alerts_df["days_remaining"] <= alerts_df["lead_time"]).sum())
+    elif not alerts_df.empty:
+        urgent_count = int((alerts_df["days_remaining"] <= LEAD_TIME_DAYS).sum())
     total_reorder = int(len(alerts_df))
 
     _, fixed_total = load_fixed_costs()

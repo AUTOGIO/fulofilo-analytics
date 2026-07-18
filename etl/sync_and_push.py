@@ -1,12 +1,15 @@
 """
-FulôFiló — Sync & Push
-======================
-Stage changed data/app files → git commit → push → Streamlit redeploys.
+FulôFiló — Sync & Push (DEPRECATED)
+===================================
+Superseded by: bash scripts/sync_and_push.sh
 
-Usage:
-    python etl/sync_and_push.py                          # push all changes
-    python etl/sync_and_push.py --message "my note"      # custom commit msg
-    python etl/sync_and_push.py --dry-run                # validate, no push
+The shell script runs Excel sync, validates generated read models, then
+commits and pushes to the current branch. This legacy module only staged
+git files without running sync_excel.sh.
+
+Usage (deprecated):
+    python etl/sync_and_push.py
+    python etl/sync_and_push.py --dry-run
 """
 
 from __future__ import annotations
@@ -133,10 +136,27 @@ def push(message: str = "manual sync via dashboard", dry_run: bool = False) -> b
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="FulôFiló sync & push")
+    import warnings
+
+    warnings.warn(
+        "etl/sync_and_push.py is deprecated. Use: bash scripts/sync_and_push.sh",
+        DeprecationWarning,
+        stacklevel=1,
+    )
+    print("DEPRECATED: use bash scripts/sync_and_push.sh instead.", flush=True)
+
+    parser = argparse.ArgumentParser(description="FulôFiló sync & push (deprecated)")
     parser.add_argument("--message", type=str, default="manual sync via dashboard")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+
+    shell_script = BASE / "scripts" / "sync_and_push.sh"
+    if shell_script.exists():
+        cmd = ["bash", str(shell_script)]
+        if args.dry_run:
+            cmd.append("--dry-run")
+        result = subprocess.run(cmd, cwd=str(BASE))
+        sys.exit(result.returncode)
 
     ok = push(message=args.message, dry_run=args.dry_run)
     sys.exit(0 if ok else 1)

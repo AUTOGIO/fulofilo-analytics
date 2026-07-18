@@ -48,7 +48,7 @@ _HTML_FILE = _SUPPLIERS_DIR / "suppliers_dashboard.html"
 col_open, col_xlsx, col_pdf, col_folder = st.columns(4)
 
 with col_open:
-    if st.button("Abrir no Browser", use_container_width=True,
+    if st.button("Abrir no Browser", width="stretch",
                  help="Abre suppliers_dashboard.html no browser padrão (macOS)"):
         if _HTML_FILE.exists():
             subprocess.run(["open", str(_HTML_FILE)])
@@ -57,7 +57,7 @@ with col_open:
             st.error(f"Arquivo não encontrado: {_HTML_FILE}")
 
 with col_xlsx:
-    if st.button("SUPPLIERS_DB.xlsx", use_container_width=True,
+    if st.button("SUPPLIERS_DB.xlsx", width="stretch",
                  help="Abre planilha de fornecedores"):
         if _SUPPLIERS_DB.exists():
             subprocess.run(["open", str(_SUPPLIERS_DB)])
@@ -65,7 +65,7 @@ with col_xlsx:
             st.warning("SUPPLIERS_DB.xlsx não encontrado.")
 
 with col_pdf:
-    if st.button("PDF Completo", use_container_width=True,
+    if st.button("PDF Completo", width="stretch",
                  help="Abre ALL_SUPPLIERS_COMPLETE.pdf"):
         if _SUPPLIERS_PDF.exists():
             subprocess.run(["open", str(_SUPPLIERS_PDF)])
@@ -73,7 +73,7 @@ with col_pdf:
             st.warning("PDF não encontrado.")
 
 with col_folder:
-    if st.button("Abrir Pasta", use_container_width=True,
+    if st.button("Abrir Pasta", width="stretch",
                  help="Abre data/suppliers/ no Finder"):
         subprocess.run(["open", str(_SUPPLIERS_DIR)])
 

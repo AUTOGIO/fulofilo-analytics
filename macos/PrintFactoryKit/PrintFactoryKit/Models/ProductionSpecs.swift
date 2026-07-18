@@ -9,7 +9,7 @@ struct ProductionSpecs: Codable {
     // Print area
     var printAreaWidthCM: Double = 0
     var printAreaHeightCM: Double = 0
-    var targetDPI: Int = 150
+    var targetDPI: Int = 300
 
     // Hardware
     var zipperColor: String = ""
