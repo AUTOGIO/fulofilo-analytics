@@ -89,6 +89,9 @@ FuloFilo_Rehearsal_Report_*.xlsx
 data/processed/reports/FuloFilo_Report_*.xlsx
 data/processed/reports/FuloFilo_Rehearsal_Report_*.xlsx
 ~$*.xlsx
+~$*.xls
+* copy.xlsx
+* copy.xls
 reports/*.tmp.xlsx
 sales_automation_bundle.zip
 

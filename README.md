@@ -1,6 +1,6 @@
 # FulôFiló Analytics
 
-Local retail intelligence for FulôFiló: Excel master → sync → Parquet/DuckDB → Streamlit terminal.
+Local retail intelligence: Excel master → sync → Parquet/DuckDB → Streamlit terminal.
 
 ## Run
 
@@ -20,7 +20,9 @@ App: http://127.0.0.1:8501 · First-time Mac setup: double-click `FuloFiloOperat
 | `data/excel/FuloFilo_Master.xlsx` | Source of truth (edit in Excel) |
 | `app/` | Streamlit dashboard |
 | `scripts/` | Sync, launch, automation helpers |
+| `config/` | Non-secret settings |
 | `docs/` | Guides · `docs/prompts/` for AI prompts |
-| `assets/` | Brand + product images · `config/` settings · `archive/` obsolete |
+| `assets/` | Brand + product images |
+| `archive/` | Old / obsolete files (not deleted) |
 
-More detail: [`docs/README.md`](docs/README.md) · Agent rules: [`AGENTS.md`](AGENTS.md)
+More: [`docs/README.md`](docs/README.md) · Agent rules: [`AGENTS.md`](AGENTS.md)

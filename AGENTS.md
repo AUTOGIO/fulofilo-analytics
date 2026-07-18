@@ -29,10 +29,10 @@ Excel master → sync pipeline → Parquet / DuckDB → Streamlit terminal
 | `docs/` | Guides and design notes |
 | `docs/prompts/` | AI prompt files |
 | `tests/` | Tests only |
-| `archive/` | Obsolete files kept for reference |
+| `archive/` | Obsolete files only — do not nest `_archive/` elsewhere |
 | `automations/`, `cf-worker/`, `macos/`, `excel/`, `reports/`, `tools/` | Supporting packages — do not invent new top-level folders |
 
-**Root** should stay lean: `README.md`, `AGENTS.md`, `.gitignore`, toolchain files (`pyproject.toml`, `uv.lock`, `Makefile`, `requirements.txt`, `docker-compose*.yml`, `*.code-workspace`), plus Finder launchers `FuloFilo.command` and `FuloFiloOperatorSetup.command`.
+**Root** stays lean: `README.md`, `AGENTS.md`, `.gitignore`, toolchain files (`pyproject.toml`, `uv.lock`, `Makefile`, `requirements.txt`, `docker-compose*.yml`, `*.code-workspace`), plus Finder launchers `FuloFilo.command` and `FuloFiloOperatorSetup.command` (kept at root on purpose for double-click).
 
 Prefer **move** over copy. Prefer **edit** over create. Do not delete unclear files — put them in `archive/`. No secrets in git. No personal machine inventory in this file.
 
