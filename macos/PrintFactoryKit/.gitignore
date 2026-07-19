@@ -1,6 +1,32 @@
+# Build products
 build/
 dist/
+DerivedData/
 *.xcuserdata
 *.xcworkspace
-DerivedData/
+!default.xcworkspace
+
+# OS / junk
 .DS_Store
+.AppleDouble
+._*
+Thumbs.db
+
+# Logs / temp
+logs/
+tmp/
+.tmp/
+*.log
+*.tmp
+*.bak
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Archives / local bundles (prefer archive/ for kept copies)
+*.app/
+
+# Large demo video in assets (screenshots PNGs may be committed)
+assets/screenshots/*.mp4
